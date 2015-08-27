@@ -1,6 +1,6 @@
 %%Load the data
 clear all; close all; 
-dirname = 'C:\Users\Mallory\Documents\Lifetime spectroscopy\Experiments\NOC-Si\July 17 2015\Sinton\15-7-14-N\Excel files'
+dirname = 'C:\Users\Mallory\Documents\Lifetime spectroscopy\Experiments\NOC-Si\July 17 2015\Sinton\15-7-14-N\Excel files';
 process_xls_data(dirname);
 %dataSave is a cell structure with probably one entry. The first column is
 %injection level. The second column is lifetime. 
@@ -42,5 +42,5 @@ semilogx(deltan,SRV);
 xlabel('Excess carrier density [cm^{-3}]');
 ylabel('SRV [cm/s]');
 
-save('SRV_deltan.mat','deltanq','SRV');
+save('SRV_deltan.mat','deltan','SRV');
 
