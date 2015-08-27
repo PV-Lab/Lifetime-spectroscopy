@@ -1,3 +1,8 @@
+%%Load the data
+clear all; close all; 
+dirname = 'C:\Users\Mallory\Documents\Lifetime spectroscopy\Experiments\NOC-Si\July 17 2015\Sinton\15-7-14-N\Excel files'
+process_xls_data(dirname);
+
 %% Process raw lifetime data
 clear all; close all; 
 deltanq = logspace(13,17,500); 
