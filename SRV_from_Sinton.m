@@ -1,6 +1,6 @@
 %%Load the data
 clear all; close all; 
-dirname = 'C:\Users\Mallory\Documents\Lifetime spectroscopy\Experiments\NOC-Si\July 17 2015\Sinton\15-7-14-N\Excel files';
+dirname = 'C:\Users\Mallory\Documents\Non-contact crucible\9-15-2015 experiment TR+Amanda\Lifetime stage 1\After anneal\FZ';
 process_xls_data(dirname);
 %dataSave is a cell structure with probably one entry. The first column is
 %injection level. The second column is lifetime. 
@@ -11,7 +11,7 @@ data = dataSave{1}; %this assumes you're only looking at one sample
 deltan = data(:,1);
 tau = data(:,2);
 
-N_dop = 1.5e15; %cm-3
+N_dop = 1.7e15; %cm-3
 W = 0.0280; %cm
 T = 300; %K
 type = 'n';
@@ -33,7 +33,7 @@ hold all;
 loglog(deltan,tau);
 legend('Surface','Intrinsic','Measured');
 
-D = 11.97; 
+D = 11.95; 
 
 SRV = W./((tau_surf-((1/D)*((W/pi)^2))).*2);
 
