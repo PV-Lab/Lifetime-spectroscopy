@@ -50,3 +50,7 @@ loglog(deltanq,tau_mean.*1e6,'-','LineWidth',2);
 
 xlabel('Excess carrier density (cm^-^3)','FontSize',30);
 ylabel('Lifetime (\mus)','FontSize',30);
+set(gca,'FontSize',20);
+set(gca,'LineWidth',2);
+
+print('-dpng','-r0',['AverageLifetime.png']);
