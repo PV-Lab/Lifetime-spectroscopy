@@ -97,7 +97,10 @@ for i = 1:length(deltanLifetime)
     count = count+1;
     h(count) = loglog(deltan_Mp,tau_Mp,'s','MarkerSize',8);
     hold all;
-    count = count+1; 
+    count = count+1;
+    hold all; 
+    loglog(deltan_now,tau_now,'k.');
+    hold all;
 end
 
 xlabel('Excess carrier density (cm^-^3)','FontSize',30);
