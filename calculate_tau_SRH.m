@@ -1,14 +1,17 @@
 %% Process sample lifetime data
 clear all; close all; 
 
-load('all_XLS_data.mat'); 
-data = dataSave{i}; 
-deltan = data(:,1); 
-tau = data(:,2); 
+load('average_data.mat'); 
+% data = dataSave{i}; 
+% deltan = data(:,1); 
+% tau = data(:,2); 
+% 
+% %Interpolate the lifetime data to use with the SRV later
+% deltanq = logspace(13,17,500); 
+% tauq = interp1(deltan,tau,deltanq); 
 
-%Interpolate the lifetime data to use with the SRV later
-deltanq = logspace(13,17,500); 
-tauq = interp1(deltan,tau,deltanq); 
+deltanq = deltanq;
+tauq = tau_mean;
 
 %% Process with surface and Richter
 
@@ -17,13 +20,14 @@ load('SRV_deltan.mat');
 %Interpolate the SRV so that it matches the measured lifetime
 SRVq = interp1(deltan,SRV,deltanq); 
 
-D=11.75;
+D=11.76;
 T = 300; 
-N_dop = 3.8e15; %cm-3
+N_dop = 3.7e15; %cm-3
 type = 'n'; 
-W = 0.0180; %cm
+W = 0.0170; %cm
 
 tau_surf =(W./(2.*SRVq))+((1/D).*((W/pi)^2)); %cm/s
+tau_surf = tau_surf';
 
 for i = 1:length(deltanq)
     tau_intr(i,1) = Richter(T,deltanq(i),N_dop,type);
@@ -63,7 +67,7 @@ xlabel('X = p/n','FontSize',30);
 ylabel('SRH \tau (\mus)','FontSize',30);
 axis([0 1 0 2000]);
 
-save('FC94-23-4_summary.mat','tau_SRH','X','tau_surf','tau_mean','deltanq');
+save('17-25-5_summary.mat','tau_SRH','X','tau_surf','tau_mean','deltanq','tau_intr','N_dop','type','W');
 
 %% Try fitting the linear lines 
 
