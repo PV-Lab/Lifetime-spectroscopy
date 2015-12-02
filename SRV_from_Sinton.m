@@ -15,8 +15,8 @@ load('average_data.mat');
 tau = tau_mean; 
 deltan = deltanq;
 
-N_dop = 1.7e15; %cm-3
-W = 0.0280; %cm
+N_dop = 4.1e15; %cm-3
+W = 0.0170; %cm
 T = 300; %K
 type = 'n';
 

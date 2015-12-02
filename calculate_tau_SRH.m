@@ -20,9 +20,9 @@ load('SRV_deltan.mat');
 %Interpolate the SRV so that it matches the measured lifetime
 SRVq = interp1(deltan,SRV,deltanq); 
 
-D=11.76;
+D=11.61;
 T = 300; 
-N_dop = 3.7e15; %cm-3
+N_dop = 5.3e15; %cm-3
 type = 'n'; 
 W = 0.0170; %cm
 
@@ -67,7 +67,7 @@ xlabel('X = p/n','FontSize',30);
 ylabel('SRH \tau (\mus)','FontSize',30);
 axis([0 1 0 2000]);
 
-save('17-25-5_summary.mat','tau_SRH','X','tau_surf','tau_mean','deltanq','tau_intr','N_dop','type','W');
+save('21-102-5_summary.mat','tau_SRH','X','tau_surf','tau_mean','deltanq','tau_intr','N_dop','type','W');
 
 %% Try fitting the linear lines 
 
