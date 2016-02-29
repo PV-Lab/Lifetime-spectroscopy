@@ -1,4 +1,4 @@
-function [tau_mean,deltanq]=average_tau(filename)
+function [tau_mean,deltanq]=average_tau(filename,saveStart)
 %average_tau(filename) processes a .mat file which has been produced by
 %process_xls_data. All of the data sets within the file are assumed to
 %belong the same sample. The curves are interpolated and then averaged to
@@ -53,4 +53,4 @@ ylabel('Lifetime (\mus)','FontSize',30);
 set(gca,'FontSize',20);
 set(gca,'LineWidth',2);
 
-print('-dpng','-r0',['AverageLifetime.png']);
+print('-dpng','-r0',[saveStart 'AverageLifetime.png']);

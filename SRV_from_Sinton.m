@@ -11,12 +11,12 @@ process_xls_data(dirname);
 % deltan = data(:,1);
 % tau = data(:,2);
 
-load('average_data.mat');
+load('C:\Users\Mallory\Documents\Non-contact crucible\9-15-2015 experiment TR+Amanda\Lifetime stage 3\4 days after anneal\Retaking averages\16-2-18-N\16-2-18-N_averageTau.mat');
 tau = tau_mean; 
 deltan = deltanq;
 
-N_dop = 4.1e15; %cm-3
-W = 0.0170; %cm
+N_dop = 1.9e15; %cm-3
+W = 0.0280; %cm
 T = 300; %K
 type = 'n';
 
@@ -37,7 +37,7 @@ hold all;
 loglog(deltan,tau);
 legend('Surface','Intrinsic','Measured');
 
-D = 11.95; 
+D = 11.93; %minority carrier in n-type is hole 
 
 SRV = W./((tau_surf-((1/D)*((W/pi)^2))).*2);
 
