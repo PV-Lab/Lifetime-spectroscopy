@@ -1,7 +1,7 @@
 %Open two PL images, align them, and then find the lifetime ratio map. 
 clear all; close all; 
 
-filename = 'C:\Users\Mallory\Documents\Non-contact crucible\9-15-2015 experiment TR+Amanda\Processed data - all stages\Ingot bottom_Position 6_40LP_PLmaps.mat';
+filename = 'C:\Users\Mallory\Documents\Non-contact crucible\9-15-2015 experiment TR+Amanda\Processed data - all stages\Ingot bottom_Position 3_40LP_PLmaps.mat';
 load(filename); 
 
 % state1 = 'As-grown'; 
@@ -10,18 +10,18 @@ load(filename);
 % state4 = 'TR'; 
 % state5 = 'TR+STD'; 
 
-% state1 = 'As-grown'; 
-% state2 = 'EXT'; 
-% state3 = 'EXT+TR'; 
-% state4 = 'TR'; 
-% state5 = 'TR+EXT'; 
+state1 = 'As-grown'; 
+state2 = 'EXT'; 
+state3 = 'EXT+TR'; 
+state4 = 'TR'; 
+state5 = 'TR+EXT'; 
 
-state1 = 'As-grown sister 1'; 
-state2 = 'As-grown sister 2'; 
-state3 = 'TR sister 1'; 
-state4 = 'TR sister 2'; 
-state5 = 'TR+EXT';
-state6 = 'TR+STD';
+% state1 = 'As-grown sister 1'; 
+% state2 = 'As-grown sister 2'; 
+% state3 = 'TR sister 1'; 
+% state4 = 'TR sister 2'; 
+% state5 = 'TR+EXT';
+% state6 = 'TR+STD';
 
 for i = 1:length(folders)
     if strcmp(folders{i},state1)==1
@@ -68,18 +68,48 @@ sample_pairs = [index2,index3,0;index1,index4,index5];
 % figure; state6_AG_ratio = state6_AG./store_cropped{index2}; imagesc(state6_AG_ratio); axis('image');
 % colorbar; title([state6 ' compared to As-grown']);
 % 
-% figure; 
-% imagesc(store_cropped{index1},[0 500]); 
-% axis('image'); 
-% colormap(gray); 
+h=figure; 
+imagesc(store_cropped{index1},[0 450]); 
+axis('image');
+colormap('gray');
+colorbar; 
+axis off; 
+title([state1 ' 40LP']);
+saveFile = [state1 '_40LP_scaled'];
+hgsave(h,saveFile);
+print(h,'-dpng',saveFile);
+
+h=figure; 
+imagesc(store_cropped{index2},[0 450]); 
+axis('image');
+colormap('gray');
+colorbar; 
+axis off; 
+title([state2 ' 40LP']);
+saveFile = [state2 '_40LP_scaled'];
+hgsave(h,saveFile);
+print(h,'-dpng',saveFile);
+
+h=figure; 
+imagesc(store_cropped{index5},[0 450]); 
+axis('image');
+colormap('gray');
+colorbar; 
+axis off; 
+title([state5 ' 40LP']);
+saveFile = [state5 '_40LP_scaled'];
+hgsave(h,saveFile);
+print(h,'-dpng',saveFile);
+
+
 % figure; 
 % imagesc(store_cropped{index5},[0 500]); 
 % axis('image'); 
 % colormap(gray); 
-
-sample_fixed = imread('123-5_AG.tif');
-sample_moving = imread('123-5_TREXT.tif');
-cpselect(sample_moving,sample_fixed); 
+% 
+% sample_fixed = imread('123-5_AG.tif');
+% sample_moving = imread('123-5_TREXT.tif');
+% cpselect(sample_moving,sample_fixed); 
 
 
 
