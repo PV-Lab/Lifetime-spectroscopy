@@ -8,6 +8,7 @@ displayPL = figure;
 croppedPL = figure; 
 crop_locations = cell(length(ingot_heights),length(wafer_positions)); 
 crop_file = 'C:\Users\Mallory\Documents\Non-contact crucible\9-15-2015 experiment TR+Amanda\Processed data - all stages\cropping_parameters.mat';
+linear_tau = cell(length(ingot_heights),length(wafer_positions)); 
 %Do this for each ingot height
 for height = 1:length(ingot_heights)
     %Do this for each position
@@ -34,6 +35,7 @@ for height = 1:length(ingot_heights)
         %Now go through the different folders and grab and plot the data
         crop_locations_hold = cell(length(folders)); 
         store_cropped = cell(length(folders)); 
+        linear_tau_hold = cell(length(folders));
         for state = 1:length(folders)
             file_location_now = [file_location '\' ingot_heights{height} '\' wafer_positions{position} '\' folders{state}];
             %Get the lifetime data
@@ -90,6 +92,10 @@ for height = 1:length(ingot_heights)
             plot(X,tau_SRH.*1e6,'LineWidth',3); 
             hold all; 
             
+            linear_tau_hold{state} = [X;tau_SRH];
+            if LP(1) ~= 40
+                disp([ingot_heights{height} ' ' wafer_positions{position} ' ' folders{state} ': Not the right laser power!']);
+            end
             if false
                 %Crop the image
                 [PLimage_now,x_crop,y_crop]=crop_PL(PLmaps{1});            
@@ -123,6 +129,7 @@ for height = 1:length(ingot_heights)
         if false
             crop_locations{height,position} = crop_locations_hold; 
         end
+        linear_tau{height,position} = linear_tau_hold; 
         %Make final adjustments to the figures and save
         figure(lifetime);
         xlabel('Excess carrier density (cm^-^3)','FontSize',40);
@@ -152,7 +159,7 @@ for height = 1:length(ingot_heights)
 %         hgsave(SRH_linear,[ingot_heights{height} '_' wafer_positions{position} '_SRHLinear']);
 %         print(SRH_linear,'-dpng','-r0',[ingot_heights{height} '_' wafer_positions{position} '_SRHLinear.png']); 
         
-        save([ingot_heights{height} '_' wafer_positions{position} '_40LP_PLmaps.mat'],'store_cropped','folders');
+%         save([ingot_heights{height} '_' wafer_positions{position} '_40LP_PLmaps.mat'],'store_cropped','folders');
         
         
     end
