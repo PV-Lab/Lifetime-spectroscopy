@@ -1,7 +1,8 @@
 %% Process sample lifetime data
 clear all; close all; 
+start = 'C:\Users\Mallory\Documents\Non-contact crucible\Australia experiments\June 22 2016\20-3\';
 
-load('average_data.mat'); 
+load([start 'averageTau.mat']); 
 % data = dataSave{i}; 
 % deltan = data(:,1); 
 % tau = data(:,2); 
@@ -15,16 +16,16 @@ tauq = tau_mean;
 
 %% Process with surface and Richter
 
-load('SRV_deltan.mat');
+load('C:\Users\Mallory\Documents\Non-contact crucible\Australia experiments\June 22 2016\16-4-28-N\SRV_deltan.mat');
 
 %Interpolate the SRV so that it matches the measured lifetime
 SRVq = interp1(deltan,SRV,deltanq); 
 
-D=11.61;
+D=11.84;
 T = 300; 
-N_dop = 5.3e15; %cm-3
+N_dop = 2.8e15; %cm-3
 type = 'n'; 
-W = 0.0170; %cm
+W = 0.0167; %cm
 
 tau_surf =(W./(2.*SRVq))+((1/D).*((W/pi)^2)); %cm/s
 tau_surf = tau_surf';
@@ -49,6 +50,8 @@ hold all;
 loglog(deltanq,tau_SRH.*1e6);
 legend('Measured','Surface','Intrinsic','SRH');
 
+save([start 'lifetime_breakdown.mat'],'tau_SRH','tau_surf','tauq','deltanq','tau_intr','N_dop','type','W');
+
 %% Linearize the SRH term
 
 %Plot the Murphy linearization for n-type
@@ -60,14 +63,17 @@ if type == 'p'
 elseif type == 'n'
     X = (p0+deltanq)./(n0+deltanq);
 end
-
-figure;
-plot(X,tau_SRH.*1e6,'LineWidth',4);
-xlabel('X = p/n','FontSize',30);
-ylabel('SRH \tau (\mus)','FontSize',30);
-axis([0 1 0 2000]);
-
-save('21-102-5_summary.mat','tau_SRH','X','tau_surf','tau_mean','deltanq','tau_intr','N_dop','type','W');
+[m,n] = size(tau_SRH);
+for i = 1:m
+    figure;
+    plot(X,tau_SRH(i,:).*1e6,'LineWidth',4);
+    xlabel('X = p/n','FontSize',30);
+    ylabel('SRH \tau (\mus)','FontSize',30);
+    axis([0 1 0 2000]);
+end
+save('C:\Users\Mallory\Documents\Australia\Quasi mono NTNU\QSSPC\A44\linSRH.mat','tau_SRH','X','tau_surf','tauq','deltanq','tau_intr','N_dop','type','W');
+% save('linSRH_SRVzero.mat','tau_SRH','X','tauq','deltanq','tau_intr','N_dop','type','W');
+xlswrite('C:\Users\Mallory\Documents\Australia\Quasi mono NTNU\QSSPC\A44\linSRH.xlsx',[X,tau_SRH']);
 
 %% Try fitting the linear lines 
 
