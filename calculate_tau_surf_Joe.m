@@ -7,15 +7,26 @@ function [tau_surf] = calculate_tau_surf_Joe(Joe,type,doping,deltan,W,T)
 q = 1.602e-19; %C
 %Boltzmann constant
 k_B = 8.61733238e-5; %eV/K  
-[NC,NV] = DOS_std(T); %cm^-3  
 %Bandgap in silicon
-if T == 300 || T == 298
+if T <= 303 & T >= 297
     Eg = 1.1242; %eV
+    %Also note that the background carrier concentration be assumed to be
+    %equal to the doping
+    N_dop = doping;
+    [NC,NV] = DOS_std(T); %cm^-3  
 else
-    [Eg] = Sze(T(tempi)); %eV
+    [Eg] = Sze(T); %eV
+    [Efi,Efv,p0,n0,Eiv] = adv_Model_gen(T,doping,type);
+    if type == 'p'
+        N_dop = p0;
+    elseif type == 'n'
+        N_dop = n0;
+    end
+    %Density of states effective mass model for consistency
+    [NC,NV] = DOS_em(T); %cm^-3  
 end
 ni2 = NC*NV*exp(-Eg/(k_B*T)); %cm^-6
 
 %Assume that Joe remains constant with temperature and calculate surface
 %lifetime
-tau_surf =(2.*Joe.*(doping+deltan)./(q*ni2*W)).^(-1); 
+tau_surf =(2.*Joe.*(N_dop+deltan)./(q*ni2*W)).^(-1); 
