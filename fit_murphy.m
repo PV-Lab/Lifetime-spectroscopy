@@ -40,8 +40,13 @@ else
     tau_SRH_new1 = tau_SRH(1:5); 
     p_1 = polyfit(X_new1,tau_SRH_new1,1); 
     m1 = p_1(1); b1 = p_1(2); 
-    X_new2 = X(length(X)-14:end); 
-    tau_SRH_new2 = tau_SRH(length(X)-14:end);
+    if length(X)-14 > 0
+        X_new2 = X(length(X)-14:end); 
+        tau_SRH_new2 = tau_SRH(length(X)-14:end);
+    else
+        X_new2 = X(length(X)-2:end);
+        tau_SRH_new2 = tau_SRH(length(X)-2:end);
+    end
     p_2 = polyfit(X_new2,tau_SRH_new2,1);
     m2 = p_2(1); b2 = p_2(2); 
     
@@ -89,18 +94,18 @@ else
     fit1 = (p(1).*X)+p(2); 
     fit2 = (p(3).*X)+p(4); 
     potential_fit = ((1./fit1)+(1./fit2)).^(-1); 
-    figure; 
-    h(1)=plot(X,tau_SRH); 
-    hold all; 
-    h(2)=plot(X,fit1); 
-    hold all;
-    h(3)=plot(X,fit2);
-    hold all;
-    h(4)=plot(X,potential_fit); 
-    legend(h,'Actual','Fit 1','Fit 2','Harmonic Sum'); 
+%     figure; 
+%     h(1)=plot(X,tau_SRH); 
+%     hold all; 
+%     h(2)=plot(X,fit1); 
+%     hold all;
+%     h(3)=plot(X,fit2);
+%     hold all;
+%     h(4)=plot(X,potential_fit); 
+%     legend(h,'Actual','Fit 1','Fit 2','Harmonic Sum'); 
 end
 
 cpu_end = cputime; 
-elapsed_time = cpu_end-cpu_start
+elapsed_time = cpu_end-cpu_start;
 
 end

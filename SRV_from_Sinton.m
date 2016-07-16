@@ -1,20 +1,24 @@
 %%Load the data
 clear all; close all; 
-dirname = 'C:\Users\Mallory\Documents\Non-contact crucible\9-15-2015 experiment TR+Amanda\Lifetime stage 1\After anneal\FZ';
+dirname = 'C:\Users\Mallory\Dropbox (MIT)\2015 Oxygen-State Study\NOC samples\NOC 17 21 22 study\November 2015\One Day after Anneal\FZ';
 process_xls_data(dirname);
 %dataSave is a cell structure with probably one entry. The first column is
 %injection level. The second column is lifetime. 
 
 %% Given the measured lifetime, determine the SRV
-load('all_XLS_data.mat'); 
-data = dataSave{1}; %this assumes you're only looking at one sample
-deltan = data(:,1);
-tau = data(:,2);
+% load('all_XLS_data.mat'); 
+% data = dataSave{1}; %this assumes you're only looking at one sample
+% deltan = data(:,1);
+% tau = data(:,2);
 
-N_dop = 1.7e15; %cm-3
+load('C:\Users\Mallory\Documents\Australia\Passivation run\June 30 2016 passivation run\July 1 2016\16-6-28-P-2\averageTau.mat');
+tau = tau_mean; 
+deltan = deltanq;
+
+N_dop = 5.7e15; %cm-3
 W = 0.0280; %cm
 T = 300; %K
-type = 'n';
+type = 'p';
 
 %Get the intrinsic lifetime
 tau_intr = zeros(length(deltan),1);
@@ -33,7 +37,7 @@ hold all;
 loglog(deltan,tau);
 legend('Surface','Intrinsic','Measured');
 
-D = 11.95; 
+D = 30.61; %minority carrier in n-type is hole 
 
 SRV = W./((tau_surf-((1/D)*((W/pi)^2))).*2);
 
@@ -42,5 +46,5 @@ semilogx(deltan,SRV);
 xlabel('Excess carrier density [cm^{-3}]');
 ylabel('SRV [cm/s]');
 
-save('SRV_deltan.mat','deltan','SRV');
+save('C:\Users\Mallory\Documents\Australia\Passivation run\June 30 2016 passivation run\July 1 2016\16-6-28-P-2\SRV_deltan.mat','deltan','SRV');
 

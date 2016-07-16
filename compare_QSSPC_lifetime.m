@@ -1,4 +1,4 @@
-function compare_QSSPC_lifetime(deltanQSSPC,tauQSSPC,deltanLifetime,tauLifetime,filenameSintonCircle)
+function compare_QSSPC_lifetime(deltanQSSPC,tauQSSPC,deltanLifetime,tauLifetime,filenameSintonCircle,saveStart)
 %compare_QSSPC_lifetime(deltanQSSPC,tauQSSPC,deltanLifetime,tauLifetime,filenameSintonCircle).
 %This function takes as input a single QSSPC curve and a single pair of
 %spatially resolved lifetime/injection level maps. The additional input is
@@ -108,4 +108,6 @@ ylabel('Lifetime (\mus)','FontSize',30);
 legend(h,'QSSPC','Arithmetic mean','Harmonic mean');
 set(gca,'FontSize',20);
 set(gca,'LineWidth',2);
+hgsave(lifetime,[saveStart 'QSSPC_PCPL']);
+print(lifetime,'-dpng','-r0',[saveStart 'QSSPC_PCPL.png']);
 
