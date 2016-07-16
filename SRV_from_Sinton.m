@@ -11,14 +11,14 @@ process_xls_data(dirname);
 % deltan = data(:,1);
 % tau = data(:,2);
 
-load('C:\Users\Mallory\Documents\Non-contact crucible\9-15-2015 experiment TR+Amanda\Lifetime stage 3\4 days after anneal\Retaking averages\16-2-18-N\16-2-18-N_averageTau.mat');
+load('C:\Users\Mallory\Documents\Australia\Passivation run\June 30 2016 passivation run\July 1 2016\16-6-28-P-2\averageTau.mat');
 tau = tau_mean; 
 deltan = deltanq;
 
-N_dop = 1.9e15; %cm-3
+N_dop = 5.7e15; %cm-3
 W = 0.0280; %cm
 T = 300; %K
-type = 'n';
+type = 'p';
 
 %Get the intrinsic lifetime
 tau_intr = zeros(length(deltan),1);
@@ -37,7 +37,7 @@ hold all;
 loglog(deltan,tau);
 legend('Surface','Intrinsic','Measured');
 
-D = 11.93; %minority carrier in n-type is hole 
+D = 30.61; %minority carrier in n-type is hole 
 
 SRV = W./((tau_surf-((1/D)*((W/pi)^2))).*2);
 
@@ -46,5 +46,5 @@ semilogx(deltan,SRV);
 xlabel('Excess carrier density [cm^{-3}]');
 ylabel('SRV [cm/s]');
 
-save('SRV_deltan.mat','deltan','SRV');
+save('C:\Users\Mallory\Documents\Australia\Passivation run\June 30 2016 passivation run\July 1 2016\16-6-28-P-2\SRV_deltan.mat','deltan','SRV');
 
