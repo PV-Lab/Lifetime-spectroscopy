@@ -6,7 +6,7 @@ function [tau_mean,deltanq]=average_tau(filename,saveStart)
 
 load(filename); 
 
-deltanq = logspace(13,17,500); %typical max range for the QSSPC tool
+deltanq = logspace(10,16,500); %typical max range for the QSSPC tool
 
 together = figure; 
 
@@ -14,6 +14,9 @@ for i = 1:length(fileListShort)
     data = dataSave{i};
     deltan = data(:,1); 
     tau = data(:,2);
+    
+    %remove spurious low injection data
+    [deltan,tau] = remove_lowinj(deltan,tau,1e10)
     
     %We need to check and make sure no deltan (x-values) are repeated. This
     %will interfere with the interpolation. 
@@ -53,4 +56,6 @@ ylabel('Lifetime (\mus)','FontSize',30);
 set(gca,'FontSize',20);
 set(gca,'LineWidth',2);
 
-print('-dpng','-r0',[saveStart 'AverageLifetime.png']);
+print('-dpng','-r0',[saveStart '\AverageLifetime.png']);
+saveFile = [saveStart '\averageTau.mat'];
+save(saveFile,'tau_mean','deltanq');
