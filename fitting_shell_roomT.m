@@ -23,3 +23,66 @@ for i = 1:m
     xlswrite([directory '\Linearized_data_wFit.xlsx'],[X_now,tau_SRH_now],['Sheet' num2str(i)]);
     xlswrite([directory '\Linearized_data_wFit.xlsx'],to_write,['Sheet' num2str(i)],'C1:E6'); 
 end
+%
+%% Given best fit parameters, now create the Ek curves
+clear all; close all; 
+%Read in all the best fit parameters which have been sorted into similar
+%defects
+data = xlsread('C:\Users\Mallory\Documents\Australia\Quasi mono NTNU\QSSPC\fitting summary.xlsx','non grain boundary','B3:E10');
+%indices in data that we want to plot together
+matching_indices = [1 3;2 4;5 7;6 8]; 
+doping = [1.5e16; 1.7e16; 1.6e16; 1.5e16];
+type = 'p';
+T = 300; 
+doping_indices = [1 1 2 2 3 3 4 4];
+[m,n] = size(matching_indices);
+for i = 1:m
+    def1_Ek = figure;
+    def1_taun0 = figure;
+    def2_Ek = figure;
+    def2_taun0 = figure; 
+    for j = 1:n
+        %Make the plots for these pairs of indices
+        doping_now = doping(doping_indices(matching_indices(i,j))); 
+        for l = 1:2:3 %we have 2 defects
+            best_fit = data(matching_indices(i,j),l:(l+1)); 
+            [Et,k,alphaN] = generate_Ek(best_fit,T,doping_now,type);
+            if l == 1
+                figure(def1_Ek); 
+                hold all; 
+                plot(Et,k,'LineWidth',3); 
+                figure(def1_taun0); 
+                hold all; 
+                plot(Et,1./alphaN,'LineWidth',3); 
+            else
+                figure(def2_Ek); 
+                hold all;
+                plot(Et,k,'LineWidth',3); 
+                figure(def2_taun0); 
+                hold all;
+                plot(Et,1./alphaN,'LineWidth',3); 
+            end
+        end
+    end
+    figure(def1_Ek); 
+    xlabel('E_t-E_v [eV]','FontSize',20); 
+    ylabel('k [-]','FontSize',20);
+    title(['Defect 1, Pair ' num2str(i)],'FontSize',20); 
+    legend('Gettered','As-grown'); 
+    figure(def1_taun0); 
+    xlabel('E_t-E_v [eV]','FontSize',20); 
+    ylabel('\tau_{n0} [s]','FontSize',20);
+    title(['Defect 1, Pair ' num2str(i)],'FontSize',20); 
+    legend('Gettered','As-grown');
+    figure(def2_Ek); 
+    xlabel('E_t-E_v [eV]','FontSize',20); 
+    ylabel('k [-]','FontSize',20);
+    title(['Defect 2, Pair ' num2str(i)],'FontSize',20); 
+    legend('Gettered','As-grown');
+    figure(def2_taun0); 
+    xlabel('E_t-E_v [eV]','FontSize',20); 
+    ylabel('\tau_{n0} [s]','FontSize',20);
+    title(['Defect 2, Pair ' num2str(i)],'FontSize',20); 
+    legend('Gettered','As-grown');
+end
+    
