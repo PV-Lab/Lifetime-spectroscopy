@@ -850,9 +850,9 @@ for i = 1:length(lifetime_breakdown)
     hold on; 
 end
 figure(upper_bgh); 
-xlabel('(n_1(T)+\deltan)/(p_0(t)+\deltan)','FontSize',20);
+xlabel('(n_1(T)+\Deltan)/(p_0(t)+\Deltan)','FontSize',20);
 ylabel('\tau_{SRH}','FontSize',20); 
-title(['\deltan = ' num2str(eval_deltan)],'FontSize',20); 
+title(['\Deltan = ' num2str(eval_deltan)],'FontSize',20); 
 
 
     
