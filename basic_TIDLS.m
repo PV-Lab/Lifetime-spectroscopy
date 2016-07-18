@@ -826,6 +826,35 @@ xlabel('E_t-E_v [eV]','FontSize',20);
 ylabel('\tau_{n0} [s]','FontSize',20);
 legend(h4,num2str(label));
 title('Defect 2','FontSize',30);
+%% Plot the k-values for Ti-dd for each temperature on top of current plot
+%Assume a constant defect energy level
+Et_Tidd = 0.28; %eV
+for i = 1:length(info)
+    index = for_iteration(i);
+    temp = info(index).temperature;%celcius
+    k_Tidd(i) = calculate_Tidd(temp);
+    figure(defect1);
+    hold all;
+    plot(Et_Tidd,k_Tidd(i),'o','MarkerSize',10,'Color',co{i});
+    figure(defect2);
+    hold all;
+    plot(Et_Tidd,k_Tidd(i),'o','MarkerSize',10,'Color',co{i});
+end
+%% Plot the k-values for Mo-d for each temperature on top of current plot
+%Assume a constant defect energy level
+Et_Mod_min = 0.28; %eV
+Et_Mod_max = 0.375; %eV
+for i = 1:length(info)
+    index = for_iteration(i);
+    temp = info(index).temperature;%celcius
+    k_Mod(i) = calculate_Mod(temp+273.15);
+    figure(defect1);
+    hold all;
+    plot([Et_Mod_min Et_Mod_max],[k_Mod(i) k_Mod(i)],'x-','MarkerSize',10,'Color',co{i});
+    figure(defect2);
+    hold all;
+    plot([Et_Mod_min Et_Mod_max],[k_Mod(i) k_Mod(i)],'x-','MarkerSize',10,'Color',co{i});
+end
 
 %% Try plotting graphs to deduce upper/lower bandgap half per Paudyal
 %Load the data which has been separated into lifeitme contributions
@@ -833,6 +862,7 @@ load([processing_directory '\lifetime_breakdown.mat']);
 load([processing_directory '\meas_info.mat']); 
 upper_bgh = figure;
 eval_deltan=1e15;
+lower_bgh = figure; 
 for i = 1:length(lifetime_breakdown)
     deltan = lifetime_breakdown(i).deltan;
     tau_SRH = lifetime_breakdown(i).tau_SRH; 
@@ -848,11 +878,22 @@ for i = 1:length(lifetime_breakdown)
     figure(upper_bgh);
     plot(x_value,eval_tau_SRH,'b.','MarkerSize',10); 
     hold on; 
+    deltan_lowinj = find(deltan<=3e14); 
+    tau_SRH_lowinj = tau_SRH(deltan_lowinj); 
+    deltan_lowinj = deltan(deltan_lowinj); 
+    figure(lower_bgh); 
+    hold all;
+    loglog(deltan_lowinj,tau_SRH_lowinj,'-o','LineWidth',3'); 
+    labels(i) = info(i).temperature;
 end
 figure(upper_bgh); 
 xlabel('(n_1(T)+\Deltan)/(p_0(t)+\Deltan)','FontSize',20);
 ylabel('\tau_{SRH}','FontSize',20); 
 title(['\Deltan = ' num2str(eval_deltan)],'FontSize',20); 
+figure(lower_bgh); 
+xlabel('Excess carrier density [cm^-^3]','FontSize',20);
+ylabel('\tau_{SRH}','FontSize',20); 
+legend(num2str(labels'));
 
 
     
