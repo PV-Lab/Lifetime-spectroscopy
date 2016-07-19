@@ -1,6 +1,7 @@
 %Plot the degradation curves of all samples
 clc;clear all; close all; 
 measurement_log = 'C:\Users\Mallory\Documents\PERC mc-Si degradation\Experiment 0\measurement_summary.xlsx';
+directory = 'C:\Users\Mallory\Documents\PERC mc-Si degradation\Experiment 0\rev resistivity, OC';
 %Define the samples as they are listed in the filenames
 samples = {'64-5' '69-5','FZ'};
 %Read in the data with the times
@@ -10,7 +11,7 @@ for i = 1:length(samples)
     filename_details{i,1} = txt(2:end,1:2); 
     filename_details{i,2} = num; 
 end
-filename_start = 'C:\Users\Mallory\Documents\PERC mc-Si degradation\Experiment 0\'; 
+filename_start = 'C:\Users\Mallory\Documents\PERC mc-Si degradation\Experiment 0\rev resistivity, OC\'; 
 filename_end = {'_1-64_avg5.xlsm' '.xlsm' '_avg5.xlsm'}; 
 
 %Time intervals
@@ -18,7 +19,7 @@ times = [0, 10:10:100, 200:100:1000, 2000:1000:10000 20000:10000:50000];
 
 colors = {'r','g','b','m','c','y'};
 
-zero_filenames = {'C:\Users\Mallory\Documents\PERC mc-Si degradation\Experiment 0\64-5\64-5_beforeDeg_1-64_avg5.xlsm' 'C:\Users\Mallory\Documents\PERC mc-Si degradation\Experiment 0\69-5\69-5_afterAnneal_avg5.xlsm' 'C:\Users\Mallory\Documents\PERC mc-Si degradation\Experiment 0\FZ\FZ_afterAnneal_avg5.xlsm'}; 
+zero_filenames = {'C:\Users\Mallory\Documents\PERC mc-Si degradation\Experiment 0\rev resistivity, OC\64-5\64-5_beforeDeg_1-64_avg5.xlsm' 'C:\Users\Mallory\Documents\PERC mc-Si degradation\Experiment 0\rev resistivity, OC\69-5\69-5_afterAnneal_avg5.xlsm' 'C:\Users\Mallory\Documents\PERC mc-Si degradation\Experiment 0\rev resistivity, OC\FZ\FZ_afterAnneal_avg5.xlsm'}; 
 
 %First load all of the data. Capture the injection-dependent lifetime
 %curves
@@ -117,6 +118,137 @@ xlabel('Degradation time [s]','FontSize',30);
 ylabel('Normalized lifetime [-]','FontSize',30);
 legend(samples); 
 
+%Save the data 
+save([directory '\processed_data.mat'],'dataSave','lifetime_deg_norm','filename_details','samples');
+
+%% Given the loaded data, try now to analyze the evolution along the degradation curve
+clc;clear all; close all; 
+directory = 'C:\Users\Mallory\Documents\PERC mc-Si degradation\Experiment 0\rev resistivity, OC';
+load([directory '\processed_data.mat']);
+%Find the fully degraded state which will correspond to the minimum
+%normalized degraded lifetime
+max_deg_index = find(lifetime_deg_norm(2,:)==min(lifetime_deg_norm(2,:))); 
+data_maxdeg = dataSave{2,max_deg_index}; 
+%Find the fully UNdegraded state which is the state that we started in
+data_mindeg = dataSave{2,1}; 
+%Plot the two lifetimes together
+figure;
+loglog(data_mindeg(:,1),data_mindeg(:,2),'LineWidth',3); 
+hold all;
+loglog(data_maxdeg(:,1),data_maxdeg(:,2),'LineWidth',3);
+xlabel('Excess carrier density [cm^-^3]','FontSize',20);
+ylabel('Lifetime [s]','FontSize',20);
+legend('Fully undegraded','Fully degraded'); 
+
+%Try calculating the SRH lifetime always relative to the initial state
+to_calc = [20 29 39 43 46 47];
+[num_samples,num_measurements] = size(dataSave); 
+times_num = filename_details{2,2}; times_num = times_num(:,4); 
+SRHfig = figure;
+taufig = figure;
+h2(1)=loglog(data_mindeg(:,1),data_mindeg(:,2),'LineWidth',3); 
+hold all;
+for i = 1:length(to_calc)
+    datanow = dataSave{2,to_calc(i)}; 
+    %Plot the raw lifetime for publication
+    figure(taufig); 
+    h2(i+1) = loglog(datanow(:,1),datanow(:,2),'LineWidth',3); 
+    hold all; 
+    %We need to interpolate the lifetime
+    tau_measure = interp1(datanow(:,1),datanow(:,2),data_mindeg(:,1)); 
+    tau_SRH{i} = ((1./tau_measure)-(1./data_mindeg(:,2))).^(-1);
+    figure(SRHfig)
+    h(i)=loglog(data_mindeg(:,1),tau_SRH{i},'LineWidth',3); 
+    labels(i) = times_num(to_calc(i)); 
+    hold all;
+end
+figure(SRHfig); 
+xlabel('Excess carrier density [cm^-^3]','FontSize',20);
+ylabel('SRH Lifetime [s]','FontSize',20);
+legend(h,num2str(labels')); 
+figure(taufig); 
+xlabel('Excess carrier density [cm^-^3]','FontSize',20);
+ylabel('Lifetime [s]','FontSize',20);
+legend(h,num2str([0;labels'])); 
+
+%Now let's take this SRH lifetime and try fitting it!
+doping = 6.9e15; 
+T = 300; 
+type = 'p'; 
+[Efi,Efv,p0,n0,Eiv] = adv_Model_gen(T,doping,type); 
+fit_tries = 1e6; 
+for i = 1:length(to_calc)
+    tau= tau_SRH{i}; 
+    deltan = data_mindeg(:,1); 
+    %Plot the data and ask the user where the cut off in high injection
+    figure;
+    loglog(deltan,tau,'.');
+    disp('Select the region for cutting off the HIGH injection data');
+    [cutoff,nothing]=ginput(1);
+    [deltan_rev,tau_rev] = remove_highinj(deltan,tau,cutoff);
+    %We might always want to remove some low injection data
+    disp('Select the region for cutting off the LOW injection data');
+    [cutoff,nothing]=ginput(1);
+    [deltan_rev,tau_rev] = remove_lowinj(deltan_rev,tau_rev,cutoff);
+    hold all;
+    loglog(deltan_rev,tau_rev,'+');
+    legend('Before cutoff','After cutoff'); 
+     if type == 'p'
+        X = (n0+deltan_rev)./(p0+deltan_rev);
+    elseif type == 'n'
+        X = (p0+deltan_rev)./(n0+deltan_rev);
+     end
+    [one_defect{i,1},MSE_one{i,1},two_defects{i,1},MSE_two{i,1},three_defects{i,1},MSE_three{i,1},all_parameters_store{i,1},all_MSE_store{i,1}] = fit_murphy_master(X,tau_rev.*1e6,25,directory,fit_tries);
+end
+%Select two defects and generate the E_k curves
+defect1 = figure;
+co={[0 0 0]; [0.5 0 0.9]; [0 0 1]; [0 1 1]; [0 1 0];  [1 1 0]; [1 0.6 0]; [1 0 0]; [0.8 0.5 0]};
+defect2 = figure;
+tau_defect1 = figure;
+tau_defect2 = figure; 
+for i = 1:length(to_calc)
+    best_fit = two_defects{i,1};
+    [slopes,IX] = sort(best_fit(:,1));
+    best_fit(:,1) = best_fit(IX,1); 
+    best_fit(:,2) = best_fit(IX,2); 
+    for j = 1:length(best_fit)
+        [Et{i,j},k{i,j},alphanN{i,j}]=generate_Ek(best_fit(j,:),T,doping,type);
+    end
+    figure(defect1); 
+    h1(i)=plot(Et{i,1},k{i,1},'-','LineWidth',2,'Color',co{i}); 
+    label(i,1) = T; 
+    hold all; 
+    figure(tau_defect1); 
+    h3(i)=plot(Et{i,1},1./alphanN{i,1},'-','LineWidth',2,'Color',co{i}); 
+    hold all;
+    figure(defect2);
+    h2(i)=plot(Et{i,2},k{i,2},'-','LineWidth',2,'Color',co{i});
+    hold all;
+    figure(tau_defect2); 
+    h4(i)=plot(Et{i,2},1./alphanN{i,2},'-','LineWidth',2,'Color',co{i}); 
+    hold all; 
+end
+figure(defect1); 
+axis([0 1.124 0 100]);
+xlabel('E_t-E_v [eV]','FontSize',20); 
+ylabel('k [-]','FontSize',20);
+legend(h1,num2str(label));
+title('Defect 1','FontSize',30); 
+figure(defect2); 
+xlabel('E_t-E_v [eV]','FontSize',20); 
+ylabel('k [-]','FontSize',20);
+legend(h2,num2str(label));
+title('Defect 2','FontSize',30); 
+figure(tau_defect1); 
+xlabel('E_t-E_v [eV]','FontSize',20); 
+ylabel('\tau_{n0} [s]','FontSize',20);
+legend(h3,num2str(label));
+title('Defect 1','FontSize',30);
+figure(tau_defect2); 
+xlabel('E_t-E_v [eV]','FontSize',20); 
+ylabel('\tau_{n0} [s]','FontSize',20);
+legend(h4,num2str(label));
+title('Defect 2','FontSize',30);
 %% Process PLI
 clear all; close all; clc;
 %Define delimiter and header in order to read txt files
