@@ -1,12 +1,12 @@
 %This script analyzes TIDLS measurements taken with WCT-120TS. 
 clear all; close all; 
-directory = 'C:\Users\Mallory\Documents\Sinton visit\by sample\PERC May 26 revised resistivity\69-8'; 
+directory = 'C:\Users\Mallory\Documents\Non-contact crucible\Comparing growth runs'; 
 before_directory = 'C:\Users\Mallory\Documents\Sinton visit\by sample\PERC May 26 revised resistivity\69-8';
 after_directory = 'C:\Users\Mallory\Documents\Sinton visit\by sample\PERC May 26 revised resistivity\69-8';
-processing_directory = 'C:\Users\Mallory\Documents\Sinton visit\by sample\PERC May 26 revised resistivity\69-8';
+processing_directory = 'C:\Users\Mallory\Documents\Non-contact crucible\Comparing growth runs';
 SRV_directory = 'C:\Users\Mallory\Documents\Sinton visit\by sample\16-4-28-N\for analysis';
 %type - p or n
-type = 'p';
+type = 'n';
 %Fit range for Joe
 fit_range = 0.3; 
 %% Collect and process raw data - WCT-120TS files
@@ -50,6 +50,48 @@ end
 info = struct('filename',fileListShort,'thickness',thick,'resistivity',res,'measured_resistivity',meas_res,'optical_constant',oc,'calibration_factor',calib,'temperature',temp,'doping',doping);
 save([directory '\meas_info.mat'],'info'); 
 
+%% Collect and process raw data - WCT-120TS temperature sweep
+%Note - this script just calculates the data which is stored in the "plots"
+%spreadsheet. The actual temperatures are different from what is recorded
+%here, and there are more lifetime curves available in the "multi"
+%spreadsheet. However, this raw data need to be processed. 
+%Find all of the files in the directory
+[fileList,fileListShort] = getAllFiles(directory); 
+%All of the data is stored in the "Plots" spreadsheet. Let's assume that we
+%have one filename. 
+all_data = xlsread(fileList{1},'Plots'); 
+%The second row is a header
+all_data(2,:) = []; 
+[points,columns] = size(all_data); 
+temps = [1:2:(columns-1)];
+for i = 1:length(temps)
+    %We want this to be the same structure as our other script
+    deltan = all_data(2:end,temps(i)); 
+    lifetime = all_data(2:end,temps(i)+1); 
+    figure;
+    loglog(deltan,lifetime,'.');
+    xlabel('Excess carrier density (cm^-^3)','FontSize',20);
+    ylabel('Lifetime (seconds)','FontSize',20);
+    title(num2str(all_data(1,temps(i))),'FontSize',20);
+    dataSave{i} = [deltan,lifetime];
+    %Save the temperature because that is not common to all samples
+    temp{i,1} = all_data(1,temps(i)); 
+end
+save([directory '\Raw_data.mat'],'fileListShort','dataSave');
+%We also want to store all of the information for each file
+%T, thickness, resistivity (entered/measured), type, optical constant, calibration,
+%1/64 or 1/1
+for file = 1:length(fileList)
+    this_file = fileList{file};
+    thick{file,1} = xlsread(this_file,'User','B6');
+    res{file,1} = xlsread(this_file,'User','C6');
+    oc{file,1} = xlsread(this_file,'User','E6');
+    meas_res{file,1} = xlsread(this_file,'Summary','Q2');
+    calib{file,1} = xlsread(this_file,'Settings','C5');
+    doping{file,1} = xlsread(this_file,'Summary','F2');
+end
+info = struct('filename',fileListShort,'thickness',thick,'resistivity',res,'measured_resistivity',meas_res,'optical_constant',oc,'calibration_factor',calib,'temperature',temp,'doping',doping);
+save([directory '\meas_info.mat'],'info'); 
 
 %% Now that the raw data has been processed, plot the curves together
 load([directory '\Raw_data.mat']);
@@ -894,11 +936,6 @@ figure(lower_bgh);
 xlabel('Excess carrier density [cm^-^3]','FontSize',20);
 ylabel('\tau_{SRH}','FontSize',20); 
 legend(num2str(labels'));
-
-
-    
-
-    
 
 
 
