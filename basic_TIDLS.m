@@ -1,12 +1,12 @@
 %This script analyzes TIDLS measurements taken with WCT-120TS. 
 clear all; close all; 
-directory = 'C:\Users\Mallory\Documents\Non-contact crucible\Comparing growth runs'; 
-before_directory = 'C:\Users\Mallory\Documents\Sinton visit\by sample\PERC May 26 revised resistivity\69-8';
-after_directory = 'C:\Users\Mallory\Documents\Sinton visit\by sample\PERC May 26 revised resistivity\69-8';
-processing_directory = 'C:\Users\Mallory\Documents\Non-contact crucible\Comparing growth runs';
+directory = 'C:\Users\Mallory\Documents\Australia\Quasi mono NTNU\WCT-120\Tscan'; 
+before_directory = 'C:\Users\Mallory\Documents\Australia\Quasi mono NTNU\WCT-120\before';
+after_directory = 'C:\Users\Mallory\Documents\Australia\Quasi mono NTNU\WCT-120\after';
+processing_directory = 'C:\Users\Mallory\Documents\Australia\Quasi mono NTNU\WCT-120';
 SRV_directory = 'C:\Users\Mallory\Documents\Sinton visit\by sample\16-4-28-N\for analysis';
 %type - p or n
-type = 'n';
+type = 'p';
 %Fit range for Joe
 fit_range = 0.3; 
 %% Collect and process raw data - WCT-120TS files
@@ -59,15 +59,15 @@ save([directory '\meas_info.mat'],'info');
 [fileList,fileListShort] = getAllFiles(directory); 
 %All of the data is stored in the "Plots" spreadsheet. Let's assume that we
 %have one filename. 
-all_data = xlsread(fileList{1},'Plots'); 
+all_data = xlsread(fileList{1},'For analysis'); 
 %The second row is a header
-all_data(2,:) = []; 
+% all_data(2,:) = []; 
 [points,columns] = size(all_data); 
-temps = [1:2:(columns-1)];
+temps = [2:2:(columns)];
 for i = 1:length(temps)
     %We want this to be the same structure as our other script
-    deltan = all_data(2:end,temps(i)); 
-    lifetime = all_data(2:end,temps(i)+1); 
+    deltan = all_data(2:end,temps(i)-1); 
+    lifetime = all_data(2:end,temps(i)); 
     figure;
     loglog(deltan,lifetime,'.');
     xlabel('Excess carrier density (cm^-^3)','FontSize',20);
