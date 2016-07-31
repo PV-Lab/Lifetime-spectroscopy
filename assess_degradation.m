@@ -119,7 +119,7 @@ ylabel('Normalized lifetime [-]','FontSize',30);
 legend(samples); 
 
 %Save the data 
-save([directory '\processed_data_20160725.mat'],'dataSave','lifetime_deg_norm','filename_details','samples');
+save([directory '\processed_data_20160731.mat'],'dataSave','lifetime_deg_norm','filename_details','samples');
 
 %% Given the loaded data, try now to analyze the evolution along the degradation curve
 clc;clear all; close all; 
@@ -510,8 +510,8 @@ samples = {'64-5' '69-5'};
 LP = 50; 
 filename_start = 'C:\Users\Mallory\Documents\PERC mc-Si degradation\Experiment 0\PLI';
 filename_end = 'LP_1.txt';
-times = [10000 20000 100000 200000 470000 610000 870000]; 
-folders = {'10000s' '20000s' '100000s' '200000s' '470000s' '610000s' '870000s'}; 
+times = [981787 1046047 1105807 1136527 1177510 1207810 1258810 1340770 1377370 1422190 1479390 1530090 1563810]; 
+folders = {'981787s' '1046047s' '1105807s' '1136527s' '1177510s' '1207810s' '1258810s' '1340770s' '1377370s' '1422190s' '1479390s' '1530090s' '1563810s'}; 
 ref_filename = 'C:\Users\Mallory\Documents\PERC mc-Si degradation\Experiment 0\PLI\reference\68-5_10s_50LP_1.txt';
 PLref = importdata(ref_filename,delimiterIn,headerlinesIn);
 PLref = PLref(:,2:end)./10; %counts/second
@@ -532,7 +532,7 @@ print(h,'-dpng','-r0',[filename_start '\Initial_PLI.png']);
 for i = 1:length(samples)
     for j = 1:length(times); 
         %Make filename
-        filename = [filename_start '\' folders{j} '\' samples{i} '_' num2str(times(j)) '_' num2str(exposure(i)) 's_' num2str(LP) filename_end]; 
+        filename = [filename_start '\' folders{j} '\' samples{i} '_' num2str(times(j)) 's_' num2str(exposure(i)) 's_' num2str(LP) filename_end]; 
         %Load data
         PLmap = importdata(filename,delimiterIn,headerlinesIn);
         PLmap = PLmap(:,2:end)./exposure(i); %counts/second
