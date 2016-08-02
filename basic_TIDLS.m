@@ -1,10 +1,10 @@
 %This script analyzes TIDLS measurements taken with WCT-120TS. 
 clear all; close all; 
-directory = 'C:\Users\Mallory\Documents\Australia\Quasi mono NTNU\WCT-120\Tscan'; 
-before_directory = 'C:\Users\Mallory\Documents\Australia\Quasi mono NTNU\WCT-120\before';
-after_directory = 'C:\Users\Mallory\Documents\Australia\Quasi mono NTNU\WCT-120\after';
-processing_directory = 'C:\Users\Mallory\Documents\Australia\Quasi mono NTNU\WCT-120';
-SRV_directory = 'C:\Users\Mallory\Documents\Sinton visit\by sample\16-4-28-N\for analysis';
+directory = 'C:\Users\Mallory\Dropbox (MIT)\TIDLS at UNSW\Advanced system measurements\20160727\for_processing'; 
+before_directory = 'C:\Users\Mallory\Dropbox (MIT)\TIDLS at UNSW\Advanced system measurements\20160727\for_processing\before';
+after_directory = 'C:\Users\Mallory\Dropbox (MIT)\TIDLS at UNSW\Advanced system measurements\20160727\for_processing\after';
+processing_directory = 'C:\Users\Mallory\Dropbox (MIT)\TIDLS at UNSW\Advanced system measurements\20160801\for_processing';
+SRV_directory = 'C:\Users\Mallory\Dropbox (MIT)\TIDLS at UNSW\Advanced system measurements\20160801\for_processing';
 %type - p or n
 type = 'p';
 %Fit range for Joe
@@ -409,15 +409,6 @@ save([processing_directory '\lifetime_breakdown.mat'],'lifetime_breakdown');
 %First load the data
 load([processing_directory '\Raw_data.mat']);
 load([processing_directory '\meas_info.mat']);
-%Read the temperature dependent diffusivity 
-data = xlsread([directory '\diffusivity.xlsx']); 
-if type == 'n'
-    %The minority carrier is the hole
-    diffusivity = data(:,5); 
-elseif type == 'p'
-    %the minority carrier is the electron
-    diffusivity = data(:,6); 
-end
 SRVtoSave = cell(length(dataSave),1);
 h=figure; 
 %Loop through each temperature calculate the SRV
@@ -444,13 +435,23 @@ for i = 1:length(dataSave)
     deltan = deltan_rev;
     tau = tau_rev; 
     tau_intr = zeros(size(deltan));
+    diffusivity_save = zeros(size(deltan)); 
     for j = 1:length(deltan)
+        %Get the intrinsic lifetime
         tau_intr(j,1) = Richter(info(i).temperature+273.15,deltan(j),info(i).doping,type);
+        %unfortunately the diffusivity is also temperature and injection
+        %dependent
+        [De,Dh] = diffusivity(info(i).temperature+273.15,type,info(i).doping,deltan(j));
+        if type == 'n'
+            diffusivity_save(j,1) = Dh; %hole is minority carrier
+        elseif type == 'p'
+            diffusivity_save(j,1) = De; %electron is minority carrier
+        end
     end
     %Calculate the surface-related lifetime assuming zero SRH contribution
     tau_surf = ((1./tau)-(1./tau_intr)).^(-1);
-    %Calculate the SRV
-    SRV = info(i).thickness./((tau_surf-((1/diffusivity(i))*((info(i).thickness/pi)^2))).*2);
+    %Calculate the SRV, including the injection-dependent diffusivity
+    SRV = info(i).thickness./((tau_surf-((1./diffusivity_save).*((info(i).thickness/pi)^2))).*2);
     SRVtoSave{i} = [deltan SRV]; 
     %Plot the result so that we can compare
     figure(h);
@@ -469,18 +470,18 @@ save([directory '\SRV_data.mat'],'SRVtoSave');
 %Load the data for processing
 load([processing_directory '\Raw_data.mat']);
 load([processing_directory '\meas_info.mat']); 
-%Read the temperature dependent diffusivity 
-data = xlsread([directory '\diffusivity.xlsx']); 
+% %Read the temperature dependent diffusivity 
+% data = xlsread([directory '\diffusivity.xlsx']); 
 %Load the SRV data
 load([SRV_directory '\SRV_data.mat']); 
-if type == 'n'
-    %The minority carrier is the hole
-    diffusivity = data(:,5); 
-elseif type == 'p'
-    %the minority carrier is the electron
-    diffusivity = data(:,6); 
-end
-SRVindex = data(:,7); 
+% if type == 'n'
+%     %The minority carrier is the hole
+%     diffusivity = data(:,5); 
+% elseif type == 'p'
+%     %the minority carrier is the electron
+%     diffusivity = data(:,6); 
+% end
+% SRVindex = data(:,7); 
 %Now, for each temperature we will be doing the same operations. Loop
 %through. 
 for i = 1:length(dataSave);
@@ -504,14 +505,25 @@ for i = 1:length(dataSave);
     title(['Temperature = ' num2str(info(i).temperature)]);
     %We will also need the intrinsic lifetime
     tau_intr = zeros(size(deltan_rev));
+    diffusivity_save = zeros(size(deltan)); 
     for j = 1:length(deltan_rev)
+        %Get the intrinsic lifetime
         tau_intr(j,1) = Richter(info(i).temperature+273.15,deltan_rev(j),info(i).doping,type);
+        %unfortunately the diffusivity is also temperature and injection
+        %dependent
+        [De,Dh] = diffusivity(info(i).temperature+273.15,type,info(i).doping,deltan_rev(j));
+        if type == 'n'
+            diffusivity_save(j,1) = Dh; %hole is minority carrier
+        elseif type == 'p'
+            diffusivity_save(j,1) = De; %electron is minority carrier
+        end
     end
     %We need the surface contribution which comes from a reference wafer
-    SRV_now = SRVtoSave{SRVindex(i)}; 
+%     SRV_now = SRVtoSave{SRVindex(i)}; 
+    SRV_now = SRVtoSave{i};
     %Interpolate the SRV so that it matches the measured lifetime
     SRVq = interp1(SRV_now(:,1),SRV_now(:,2),deltan_rev); 
-    tau_surf =(info(i).thickness./(2.*SRVq))+((1/diffusivity(i)).*((info(i).thickness/pi)^2)); %cm/s
+    tau_surf =(info(i).thickness./(2.*SRVq))+((1./diffusivity_save(i)).*((info(i).thickness/pi)^2)); %cm/s
     %Finally, we can calculate the SRH lifetime
     tau_SRH = ((1./tau_rev)-(1./tau_intr)-(1./tau_surf)).^(-1);
     %We should plot all of the contributions together
