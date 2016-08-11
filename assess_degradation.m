@@ -119,7 +119,7 @@ ylabel('Normalized lifetime [-]','FontSize',30);
 legend(samples); 
 
 %Save the data 
-save([directory '\processed_data_20160731.mat'],'dataSave','lifetime_deg_norm','filename_details','samples');
+save([directory '\processed_data_20160808.mat'],'dataSave','lifetime_deg_norm','filename_details','samples');
 
 %% Given the loaded data, try now to analyze the evolution along the degradation curve
 clc;clear all; close all; 
