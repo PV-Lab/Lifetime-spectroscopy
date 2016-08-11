@@ -1,10 +1,10 @@
 %This script analyzes TIDLS measurements taken with WCT-120TS. 
 clear all; close all; 
-directory = 'C:\Users\Mallory\Dropbox (MIT)\TIDLS at UNSW\Advanced system measurements\20160727\for_processing'; 
+directory = 'C:\Users\Mallory\Dropbox (MIT)\TIDLS at UNSW\Advanced system measurements\20160805\for processing'; 
 before_directory = 'C:\Users\Mallory\Dropbox (MIT)\TIDLS at UNSW\Advanced system measurements\20160727\for_processing\before';
 after_directory = 'C:\Users\Mallory\Dropbox (MIT)\TIDLS at UNSW\Advanced system measurements\20160727\for_processing\after';
-processing_directory = 'C:\Users\Mallory\Dropbox (MIT)\TIDLS at UNSW\Advanced system measurements\20160801\for_processing';
-SRV_directory = 'C:\Users\Mallory\Dropbox (MIT)\TIDLS at UNSW\Advanced system measurements\20160801\for_processing';
+processing_directory = 'C:\Users\Mallory\Dropbox (MIT)\TIDLS at UNSW\Advanced system measurements\20160805\for processing';
+SRV_directory = 'C:\Users\Mallory\Dropbox (MIT)\TIDLS at UNSW\Advanced system measurements\20160804\For processing';
 %type - p or n
 type = 'p';
 %Fit range for Joe
@@ -551,6 +551,50 @@ end
 lifetime_breakdown = struct('tau',tau_store,'deltan',deltan_store,'tau_SRH',tau_SRH_store,'tau_intr',tau_intr_store,'tau_surf',tau_surf_store);
 save([processing_directory '\lifetime_breakdown.mat'],'lifetime_breakdown');
 
+%% Load the data and ask for where to crop the SRH data based on the contributions
+%Load the data for processing
+load([processing_directory '\lifetime_breakdown.mat']);
+for i = 1:length(dataSave);
+    deltan_rev = lifetime_breakdown(i).deltan; 
+    tau_rev = lifetime_breakdown(i).tau; 
+    tau_SRH = lifetime_breakdown(i).tau_SRH; 
+    tau_intr = lifetime_breakdown(i).tau_intr;
+    tau_surf = lifetime_breakdown(i).tau_surf;
+    figure;
+    h=figure('units','normalized','outerposition',[0 0 1 1]);
+    loglog(deltan_rev,tau_rev.*1e6,'LineWidth',2);
+    hold all; 
+    loglog(deltan_rev,tau_intr.*1e6,'LineWidth',2);
+    hold all;
+    loglog(deltan_rev,tau_surf.*1e6,'LineWidth',2); 
+    hold all; 
+    loglog(deltan_rev,tau_SRH.*1e6,'LineWidth',2);
+    xlabel('Excess carrier density (cm^-^3)','FontSize',20);
+    ylabel('Lifetime (\mus)','FontSize',20);   
+    legend('Measured','Intrinsic','Surface','SRH');
+    title(['Temperature = ' num2str(info(i).temperature)]);
+    disp('Select the region for cutting off the HIGH injection data');
+    [cutoff,nothing]=ginput(1);
+    [deltan_rev,tau_SRH_rev] = remove_highinj(deltan_rev,tau_SRH,cutoff);
+    [deltan_rev,tau_rev_rev] = remove_highinj(deltan_rev,tau_rev,cutoff);
+    [deltan_rev,tau_surf_rev] = remove_highinj(deltan_rev,tau_surf,cutoff);
+    [deltan_rev,tau_intr_rev] = remove_highinj(deltan_rev,tau_intr,cutoff);
+    %We might always want to remove some low injection data
+    disp('Select the region for cutting off the LOW injection data');
+    [cutoff,nothing]=ginput(1);
+    [deltan_rev,tau_SRH_rev] = remove_lowinj(deltan_rev,tau_SRH_rev,cutoff);
+    [deltan_rev,tau_rev_rev] = remove_lowinj(deltan_rev,tau_rev_rev,cutoff);
+    [deltan_rev,tau_surf_rev] = remove_lowinj(deltan_rev,tau_surf_rev,cutoff);
+    [deltan_rev,tau_intr_rev] = remove_lowinj(deltan_rev,tau_intr_rev,cutoff);
+     %Let's store everything now
+    deltan_store{i,1} = deltan_rev;
+    tau_store{i,1} = tau_rev_rev;
+    tau_SRH_store{i,1} = tau_SRH_rev;
+    tau_intr_store{i,1} = tau_intr_rev; 
+    tau_surf_store{i,1} = tau_surf_rev;
+end
+lifetime_breakdown = struct('tau',tau_store,'deltan',deltan_store,'tau_SRH',tau_SRH_store,'tau_intr',tau_intr_store,'tau_surf',tau_surf_store);
+save([processing_directory '\lifetime_breakdown.mat'],'lifetime_breakdown');
 %% Perform the lifetime fitting
 %Load the data which has been separated into lifeitme contributions
 load([processing_directory '\lifetime_breakdown.mat']);
