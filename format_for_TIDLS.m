@@ -1,13 +1,7 @@
-%Read a .txt file which has been output from python. Put this into a
-%format which will be accepted by TIDLS codes. NOTE: the temperature
-%should be exported in descending order to match this code. 
-function format_for_TIDLS(data_filename,sample_param_filename,saveDir)
-nothing=load(sample_param_filename); 
-%Sort the structure to match what should have been loaded into the .txt
-%file
-% sample_param = nestedSortStruct(python_inputs,'temperature'); 
-% [num_samples,dim] = size(sample_param); 
-num_samples = length(nothing);
+%Read a .txt file which has been output from python and store the lifetime
+%and carrier density. Put this into a format which will be accepted by
+%TIDLS codes. 
+function format_for_TIDLS(data_filename,saveDir)
 %Open the text file
 fileID = fopen(data_filename); 
 %Read line-by-line 
@@ -47,7 +41,5 @@ end
 dataSave{sample_count} = data_now; 
 %close the file
 fclose(fileID); 
-% info = sample_param;  
 %Now we should have read the entire file. Save. 
-save([saveDir '\Raw_data.mat'],'dataSave'); 
-% save([saveDir '\meas_info.mat'],'info'); 
+save([saveDir '\Raw_data.mat'],'dataSave');  
