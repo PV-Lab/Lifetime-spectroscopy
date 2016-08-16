@@ -6,17 +6,17 @@ function [tau_mean,deltanq]=average_tau(filename,saveStart)
 
 load(filename); 
 
-deltanq = logspace(10,16,500); %typical max range for the QSSPC tool
+deltanq = logspace(10,17,1000); %typical max range for the QSSPC tool
 
 together = figure; 
 
-for i = 1:length(fileListShort)
+for i = 1:length(dataSave)
     data = dataSave{i};
     deltan = data(:,1); 
     tau = data(:,2);
     
     %remove spurious low injection data
-    [deltan,tau] = remove_lowinj(deltan,tau,1e10)
+    [deltan,tau] = remove_lowinj(deltan,tau,1e10);
     
     %We need to check and make sure no deltan (x-values) are repeated. This
     %will interfere with the interpolation. 
