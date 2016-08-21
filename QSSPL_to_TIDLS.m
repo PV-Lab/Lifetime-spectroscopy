@@ -68,16 +68,34 @@ time_before = .001; %s
 % title('Dark voltage corrected','FontSize',20); 
 %% Now try averaging for a series 
 clear all; close all; 
-dirname = 'C:\Users\Mallory\Dropbox (MIT)\TIDLS at UNSW\Advanced system measurements\20160811\A23-6';
-sample = 'A23-6'; 
+dirname = 'C:\Users\Mallory\Dropbox (MIT)\TIDLS at UNSW\Advanced system measurements\20160815\IR 1-64';
+sample = '16-6-28-P-2'; 
+Ctonum = 'C_1-64_wIR_';
 time_before = .001; %s
-T = [25 100 150 200]; 
-num_repeats = [5 10 10 10]; 
-[dataSave] = average_QSSPL(dirname,sample,T,num_repeats,time_before);
+T = [25]; 
+num_repeats = [10]; 
+[dataSave] = average_QSSPL(dirname,sample,T,num_repeats,time_before,Ctonum);
 
 %Now, given this data, we want to write this to a new file which can be
 %read into QSSPL
-
+for i = 1:length(T)
+    matrix_to_write = dataSave{i}; 
+    write_QSSPL_analyser(dirname,sample,T(i),matrix_to_write,Ctonum);
+end
+    
+% i = 1;
+%     %Make the filename to write to
+%     filename_write = [dirname '\' sample '_' num2str(T(i)) 'C_averaged.Raw Data.dat'];
+% %     fileID = fopen(filename_write,'w'); 
+%     %We need to write the first line
+%     first_line = '# Time (s)	Generation (V)	PC (V)	PL (V)';
+%     dlmwrite(filename_write,first_line,'delimiter',''); 
+%     %Now append the data
+%     load([dirname '\A23-6_200C_3_rawData.mat']);
+%     matrix_to_write = [time,gen,PC,PL];
+%     dlmwrite(filename_write,matrix_to_write,'-append','delimiter','\t','precision','%-6.18e','newline','pc'); 
+%     %Make the .inf file
+%     copyfile([dirname '\' sample '_' num2str(T(i)) 'C_1.inf'],[dirname '\' sample '_' num2str(T(i)) 'C_averaged.inf']);
 
 % for i = 1:length(T)
 %     for j =1:num_repeats(i)
