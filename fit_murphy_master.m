@@ -23,7 +23,7 @@ function [one_defect,MSE_one,two_defects,MSE_two,three_defects,MSE_three,all_par
     %Now try 2 defects. First find starting parameters from fit_murphy function
     %Set the threshold at some arbitrary value
     threshold = 1e-15; 
-    [p,order,MSE,MSE_store]=fit_murphy(X,tau_SRH,threshold); 
+    [p,order]=fit_murphy(X,tau_SRH,threshold); 
     if order == 2
         %Make the fit parameter matrix from the output p values
         fit_start = [p(1) p(2); p(3) p(4)];
