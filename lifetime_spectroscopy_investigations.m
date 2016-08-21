@@ -351,19 +351,22 @@ for i = 1:length(k_value)
     title(['k = ' num2str(k_value(i))]);
 end
 %% Look at SRH curve along E-k curve
-load('C:\Users\Mallory\Documents\Sinton visit\by sample\PERC May 26 revised resistivity\69-8\Ek_degraded_PVSC.mat'); 
+% load('C:\Users\Mallory\Documents\Sinton visit\by sample\PERC May 26 revised resistivity\69-8\Ek_degraded_PVSC.mat'); 
 Ect = 0; 
 sigma_p = 1e-14; 
-N_dop = 8.2e15; 
+N_dop = 9.74e15; 
 type = 'p'; 
-Nt = 1e14; 
+Nt = 1e12; 
 deltan = logspace(12,18,500); 
 deltan = deltan'; 
-indices = 1:1:length(Ek_degraded_PVSC); 
+% indices = 1:1:length(Ek_degraded_PVSC); 
 T = [25 100 175]; 
 T = T+273.15; 
-Et = Ek_degraded_PVSC(:,2); 
-k_values = Ek_degraded_PVSC(:,1); 
+% Et = Ek_degraded_PVSC(:,2); 
+% k_values = Ek_degraded_PVSC(:,1); 
+Et = [0.2 0.28 0.5 0.74 0.79];
+k_values = [42.35 28.99 28.36 29.57 39.58];
+indices = 1:1:length(Et); 
 for i = 1:length(indices); 
     lifetime = figure; 
     for k = 1:length(T)
@@ -371,13 +374,13 @@ for i = 1:length(indices);
             [tau_SRH,n1,p1] = SRH_full_adv(Nt,k_values(indices(i))*sigma_p,sigma_p,Ect,Et(indices(i)),T(k),deltan(j),N_dop,type);
             tau_SRH_store(j,k) = tau_SRH;
         end 
-        loglog(deltan,tau_SRH_store(:,k),'-','LineWidth',2); 
+        loglog(deltan,tau_SRH_store(:,k),'-','LineWidth',3); 
         hold all; 
     end
-    xlabel('Excess carrier density (cm^-^3)','FontSize',20);
-    ylabel('Lifetime (\mus)','FontSize',20);  
-    legend(num2str(T'));
-    title(['k = ' num2str(k_values(indices(i))) ', Et = ' num2str(Et(indices(i)))]);
+    xlabel('Excess carrier density (cm^-^3)','FontSize',30);
+    ylabel('Lifetime (\mus)','FontSize',30);  
+    legend(num2str((T-273.15)'));
+    title(['k = ' num2str(k_values(indices(i))) ', E_t-E_v = ' num2str(Et(indices(i)))],'FontSize',30);
 end
 
 
