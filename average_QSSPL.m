@@ -1,12 +1,12 @@
 %Average QSSPL data
-function [dataSave] = average_QSSPL(dirname,sample,T,num_repeats,time_before)
+function [dataSave] = average_QSSPL(dirname,sample,T,num_repeats,time_before,Ctonum)
     for i = 1:length(T)
         for j =1:num_repeats(i)
             %Make filename
-            filename = [dirname '\' sample '_' num2str(T(i)) 'C_' num2str(j)...
+            filename = [dirname '\' sample '_' num2str(T(i)) Ctonum num2str(j)...
                 '.Raw Data.dat'];
             %Make the savename
-            savename = [dirname '\' sample '_' num2str(T(i)) 'C_' num2str(j)...
+            savename = [dirname '\' sample '_' num2str(T(i)) Ctonum num2str(j)...
                 '_rawData.mat'];
             %Read the data
             [data_now,time,PC,PL,gen]=format_QSSPL_rawdata(filename,savename);
@@ -45,5 +45,5 @@ function [dataSave] = average_QSSPL(dirname,sample,T,num_repeats,time_before)
         ylabel('Voltage [V]','FontSize',20);
         legend('Generation','PL','PC'); 
         title(['Average PC, T = ' num2str(T(i)) 'C'],'FontSize',20); 
-        dataSave{i} = [time_store gen_overall PL_overall PC_overall]; 
+        dataSave{i} = [time_store gen_overall PC_overall PL_overall]; 
     end
