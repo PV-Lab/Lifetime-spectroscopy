@@ -1,19 +1,12 @@
-%Read a .txt file which has been output from python. Put this into a
-%format which will be accepted by TIDLS codes. NOTE: the temperature
-%should be exported in descending order to match this code. 
-function format_for_TIDLS(data_filename,sample_param_filename,saveDir)
-nothing=load(sample_param_filename); 
-%Sort the structure to match what should have been loaded into the .txt
-%file
-% sample_param = nestedSortStruct(python_inputs,'temperature'); 
-% [num_samples,dim] = size(sample_param); 
-num_samples = length(nothing);
+%Read a .txt file which has been output from python and store the lifetime
+%and carrier density. Put this into a format which will be accepted by
+%TIDLS codes. 
+function format_for_TIDLS(data_filename,saveDir,lifetime_type)
 %Open the text file
 fileID = fopen(data_filename); 
 %Read line-by-line 
 tline = fgetl(fileID);
 line = 1; 
-dataSave = cell(num_samples,1);  
 sample_count = 1; 
 new_line = 0; 
 while ischar(tline)
@@ -32,11 +25,23 @@ while ischar(tline)
     elseif isempty(this_line_num)==0
         if line == 2 || new_line == 1
             %We need to start the data_now storage
-            data_now = [this_line_num(1,2) this_line_num(1,4)];
+            if strcmp(lifetime_type,'PC')==1
+                data_now = [this_line_num(1,2) this_line_num(1,4)];
+            elseif strcmp(lifetime_type,'PL')==1
+                data_now = [this_line_num(1,3) this_line_num(1,5)];
+            else
+                display('Issue with specifying lifetime measurement type.');
+            end
             new_line = 0; 
         else
             %Then we just add this line to our existing structure
-            data_now(end+1,:) = [this_line_num(1,2) this_line_num(1,4)];
+            if strcmp(lifetime_type,'PC')==1
+                data_now(end+1,:) = [this_line_num(1,2) this_line_num(1,4)];
+            elseif strcmp(lifetime_type,'PL')
+                data_now(end+1,:) = [this_line_num(1,3) this_line_num(1,5)];
+            else
+                display('Issue with specifying lifetime measurement type.');
+            end
         end
     end
     tline = fgetl(fileID);
@@ -47,7 +52,5 @@ end
 dataSave{sample_count} = data_now; 
 %close the file
 fclose(fileID); 
-% info = sample_param;  
 %Now we should have read the entire file. Save. 
-save([saveDir '\Raw_data.mat'],'dataSave'); 
-% save([saveDir '\meas_info.mat'],'info'); 
+save([saveDir '\Raw_data.mat'],'dataSave');  

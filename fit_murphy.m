@@ -9,8 +9,6 @@ function [p,order,MSE,MSE_store]=fit_murphy(X,tau_SRH,threshold)
 %2012). One additional input is a threshold value for the mean squared
 %error, used to identify a good fit to the data.
 
-cpu_start =cputime; 
-
 %Vary the initial fit parameters by... 
 variation = 30; 
 
@@ -104,8 +102,5 @@ else
 %     h(4)=plot(X,potential_fit); 
 %     legend(h,'Actual','Fit 1','Fit 2','Harmonic Sum'); 
 end
-
-cpu_end = cputime; 
-elapsed_time = cpu_end-cpu_start;
 
 end

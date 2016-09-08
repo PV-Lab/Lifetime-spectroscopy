@@ -28,7 +28,8 @@ function [unprocessed] = get_Sinton_raw(dirname)
         type{file,1} = txt{1}; 
         %Get the measurement parameters
         [x,txt] = xlsread(filename,'Summary','I2');
-        %mode{file,1} = txt{1}; 
+%         mode{file,1} = txt{1}; 
+        mode{file,1} = '1/1';
         %Get the calibration parameters
         calib_A{file,1} = xlsread(filename,'Settings','C6');
         calib_B{file,1} = xlsread(filename,'Settings','C7');
