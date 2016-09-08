@@ -324,15 +324,15 @@ for i = 1:length(Ect)
     title(['E_c-E_t = ' num2str(Ect(i))]);
 end
 %% Change in SRH curves with temperature, different k values, constant E
-Ect = [0.9];
+Ect = [0.24];
 Etv = 0; 
 Nt = 1e12;
-sigma_n = [6e-17 6e-16 1.6e-14 1.2e-13];
-sigma_p = 6e-16;
+sigma_n = [3.6e-14];
+sigma_p = 1e-14;
 k_value = sigma_n./sigma_p; 
 type = 'p'; 
-N_dop = 1e16; 
-T = [300 350 400 450]; 
+N_dop = 1.9e16; 
+T = [200 250 300 350 400]; 
 deltan = logspace(12,18,500); 
 deltan = deltan';
 for i = 1:length(k_value)
