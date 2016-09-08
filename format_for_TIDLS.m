@@ -1,13 +1,12 @@
 %Read a .txt file which has been output from python and store the lifetime
 %and carrier density. Put this into a format which will be accepted by
 %TIDLS codes. 
-function format_for_TIDLS(data_filename,saveDir)
+function format_for_TIDLS(data_filename,saveDir,lifetime_type)
 %Open the text file
 fileID = fopen(data_filename); 
 %Read line-by-line 
 tline = fgetl(fileID);
 line = 1; 
-dataSave = cell(num_samples,1);  
 sample_count = 1; 
 new_line = 0; 
 while ischar(tline)
@@ -26,11 +25,23 @@ while ischar(tline)
     elseif isempty(this_line_num)==0
         if line == 2 || new_line == 1
             %We need to start the data_now storage
-            data_now = [this_line_num(1,2) this_line_num(1,4)];
+            if strcmp(lifetime_type,'PC')==1
+                data_now = [this_line_num(1,2) this_line_num(1,4)];
+            elseif strcmp(lifetime_type,'PL')==1
+                data_now = [this_line_num(1,3) this_line_num(1,5)];
+            else
+                display('Issue with specifying lifetime measurement type.');
+            end
             new_line = 0; 
         else
             %Then we just add this line to our existing structure
-            data_now(end+1,:) = [this_line_num(1,2) this_line_num(1,4)];
+            if strcmp(lifetime_type,'PC')==1
+                data_now(end+1,:) = [this_line_num(1,2) this_line_num(1,4)];
+            elseif strcmp(lifetime_type,'PL')
+                data_now(end+1,:) = [this_line_num(1,3) this_line_num(1,5)];
+            else
+                display('Issue with specifying lifetime measurement type.');
+            end
         end
     end
     tline = fgetl(fileID);
