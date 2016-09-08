@@ -4,20 +4,23 @@
 %read. 
 function prepare_Sinton_raw(dirname,T)
 %Load the dark voltage data 
-% load([dirname '\dark_voltages.mat']);
+load([dirname '\dark_voltages.mat']);
 %Load the lifetime data
 load([dirname '\voltage_data.mat']);
 %We will do the same thing for each file
 for i = 1:length(fileListShort)
-%     photovolt = unprocessed(i).photovoltage; 
-%     refvolt = unprocessed(i).ref_voltage; 
-%     time = unprocessed(i).time; 
-%     dark_voltage = Vd(i); 
-%     %Add a row to the end as specified
-%     time(end+1) = 0; 
-%     refvolt(end+1) = 0; 
-%     photovolt(end+1) = dark_voltage; 
-%     PL = zeros(size(time)); 
+    photovolt = unprocessed(i).photovoltage; 
+    refvolt = unprocessed(i).ref_voltage; 
+    time = unprocessed(i).time; 
+    dark_voltage = Vd(i); 
+    %Add a row to the end as specified
+    time(end+1) = 0; 
+    refvolt(end+1) = 0; 
+    photovolt(end+1) = dark_voltage; 
+    PL = zeros(size(time)); 
+    matrix_to_write = [time,refvolt;photovolt,PL];
+    write_QSSPL_analyser(dirname,'189-9',T,matrix_to_write,'C_avg5');
+%     
 %     filename = fileListShort{i}; 
 %     filename = filename(1:end-5); 
 %     xlswrite([dirname '\' filename '.Raw Data.xlsx'],{'# Time(s)'},'Sheet1','A1'); 
