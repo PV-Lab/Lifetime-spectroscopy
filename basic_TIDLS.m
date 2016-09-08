@@ -1,12 +1,12 @@
 %This script analyzes TIDLS measurements taken with WCT-120TS. 
 clear all; close all; 
-directory = 'C:\Users\Mallory\Dropbox (MIT)\Mallory in Australia\PERC LeTID\Measurements at Sinton Instruments\August 15 revised temp\69-8'; 
+directory = 'C:\Users\Mallory\Dropbox (MIT)\Mallory in Australia\Method development\SRH test'; 
 before_directory = 'C:\Users\Mallory\Dropbox (MIT)\TIDLS at UNSW\Advanced system measurements\20160727\for_processing\before';
 after_directory = 'C:\Users\Mallory\Dropbox (MIT)\TIDLS at UNSW\Advanced system measurements\20160727\for_processing\after';
-processing_directory = 'C:\Users\Mallory\Dropbox (MIT)\Mallory in Australia\PERC LeTID\Measurements at Sinton Instruments\August 15 revised temp\69-8';
-SRV_directory = 'C:\Users\Mallory\Dropbox (MIT)\TIDLS at UNSW\Advanced system measurements\20160804\For processing';
-deg_directory = 'C:\Users\Mallory\Dropbox (MIT)\Mallory in Australia\PERC LeTID\Measurements at Sinton Instruments\August 15 revised temp\69-8';
-undeg_directory = 'C:\Users\Mallory\Dropbox (MIT)\Mallory in Australia\PERC LeTID\Measurements at Sinton Instruments\August 15 revised temp\68-8';
+processing_directory = 'C:\Users\Mallory\Dropbox (MIT)\Mallory in Australia\Method development\SRH test';
+SRV_directory = 'C:\Users\Mallory\Dropbox (MIT)\Mallory in Australia\Method development\SRH test';
+deg_directory = 'C:\Users\Mallory\Dropbox (MIT)\TIDLS at UNSW\Advanced system measurements\By sample\22-101-8\flash only';
+undeg_directory = 'C:\Users\Mallory\Dropbox (MIT)\TIDLS at UNSW\Advanced system measurements\By sample\22-102-8\flash only';
 %type - p or n
 type = 'p';
 %Fit range for Joe
@@ -295,15 +295,20 @@ save([processing_directory '\lifetime_breakdown.mat'],'lifetime_breakdown');
 %First load the data
 load([processing_directory '\Raw_data.mat']);
 load([processing_directory '\meas_info.mat']); 
-Joe{1,1} = 5.75e-14.*1;
-Joe{2,1} = 4.76e-14.*1; 
-cutoff(1,1) = 5e13;
-cutoff(1,2) = 1e16;
-cutoff(2,1) = 5e13;
-cutoff(2,2) = 1e16;
+% Joe{1,1} = 5.75e-14.*1;
+% % Joe{2,1} = 4.76e-14.*1; 
+% cutoff(1,1) = 1e12;
+% cutoff(1,2) = 1e18;
+% cutoff(2,1) = 1e12;
+% cutoff(2,2) = 1e18;
+Joe_in = 4.76e-14*0.7; 
+cutoff = ones(length(dataSave),2); 
+cutoff(:,1) = cutoff(:,1).*2e14; 
+cutoff(:,2) = cutoff(:,2).*1e16; 
 %Now, for each temperature we will be doing the same operations. Loop
 %through. 
 for i = 1:length(dataSave);
+    Joe{i,1} = Joe_in; 
     dataNow = dataSave{i}; 
     tau = dataNow(:,2);
     deltan = dataNow(:,1);
@@ -319,7 +324,7 @@ for i = 1:length(dataSave);
     legend('Before cutoff','After cutoff'); 
     title(['Temperature = ' num2str(info(i).temperature)]);
     %Now that we have the Joe, we can calculate the surface lifetime
-    [tau_surf] = calculate_tau_surf_Joe(Joe{i,1},type,info(i).doping,deltan_rev,info(i).thickness,info(i).temperature+273.15);
+    [tau_surf] = calculate_tau_surf_Joe(Joe_in,type,info(i).doping,deltan_rev,info(i).thickness,info(i).temperature+273.15);
     %We will also need the intrinsic lifetime
     tau_intr = zeros(size(deltan_rev));
     for j = 1:length(deltan_rev)
@@ -350,7 +355,7 @@ for i = 1:length(dataSave);
     tau_intr_store{i,1} = tau_intr; 
 end
 lifetime_breakdown = struct('tau',tau_store,'deltan',deltan_store,'tau_surf',tau_surf_store,'tau_SRH',tau_SRH_store,'tau_intr',tau_intr_store,'Joe',Joe);
-save([processing_directory '\original_lifetime_breakdown.mat'],'lifetime_breakdown');
+save([processing_directory '\lifetime_breakdown.mat'],'lifetime_breakdown');
 
 %% Load the data that will be processed and lifetime contributions - no surface contribution
 %First load the data
@@ -413,6 +418,7 @@ load([processing_directory '\Raw_data.mat']);
 load([processing_directory '\meas_info.mat']);
 SRVtoSave = cell(length(dataSave),1);
 h=figure; 
+label = zeros(length(dataSave),1)
 %Loop through each temperature calculate the SRV
 for i = 1:length(dataSave)
     dataNow = dataSave{i}; 
@@ -646,27 +652,31 @@ save([processing_directory '\original_linearized.mat'],'X_store','tau_SRH_store'
 %We need to load our data first
 load([processing_directory '\meas_info.mat']); 
 load([processing_directory '\best_fits.mat']);
+label = zeros(1,1); 
 defect1 = figure;
 co={[0 0 0]; [0.5 0 0.9]; [0 0 1]; [0 1 1]; [0 1 0];  [1 1 0]; [1 0.6 0]; [1 0 0]; [0.8 0.5 0]};
-defect2 = figure;
+% defect2 = figure;
 tau_defect1 = figure;
-tau_defect2 = figure; 
+% tau_defect2 = figure; 
 % defect3 = figure;
 %I want these to be in order of increasing temperature
+% for i = 1:length(info)
+%     T(i) = info(i).temperature;
+% end
+% %Sort 
+% [T,for_iteration] = sort(T); 
 for i = 1:length(info)
-    T(i) = info(i).temperature;
-end
-%Sort 
-[T,for_iteration] = sort(T); 
-for i = 1:length(info)
-    index = for_iteration(i);
-    best_fit = best_fits(index).two_defects;
+%     index = for_iteration(i);
+    index = i; 
+    best_fit = best_fits(index).one_defect; 
+%     best_fit = best_fits(index).two_defects;
 %     best_fit = best_fits(index).three_defects;
-%     Let's sort this to try to match up defects between temperatures
-    [slopes,IX] = sort(best_fit(:,1));
-    best_fit(:,1) = best_fit(IX,1); 
-    best_fit(:,2) = best_fit(IX,2); 
-    for j = 1:length(best_fit)
+    %Let's sort this to try to match up defects between temperatures
+%     [slopes,IX] = sort(best_fit(:,1));
+%     best_fit(:,1) = best_fit(IX,1); 
+%     best_fit(:,2) = best_fit(IX,2); 
+    [m,n] = size(best_fit);
+    for j = 1:m
         [Et{index,j},k{index,j},alphanN{index,j}]=generate_Ek(best_fit(j,:),info(index).temperature+273.15,info(index).doping,type);
     end
     figure(defect1); 
@@ -676,12 +686,12 @@ for i = 1:length(info)
     figure(tau_defect1); 
     h3(i)=plot(Et{index,1},1./alphanN{index,1},'-','LineWidth',2,'Color',co{i}); 
     hold all;
-    figure(defect2);
-    h2(i)=plot(Et{index,2},k{index,2},'-','LineWidth',2,'Color',co{i});
-    hold all;
-    figure(tau_defect2); 
-    h4(i)=plot(Et{index,2},1./alphanN{index,2},'-','LineWidth',2,'Color',co{i}); 
-    hold all; 
+%     figure(defect2);
+%     h2(i)=plot(Et{index,2},k{index,2},'-','LineWidth',2,'Color',co{i});
+%     hold all;
+%     figure(tau_defect2); 
+%     h4(i)=plot(Et{index,2},1./alphanN{index,2},'-','LineWidth',2,'Color',co{i}); 
+%     hold all; 
 %     figure(defect3);
 %     h3(i)=plot(Et{index,3},k{index,3},'-','LineWidth',2,'Color',co{i});
 %     hold all;
@@ -718,21 +728,21 @@ xlabel('E_t-E_v [eV]','FontSize',20);
 ylabel('k [-]','FontSize',20);
 legend(h1,num2str(label));
 title('Defect 1','FontSize',30); 
-figure(defect2); 
-xlabel('E_t-E_v [eV]','FontSize',20); 
-ylabel('k [-]','FontSize',20);
-legend(h2,num2str(label));
-title('Defect 2','FontSize',30); 
+% figure(defect2); 
+% xlabel('E_t-E_v [eV]','FontSize',20); 
+% ylabel('k [-]','FontSize',20);
+% legend(h2,num2str(label));
+% title('Defect 2','FontSize',30); 
 figure(tau_defect1); 
 xlabel('E_t-E_v [eV]','FontSize',20); 
 ylabel('\tau_{n0} [s]','FontSize',20);
 legend(h3,num2str(label));
 title('Defect 1','FontSize',30);
-figure(tau_defect2); 
-xlabel('E_t-E_v [eV]','FontSize',20); 
-ylabel('\tau_{n0} [s]','FontSize',20);
-legend(h4,num2str(label));
-title('Defect 2','FontSize',30);
+% figure(tau_defect2); 
+% xlabel('E_t-E_v [eV]','FontSize',20); 
+% ylabel('\tau_{n0} [s]','FontSize',20);
+% legend(h4,num2str(label));
+% title('Defect 2','FontSize',30);
 % figure(defect3); 
 % xlabel('E_t-E_v [eV]','FontSize',20); 
 % ylabel('k [-]','FontSize',20);
@@ -756,10 +766,14 @@ all_defects = figure;
 co={[0 0 0]; [0.5 0 0.9]; [0 0 1]; [0 1 1]; [0 1 0];  [1 1 0]; [1 0.6 0]; [1 0 0]; [0.8 0.5 0]};
 tau_defects = figure;
 defectcount = 1;
-for i = 1:length(info)
+label = zeros(length(best_fits),1);
+for i = 1:length(best_fits)
     index = i;
+%     best_fit = best_fits(index).one_defect;
     best_fit = best_fits(index).two_defects;
-    for j = 1:length(best_fit)
+%     best_fit = best_fits(index).three_defects; 
+    [m,n] = size(best_fit);
+    for j = 1:m
         [Et{index,j},k{index,j},alphanN{index,j}]=generate_Ek(best_fit(j,:),info(index).temperature+273.15,info(index).doping,type);
     end
     figure(all_defects); 
@@ -776,6 +790,13 @@ for i = 1:length(info)
     figure(tau_defects); 
     plot(Et{index,2},1./alphanN{index,2},'--','LineWidth',2,'Color',co{i}); 
     hold all; 
+%     defectcount = defectcount+1;
+%     figure(all_defects);
+%     plot(Et{index,3},k{index,3},'-.','LineWidth',2,'Color',co{i});
+%     hold all;
+%     figure(tau_defects); 
+%     plot(Et{index,3},1./alphanN{index,3},'-.','LineWidth',2,'Color',co{i}); 
+%     defectcount = defectcount+1;
 end
 figure(all_defects); 
 axis([0 1.124 0 100]);
@@ -971,32 +992,34 @@ title('Defect 2','FontSize',30);
 %Assume a constant defect energy level
 Et_Tidd = 0.28; %eV
 for i = 1:length(info)
-    index = for_iteration(i);
-%     index = i; 
+%     index = for_iteration(i);
+    index = i; 
     temp = info(index).temperature;%celcius
     k_Tidd(i) = calculate_Tidd(temp);
-    figure(defect1);
-%     figure(all_defects)
+%     figure(defect1);
+    figure(all_defects)
     hold all;
     plot(Et_Tidd,k_Tidd(i),'o','MarkerSize',10,'Color',co{i});
-    figure(defect2);
-    hold all;
-    plot(Et_Tidd,k_Tidd(i),'o','MarkerSize',10,'Color',co{i});
+%     figure(defect2);
+%     hold all;
+%     plot(Et_Tidd,k_Tidd(i),'o','MarkerSize',10,'Color',co{i});
 end
 %% Plot the k-values for Mo-d for each temperature on top of current plot
 %Assume a constant defect energy level
 Et_Mod_min = 0.28; %eV
 Et_Mod_max = 0.375; %eV
 for i = 1:length(info)
-    index = for_iteration(i);
+%     index = for_iteration(i);
+    index = i; 
     temp = info(index).temperature;%celcius
     k_Mod(i) = calculate_Mod(temp+273.15);
-    figure(defect1);
+    figure(all_defects)
+%     figure(defect1);
     hold all;
     plot([Et_Mod_min Et_Mod_max],[k_Mod(i) k_Mod(i)],'x-','MarkerSize',10,'Color',co{i});
-    figure(defect2);
-    hold all;
-    plot([Et_Mod_min Et_Mod_max],[k_Mod(i) k_Mod(i)],'x-','MarkerSize',10,'Color',co{i});
+%     figure(defect2);
+%     hold all;
+%     plot([Et_Mod_min Et_Mod_max],[k_Mod(i) k_Mod(i)],'x-','MarkerSize',10,'Color',co{i});
 end
 
 %% Try plotting graphs to deduce upper/lower bandgap half per Paudyal
@@ -1059,37 +1082,53 @@ for i = 1:length(data_undeg)
     loglog(dataNow_undeg(:,1),dataNow_undeg(:,2),'.'); 
     hold all; 
     loglog(dataNow_deg(:,1),dataNow_deg(:,2),'.'); 
-    xlabel('Excess carrier density [cm^-^3]','FontSize',20); 
-    ylabel('Lifetime [s]','FontSize',20);
-    legend('Undegraded','Degraded');
-    title(['Temperature = ' num2str(info_undeg(i).temperature) 'C, ' num2str(info_deg(i).temperature) 'C'],'FontSize',20);
+    xlabel('Excess carrier density [cm^-^3]','FontSize',30); 
+    ylabel('Lifetime [s]','FontSize',30);
+%     legend('Undegraded','Degraded');
+    legend('PDG','As-grown');
+    title(['Temperature = ' num2str(info_undeg(i).temperature) 'C, ' num2str(info_deg(i).temperature) 'C'],'FontSize',30);
     hgsave(h,[directory '\Lifetime' num2str(round(info_undeg(i).temperature))]);
     print(h,'-dpng','-r0',[directory '\Lifetime ' num2str(round(info_undeg(i).temperature)) '.png']); 
     %Now calculate the SRH lifetime from the two contributions
     %First we need to interpolate. 
-    tau_undeg_interp = interp1(dataNow_undeg(:,1),dataNow_undeg(:,2),dataNow_deg(:,1)); 
-    %Now everything should be at the same injection levels
-    tau_SRH_now = ((1./dataNow_deg(:,2))-(1./tau_undeg_interp)).^(-1);
+    %But before we do that we need to make sure there aren't any repeated
+    %injection levels
+    [deltan_undeg,tau_undeg] = remove_duplicates(dataNow_undeg(:,1),dataNow_undeg(:,2));
+    [deltan_deg,tau_deg] = remove_duplicates(dataNow_deg(:,1),dataNow_deg(:,2));
+    tau_undeg_interp = interp1(deltan_undeg,tau_undeg,deltan_deg);
+    %Quick correction in case the "degraded" is lower lifetime than the
+    %undegraded
+    if interp1(deltan_undeg,tau_undeg,1e15)>interp1(deltan_deg,tau_deg,1e15)
+        %This is the situation we expect
+        %Now everything should be at the same injection levels
+        tau_SRH_now = ((1./tau_deg)-(1./tau_undeg_interp)).^(-1);
+    elseif interp1(deltan_undeg,tau_undeg,1e15)<interp1(deltan_deg,tau_deg,1e15)
+        disp(['Degraded lifetime is higher than undegraded at T = '...
+            num2str(info_undeg(i).temperature) ', ' num2str(info_deg(i).temperature)]);
+        tau_SRH_now = ((1./tau_undeg_interp)-(1./tau_deg)).^(-1);
+    end
     %Plot the result along with the other temperatures
     figure(SRH_fig); 
-    curves(i) = loglog(dataNow_deg(:,1),tau_SRH_now,'LineWidth',2);
+    curves(i) = loglog(deltan_deg,tau_SRH_now,'LineWidth',2);
     hold all; 
     labels{i} = [num2str(round(info_undeg(i).temperature))];
     %we want to put this in the format which is expected
     tau_SRH_store{i,1} = tau_SRH_now; 
-    deltan_store{i,1} = dataNow_deg(:,1); 
+    deltan_store{i,1} = deltan_deg; 
 end
 %Label the figure
-xlabel('Excess carrier density [cm^-^3]','FontSize',20); 
-ylabel('Lifetime [s]','FontSize',20);
+xlabel('Excess carrier density [cm^-^3]','FontSize',30); 
+ylabel('Lifetime [s]','FontSize',30);
 legend(curves',labels);
 hgsave(h,[directory '\SRH lifetimes']);
 print(h,'-dpng','-r0',[directory '\SRH lifetimes.png']); 
 lifetime_breakdown = struct('deltan',deltan_store,'tau_SRH',tau_SRH_store);
-save([deg_directory '\lifetime_breakdown.mat'],'lifetime_breakdown');
+% save([deg_directory '\lifetime_breakdown.mat'],'lifetime_breakdown');
+save([processing_directory '\lifetime_breakdown.mat'],'lifetime_breakdown');
 %% %% Load the data and ask for where to crop the SRH data based on the contributions
 %Load the data for processing
 load([processing_directory '\lifetime_breakdown.mat']);
+load([processing_directory '\meas_info.mat']);
 for i = 1:length(lifetime_breakdown);
     deltan_rev = lifetime_breakdown(i).deltan; 
     tau_SRH = lifetime_breakdown(i).tau_SRH; 
