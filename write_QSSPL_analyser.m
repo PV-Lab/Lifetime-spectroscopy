@@ -9,4 +9,5 @@ function write_QSSPL_analyser(dirname,sample,T,matrix_to_write,Ctonum)
     dlmwrite(filename_write,matrix_to_write,'-append','delimiter','\t','precision','%-6.18e','newline','pc'); 
     %Make the .inf file
     copyfile([dirname '\' sample '_' num2str(T) Ctonum '1.inf'],[dirname '\' sample '_' num2str(T) Ctonum 'averaged.inf']);
+%     copyfile([dirname '\' sample '_' Ctonum '1.inf'],[dirname '\' sample '_' num2str(T) Ctonum 'averaged.inf']);
 end
