@@ -16,7 +16,7 @@ lifetime = data(:,5);
 conversion = xlsread(filename,'Settings','C5'); 
 %Convert measured voltage to suns
 suns = ref_cell/conversion; %suns
-bias_values = [0,round(min(suns)*100)/100:.01:1];
+bias_values = [0,round(min(suns)*100)/100:.01:3];
 %We need to some sample parameters
 data = xlsread(filename,'Summary','E2:K2');
 thickness = data(1); 
@@ -82,8 +82,12 @@ for i = 1:length(bias_values)
 %     loglog(minority_carrier_density,lifetime_mod,'--'); 
     %Grab the lifetime at our input deltan
     if deltan_input > deltan_bias
+        %Get rid of any repeated values
+        [minority_carrier_density,ia] = unique(minority_carrier_density,'stable');
+        lifetime_mod = lifetime_mod(ia); 
         lifetime_store(1,i) = interp1(minority_carrier_density,lifetime_mod,deltan_input); 
     else
+        disp('Bias input greater than injection level');
         lifetime_store(1,i) = NaN; 
     end
     lifetime_mod_store{i} = lifetime_mod; 
