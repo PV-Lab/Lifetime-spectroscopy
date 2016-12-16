@@ -10,6 +10,12 @@ function [Joe,Joe_select] = fit_Joe_curve(deltan,tau,doping,T,type,fit_range,thi
 %a decimal percent (Sinton uses +/-30%, so input 0.30)
 %Thickness = sample thickness, in cm
 
+%Sort results in order of deltan
+[sorted_deltan,ix_sort] = sort(deltan,1,'descend'); 
+sorted_tau = tau(ix_sort); 
+deltan = sorted_deltan; 
+tau = sorted_tau; 
+
 %First try the bulk lifetime with Auger
 figure; 
 plot(deltan,1./tau,'o'); 
