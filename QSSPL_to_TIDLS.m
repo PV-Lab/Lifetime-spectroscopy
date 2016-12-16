@@ -20,12 +20,12 @@ end
 
 %% Now try averaging for a series 
 clear all; close all; 
-dirname = 'C:\Users\Mallory\Dropbox (MIT)\TIDLS at UNSW\Advanced system measurements\20160902';
-sample = '94-20-3'; 
-Ctonum = 'C_glassND_1-1_';
+dirname = 'C:\Users\Mallory\Dropbox (MIT)\TIDLS at UNSW\Advanced system measurements\20160908\22-25-8';
+sample = '69-6'; 
+Ctonum = '_glassup_1-1_';
 time_before = .001; %s
-T = [-75 -125]; 
-num_repeats = [10 3]; 
+T = [200]; 
+num_repeats = [5]; 
 [dataSave] = average_QSSPL(dirname,sample,T,num_repeats,time_before,Ctonum);
 
 %Now, given this data, we want to write this to a new file which can be
@@ -113,13 +113,14 @@ loglog(togetherPL(:,1),togetherPL(:,2),'k--','LineWidth',2);
 
 %% 
 clear all; close all; 
-sample = '16-4-28-N'; 
-dirname = 'C:\Users\Mallory\Dropbox (MIT)\TIDLS at UNSW\Advanced system measurements\20160906\16-4-28-N'; 
-T = [-125 -75 -25 25 75]; %C
+sample = '64-6'; 
+dirname = 'C:\Users\Mallory\Dropbox (MIT)\TIDLS at UNSW\PERC LeTID Advanced System\64-6\Summary files'; 
+T = [25 50 100 150 200]; %C
 dataStore = cell(length(T),1); 
 figure; 
 for i = 1:length(T)
-    filename = [dirname '\' num2str(T(i)) 'C\' sample '.txt']; 
+%     filename = [dirname '\' num2str(T(i)) 'C\' sample '.txt']; 
+    filename = [dirname '\' num2str(T(i)) 'C\' sample '_' num2str(T(i)) 'C.txt'];
     format_for_TIDLS(filename,[dirname '\' num2str(T(i)) 'C'],'PC');
     load([dirname '\' num2str(T(i)) 'C\Raw_data.mat']); 
     data_now = dataSave; 
@@ -136,14 +137,14 @@ for i = 1:length(T)
     dataStore{i} = togetherPC; 
 end
 
-T = [148 198 248 297 342]; 
+T = [297 320 368 415 462]; 
 for i = 1:length(T)
     temperature{i} = T(i)-273.15; 
-    resistivity{i} = 1000; 
-    thickness{i} = .0270; 
-    OC{i} = 0.8; 
+    resistivity{i} = 1.6; 
+    thickness{i} = .0175; 
+    OC{i} = 0.98; 
     calibration_factor{i} = 1; 
-    doping{i} = 1.6e15; 
+    doping{i} = 9.1e15; 
     fileListShort{i} = [sample '_' num2str(T(i)) 'C'];
 end
 info = struct('filename',fileListShort,'thickness',thickness,'resistivity',...
