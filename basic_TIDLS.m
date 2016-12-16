@@ -1,12 +1,12 @@
 %This script analyzes TIDLS measurements taken with WCT-120TS. 
 clear all; close all; 
-directory = 'C:\Users\Mallory\Dropbox (MIT)\Mallory in Australia\Method development\SRH test'; 
+directory = 'C:\Users\Mallory\Dropbox (MIT)\TIDLS at UNSW\PERC LeTID Advanced System\Harmonic difference'; 
 before_directory = 'C:\Users\Mallory\Dropbox (MIT)\TIDLS at UNSW\Advanced system measurements\20160727\for_processing\before';
 after_directory = 'C:\Users\Mallory\Dropbox (MIT)\TIDLS at UNSW\Advanced system measurements\20160727\for_processing\after';
-processing_directory = 'C:\Users\Mallory\Dropbox (MIT)\Mallory in Australia\Method development\SRH test';
+processing_directory = 'C:\Users\Mallory\Dropbox (MIT)\TIDLS at UNSW\PERC LeTID Advanced System\Harmonic difference';
 SRV_directory = 'C:\Users\Mallory\Dropbox (MIT)\Mallory in Australia\Method development\SRH test';
-deg_directory = 'C:\Users\Mallory\Dropbox (MIT)\TIDLS at UNSW\Advanced system measurements\By sample\22-101-8\flash only';
-undeg_directory = 'C:\Users\Mallory\Dropbox (MIT)\TIDLS at UNSW\Advanced system measurements\By sample\22-102-8\flash only';
+deg_directory = 'C:\Users\Mallory\Dropbox (MIT)\TIDLS at UNSW\PERC LeTID Advanced System\Harmonic difference\degraded';
+undeg_directory = 'C:\Users\Mallory\Dropbox (MIT)\TIDLS at UNSW\PERC LeTID Advanced System\Harmonic difference\undegraded';
 %type - p or n
 type = 'p';
 %Fit range for Joe
@@ -225,12 +225,12 @@ save([processing_directory '\lifetime_breakdown.mat'],'lifetime_breakdown');
 load([processing_directory '\Raw_data.mat']);
 load([processing_directory '\meas_info.mat']); 
 cutoff(1,1) = 1e14;
-cutoff(1,2) = 8e15;
+cutoff(1,2) = 1e16;
 %fit parameters for Joe as function of T (ax^2+bx+c). T is fit in units of
 %C, Joe in units A/cm2. 
-a = -0.00029911;
-b = 0.17713;
-c = -35.16;
+a = -2.8082e-4;
+b = 1.6869e-1;
+c = -3.4422e1;
 %Now, for each temperature we will be doing the same operations. Loop
 %through. 
 for i = 1:length(dataSave);
@@ -655,9 +655,9 @@ load([processing_directory '\best_fits.mat']);
 label = zeros(1,1); 
 defect1 = figure;
 co={[0 0 0]; [0.5 0 0.9]; [0 0 1]; [0 1 1]; [0 1 0];  [1 1 0]; [1 0.6 0]; [1 0 0]; [0.8 0.5 0]};
-% defect2 = figure;
+defect2 = figure;
 tau_defect1 = figure;
-% tau_defect2 = figure; 
+tau_defect2 = figure; 
 % defect3 = figure;
 %I want these to be in order of increasing temperature
 % for i = 1:length(info)
@@ -668,10 +668,10 @@ tau_defect1 = figure;
 for i = 1:length(info)
 %     index = for_iteration(i);
     index = i; 
-    best_fit = best_fits(index).one_defect; 
-%     best_fit = best_fits(index).two_defects;
+%     best_fit = best_fits(index).one_defect; 
+    best_fit = best_fits(index).two_defects;
 %     best_fit = best_fits(index).three_defects;
-    %Let's sort this to try to match up defects between temperatures
+%     Let's sort this to try to match up defects between temperatures
 %     [slopes,IX] = sort(best_fit(:,1));
 %     best_fit(:,1) = best_fit(IX,1); 
 %     best_fit(:,2) = best_fit(IX,2); 
@@ -686,12 +686,12 @@ for i = 1:length(info)
     figure(tau_defect1); 
     h3(i)=plot(Et{index,1},1./alphanN{index,1},'-','LineWidth',2,'Color',co{i}); 
     hold all;
-%     figure(defect2);
-%     h2(i)=plot(Et{index,2},k{index,2},'-','LineWidth',2,'Color',co{i});
-%     hold all;
-%     figure(tau_defect2); 
-%     h4(i)=plot(Et{index,2},1./alphanN{index,2},'-','LineWidth',2,'Color',co{i}); 
-%     hold all; 
+    figure(defect2);
+    h2(i)=plot(Et{index,2},k{index,2},'-','LineWidth',2,'Color',co{i});
+    hold all;
+    figure(tau_defect2); 
+    h4(i)=plot(Et{index,2},1./alphanN{index,2},'-','LineWidth',2,'Color',co{i}); 
+    hold all; 
 %     figure(defect3);
 %     h3(i)=plot(Et{index,3},k{index,3},'-','LineWidth',2,'Color',co{i});
 %     hold all;
@@ -716,33 +716,37 @@ for i = 1:length(Et_vector)
 end
 figure(defect1); 
 %Now we find the minimum of standard deviation curve
-min_std = min(std_dev(:,1)); 
-Et_min = Et_vector(find(std_dev(:,1)==min_std));
-average_k = average(find(std_dev(:,1)==min_std),1); 
-hold all;
-plot([Et_min Et_min], [-100 100],'k--','LineWidth',2);
-hold all;
-plot([0 1.124], [average_k average_k],'k--','LineWidth',2);
-axis([0 1.124 0 100]);
-xlabel('E_t-E_v [eV]','FontSize',20); 
+% min_std = min(std_dev(:,1)); 
+% Et_min = Et_vector(find(std_dev(:,1)==min_std));
+% average_k = average(find(std_dev(:,1)==min_std),1); 
+% hold all;
+% plot([Et_min Et_min], [-100 100],'k--','LineWidth',2);
+% hold all;
+% plot([0 1.124], [average_k average_k],'k--','LineWidth',2);
+% axis([0 1.124 0 100]);
+% xlabel('E_t-E_v [eV]','FontSize',20); 
+xlabel('E_t-E_i [eV]','FontSize',20); 
 ylabel('k [-]','FontSize',20);
 legend(h1,num2str(label));
 title('Defect 1','FontSize',30); 
-% figure(defect2); 
+figure(defect2); 
 % xlabel('E_t-E_v [eV]','FontSize',20); 
-% ylabel('k [-]','FontSize',20);
-% legend(h2,num2str(label));
-% title('Defect 2','FontSize',30); 
+xlabel('E_t-E_i [eV]','FontSize',20); 
+ylabel('k [-]','FontSize',20);
+legend(h2,num2str(label));
+title('Defect 2','FontSize',30); 
 figure(tau_defect1); 
-xlabel('E_t-E_v [eV]','FontSize',20); 
+% xlabel('E_t-E_v [eV]','FontSize',20); 
+xlabel('E_t-E_i [eV]','FontSize',20); 
 ylabel('\tau_{n0} [s]','FontSize',20);
 legend(h3,num2str(label));
 title('Defect 1','FontSize',30);
-% figure(tau_defect2); 
+figure(tau_defect2); 
 % xlabel('E_t-E_v [eV]','FontSize',20); 
-% ylabel('\tau_{n0} [s]','FontSize',20);
-% legend(h4,num2str(label));
-% title('Defect 2','FontSize',30);
+xlabel('E_t-E_i [eV]','FontSize',20); 
+ylabel('\tau_{n0} [s]','FontSize',20);
+legend(h4,num2str(label));
+title('Defect 2','FontSize',30);
 % figure(defect3); 
 % xlabel('E_t-E_v [eV]','FontSize',20); 
 % ylabel('k [-]','FontSize',20);
@@ -996,10 +1000,11 @@ for i = 1:length(info)
     index = i; 
     temp = info(index).temperature;%celcius
     k_Tidd(i) = calculate_Tidd(temp);
-%     figure(defect1);
-    figure(all_defects)
+    [Efi,Efv,p0,n0,Eiv] = adv_Model_gen(temp+273.15,info(index).doping,type); 
+    figure(defect1);
+%     figure(all_defects)
     hold all;
-    plot(Et_Tidd,k_Tidd(i),'o','MarkerSize',10,'Color',co{i});
+    plot((Et_Tidd-Eiv),k_Tidd(i),'o','MarkerSize',10,'Color',co{i});
 %     figure(defect2);
 %     hold all;
 %     plot(Et_Tidd,k_Tidd(i),'o','MarkerSize',10,'Color',co{i});
@@ -1013,10 +1018,11 @@ for i = 1:length(info)
     index = i; 
     temp = info(index).temperature;%celcius
     k_Mod(i) = calculate_Mod(temp+273.15);
-    figure(all_defects)
-%     figure(defect1);
+    [Efi,Efv,p0,n0,Eiv] = adv_Model_gen(temp+273.15,info(index).doping,type); 
+%     figure(all_defects)
+    figure(defect1);
     hold all;
-    plot([Et_Mod_min Et_Mod_max],[k_Mod(i) k_Mod(i)],'x-','MarkerSize',10,'Color',co{i});
+    plot([(Et_Mod_min-Eiv) (Et_Mod_max-Eiv)],[k_Mod(i) k_Mod(i)],'x-','MarkerSize',10,'Color',co{i});
 %     figure(defect2);
 %     hold all;
 %     plot([Et_Mod_min Et_Mod_max],[k_Mod(i) k_Mod(i)],'x-','MarkerSize',10,'Color',co{i});
