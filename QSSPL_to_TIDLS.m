@@ -44,11 +44,11 @@ end
 
 %% Now try averaging for a series 
 clear all; close all; 
-dirname = 'C:\Users\Mallory\Dropbox (MIT)\TIDLS at UNSW\Advanced system measurements\20160908\22-25-8';
-sample = '69-6'; 
-Ctonum = '_glassup_1-1_';
+dirname = 'C:\Users\Malloryj\Dropbox (MIT)\TIDLS at UNSW\Advanced system measurements\20160905\16-6-28-P-2';
+sample = '16-6-28-P-2'; 
+Ctonum = '_IRap_1-1_';
 time_before = .001; %s
-T = [200]; 
+T = [25]; 
 num_repeats = [5]; 
 [dataSave] = average_QSSPL(dirname,sample,T,num_repeats,time_before,Ctonum);
 
@@ -137,14 +137,15 @@ loglog(togetherPL(:,1),togetherPL(:,2),'k--','LineWidth',2);
 
 %% 
 clear all; close all; 
-sample = '64-6'; 
-dirname = 'C:\Users\Mallory\Dropbox (MIT)\TIDLS at UNSW\PERC LeTID Advanced System\64-6\Summary files'; 
-T = [25 50 100 150 200]; %C
+sample = 'A41-6'; 
+dirname = 'C:\Users\Malloryj\Dropbox (MIT)\TIDLS at UNSW\Advanced system measurements\By sample\A41-6\Summary files'; 
+T = [-100 -50 25 100]; %C
 dataStore = cell(length(T),1); 
 figure; 
 for i = 1:length(T)
 %     filename = [dirname '\' num2str(T(i)) 'C\' sample '.txt']; 
-    filename = [dirname '\' num2str(T(i)) 'C\' sample '_' num2str(T(i)) 'C.txt'];
+%     filename = [dirname '\' num2str(T(i)) 'C\' sample '_' num2str(T(i)) 'C.txt'];
+    filename = [dirname '\' num2str(T(i)) 'C\' sample '_' num2str(T(i)) 'C_PC.txt'];
     format_for_TIDLS(filename,[dirname '\' num2str(T(i)) 'C'],'PC');
     load([dirname '\' num2str(T(i)) 'C\Raw_data.mat']); 
     data_now = dataSave; 
@@ -161,14 +162,14 @@ for i = 1:length(T)
     dataStore{i} = togetherPC; 
 end
 
-T = [297 320 368 415 462]; 
+T = [177 225 296 368]; 
 for i = 1:length(T)
     temperature{i} = T(i)-273.15; 
-    resistivity{i} = 1.6; 
-    thickness{i} = .0175; 
-    OC{i} = 0.98; 
+    resistivity{i} = 0.95; 
+    thickness{i} = .0193; 
+    OC{i} = 0.7; 
     calibration_factor{i} = 1; 
-    doping{i} = 9.1e15; 
+    doping{i} = 1.6e16; 
     fileListShort{i} = [sample '_' num2str(T(i)) 'C'];
 end
 info = struct('filename',fileListShort,'thickness',thickness,'resistivity',...
