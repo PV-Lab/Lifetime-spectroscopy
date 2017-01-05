@@ -137,8 +137,8 @@ loglog(togetherPL(:,1),togetherPL(:,2),'k--','LineWidth',2);
 
 %% 
 clear all; close all; 
-sample = 'A41-6'; 
-dirname = 'C:\Users\Malloryj\Dropbox (MIT)\TIDLS at UNSW\Advanced system measurements\By sample\A41-6\Summary files'; 
+sample = '16-6-28-P-2'; 
+dirname = 'C:\Users\Malloryj\Dropbox (MIT)\TIDLS at UNSW\Advanced system measurements\By sample\16-6-28-P-2\Summary files'; 
 T = [-100 -50 25 100]; %C
 dataStore = cell(length(T),1); 
 figure; 
@@ -162,14 +162,14 @@ for i = 1:length(T)
     dataStore{i} = togetherPC; 
 end
 
-T = [177 225 296 368]; 
+T = [186 231 297 364]; 
 for i = 1:length(T)
     temperature{i} = T(i)-273.15; 
-    resistivity{i} = 0.95; 
-    thickness{i} = .0193; 
+    resistivity{i} = 2.7; 
+    thickness{i} = .0273; 
     OC{i} = 0.7; 
     calibration_factor{i} = 1; 
-    doping{i} = 1.6e16; 
+    doping{i} = 5.2e15; 
     fileListShort{i} = [sample '_' num2str(T(i)) 'C'];
 end
 info = struct('filename',fileListShort,'thickness',thickness,'resistivity',...
