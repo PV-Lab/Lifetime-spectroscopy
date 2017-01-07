@@ -918,7 +918,7 @@ filename = [processing_directory '\IDLS two and three curve fitting.xlsm'];
 load([processing_directory '\meas_info.mat']); 
 fits = xlsread(filename,'Summary','B3:E11'); %Note - they should be sorted in increasing temperature
 [m,n] = size(fits); 
-% load([processing_directory '\best_fits.mat']); %We will load this and then replace two defects fits
+load([processing_directory '\best_fits.mat']); %We will load this and then replace two defects fits
 % for i = 1:length(info)
 %     T(i) = info(i).temperature;
 % end
@@ -929,10 +929,10 @@ for i = 1:m
     index = i;
     defect_1 = fits(i,1:2); 
     defect_2 = fits(i,3:4); 
-%     best_fits(index).two_defects = [defect_1;defect_2];
-    two_defects{i,1} = [defect_1;defect_2];
+    best_fits(index).two_defects = [defect_1;defect_2];
+%     two_defects{i,1} = [defect_1;defect_2];
 end
-best_fits = struct('two_defects',two_defects);
+% best_fits = struct('two_defects',two_defects);
 save([processing_directory '\best_fits.mat'],'best_fits');
 %% Plot the lifetime as a function of T which is analyzed
 load([processing_directory '\lifetime_breakdown.mat']);
