@@ -24,7 +24,7 @@ SOFTWARE.
 
 %Process microPL measurements
 clear all; close all; 
-dirname = 'C:\Users\Mallory\Dropbox (MIT)\Mallory in Australia\PERC LeTID\microPL!\text data\in situ degradation\Larger piece\As brought'; 
+dirname = 'C:\Users\Mallory Jensen\Documents\LeTID\microPL\microPL!\text data\in situ degradation\Larger piece\As brought'; 
 [fileList,fileListShort] = getAllFiles(dirname); 
 dataStore = cell(size(fileListShort)); 
 figure; 
@@ -46,9 +46,9 @@ legend(fileListShort);
 %Intra grain to intra grain regions
 %% Compare before/after in situ dark anneal, same location
 clear all; close all; 
-dirname = 'C:\Users\Mallory\Dropbox (MIT)\Mallory in Australia\PERC LeTID\microPL!\text data\in situ degradation';
-before = 'C:\Users\Mallory\Dropbox (MIT)\Mallory in Australia\PERC LeTID\microPL!\text data\in situ degradation\Larger piece\After ex situ dark anneal\broken-7-beforeISDA-532nm-36mW-0P1s-intra-grain-p1.txt';
-after = 'C:\Users\Mallory\Dropbox (MIT)\Mallory in Australia\PERC LeTID\microPL!\text data\in situ degradation\Larger piece\After ex situ dark anneal\After in situ dark anneal\broken-7-afterISDA-532nm-36mW-0P1s-intra-grain-p1.txt';
+dirname = 'C:\Users\Mallory Jensen\Documents\LeTID\microPL\microPL!\text data\in situ degradation';
+before = 'C:\Users\Mallory Jensen\Documents\LeTID\microPL\microPL!\text data\in situ degradation\Larger piece\After ex situ dark anneal\broken-7-beforeISDA-532nm-36mW-0P1s-intra-grain-p1.txt';
+after = 'C:\Users\Mallory Jensen\Documents\LeTID\microPL\microPL!\text data\text data\in situ degradation\Larger piece\After ex situ dark anneal\After in situ dark anneal\broken-7-afterISDA-532nm-36mW-0P1s-intra-grain-p1.txt';
 dataStore = cell(2,1); 
 data_before = textread(before); 
 %Try normalizing to start value
@@ -82,8 +82,8 @@ hgsave(h2,[dirname '\Insitu_darkanneal_norm']);
 print(h2,'-dpng','-r0',[dirname '\Insitu_darkanneal_norm.png']);
 %% All grain boundaries vs. all intra-grain for in-situ
 clear all; close all;
-intragrain = 'C:\Users\Mallory\Dropbox (MIT)\Mallory in Australia\PERC LeTID\microPL!\text data\in situ degradation\Intra grain';
-grainboundary = 'C:\Users\Mallory\Dropbox (MIT)\Mallory in Australia\PERC LeTID\microPL!\text data\in situ degradation\GB all';
+intragrain = 'C:\Users\Mallory Jensen\Documents\LeTID\microPL\microPL!\text data\in situ degradation\Intra grain';
+grainboundary = 'C:\Users\Mallory Jensen\Documents\LeTID\microPL\microPL!\text data\in situ degradation\GB all';
 all = figure;
 sep_IG = figure;
 sep_GB = figure;
@@ -97,7 +97,7 @@ for i = 1:length(fileListShort)
     data = textread(fileList{i}); 
     dataStore_IG{i,1} = data; 
     figure(all); 
-    plot(data(:,1),data(:,2),'k-','LineWidth',2); 
+    plot(data(:,1),data(:,2),'LineWidth',2); 
     hold all; 
     figure(sep_IG); 
     plot(data(:,1),data(:,2),'LineWidth',2); 
@@ -107,7 +107,7 @@ for i = 1:length(fileListShort)
     data(:,2) = data(:,2)./start_value; 
     dataStore_IG{i,2} = data;
     figure(all_norm); 
-    plot(data(:,1),data(:,2),'k-','LineWidth',2); 
+    plot(data(:,1),data(:,2),'LineWidth',2); 
     hold all; 
     figure(sep_IG_norm); 
     plot(data(:,1),data(:,2),'LineWidth',2); 
@@ -132,7 +132,7 @@ for i = 1:length(fileListShort)
     data = textread(fileList{i}); 
     dataStore_GB{i,1} = data; 
     figure(all); 
-    plot(data(:,1),data(:,2),'b-','LineWidth',2); 
+    plot(data(:,1),data(:,2),'LineWidth',2); 
     hold all; 
     figure(sep_GB); 
     plot(data(:,1),data(:,2),'LineWidth',2); 
@@ -142,7 +142,7 @@ for i = 1:length(fileListShort)
     data(:,2) = data(:,2)./start_value; 
     dataStore_GB{i,2} = data;
     figure(all_norm); 
-    plot(data(:,1),data(:,2),'b-','LineWidth',2); 
+    plot(data(:,1),data(:,2),'LineWidth',2); 
     hold all; 
     figure(sep_GB_norm); 
     plot(data(:,1),data(:,2),'LineWidth',2); 
@@ -174,12 +174,12 @@ hgsave(all_norm,[grainboundary '\all_norm']);
 print(all_norm,'-dpng','-r0',[grainboundary '\all_norm.png']);
 %% Separating recombination active and non-recombination active grain boundaries (in-situ)
 clear all; close all;
-recomb = 'C:\Users\Mallory\Dropbox (MIT)\Mallory in Australia\PERC LeTID\microPL!\text data\in situ degradation\GB recombination active'
-non_recomb = 'C:\Users\Mallory\Dropbox (MIT)\Mallory in Australia\PERC LeTID\microPL!\text data\in situ degradation\GB non recombination active';
+recomb = 'C:\Users\Mallory Jensen\Documents\LeTID\microPL\microPL!\text data\in situ degradation\GB recombination active'
+non_recomb = 'C:\Users\Mallory Jensen\Documents\LeTID\microPL\microPL!\text data\in situ degradation\GB non recombination active';
 
 %% Let's look at the ex-situ measurements
 clear all; close all; 
-dirname = 'C:\Users\Mallory\Dropbox (MIT)\Mallory in Australia\PERC LeTID\microPL!\text data\ex situ degradation'; 
+dirname = 'C:\Users\Mallory Jensen\Documents\LeTID\microPL\microPL!\text data\ex situ degradation'; 
 samples = {'68-3'}; 
 %times 
 times = {'t0','t1-100s','t2-1000s','t3-10000s'}; 
@@ -228,7 +228,7 @@ end
 save([dirname '\68-3_exsitu_data.mat'],'x','PL','times','conditions','samples'); 
 %% Load the ex-situ data and try averaging
 clear all; close all; 
-dirname = 'C:\Users\Mallory\Dropbox (MIT)\Mallory in Australia\PERC LeTID\microPL!\text data\ex situ degradation'; 
+dirname = 'C:\Users\Mallory Jensen\Documents\LeTID\microPL\microPL!\text data\ex situ degradation'; 
 load([dirname '\68-3_exsitu_data.mat']); 
 %We want to plot the different times together
 for i = 1:length(conditions)
@@ -271,7 +271,7 @@ for i = 1:length(conditions)
 end
 %% Look at ex-situ degradation at grains vs. grain boundaries over times
 clear all; close all; 
-dirname = 'C:\Users\Mallory\Dropbox (MIT)\Mallory in Australia\PERC LeTID\microPL!\text data\ex situ degradation'; 
+dirname = 'C:\Users\Mallory Jensen\Documents\LeTID\microPL\microPL!\text data\ex situ degradation'; 
 load([dirname '\68-3_exsitu_data.mat']); 
 %We'll want to get the plateau values on either side of the GB + at GB
 plateau_rightG = cell(size(PL));
@@ -331,7 +331,7 @@ end
 save([dirname '\PlateauValues.mat'],'plateau_rightG','plateau_GB','plateau_leftG','num_times','times','conditions');         
 %% Just plot the plateau values from before
 clear all; close all; 
-dirname = 'C:\Users\Mallory\Dropbox (MIT)\Mallory in Australia\PERC LeTID\microPL!\text data\ex situ degradation'; 
+dirname = 'C:\Users\Mallory Jensen\Documents\LeTID\microPL\microPL!\text data\ex situ degradation'; 
 load([dirname '\PlateauValues.mat']); 
 for i = 1:length(conditions)
     h=figure;
