@@ -1033,6 +1033,34 @@ for i = 1:length(info)
 %     hold all;
 %     plot(Et_Tidd,k_Tidd(i),'o','MarkerSize',10,'Color',co{i});
 end
+%% Plot k as a function of T to compare to specific defects: Ti, Mo
+%Defect energy level, referenced to the valence band edge
+Et_Tidd = 0.28; %eV
+Et_Mod = 0.375; %eV
+k_Mod = zeros(length(info),1); 
+k_Tidd = zeros(length(info),1);
+k_LeTID_Ti = zeros(length(info),1); 
+k_LeTID_Mo = zeros(length(info),1); 
+T = zeros(length(info),1); 
+for i = 1:length(info)
+    temp = info(index).temperature; 
+    %Get the k-value for Ti at this temperature
+    k_Tidd(i) = calculate_Tidd(temp); 
+    %Get the band edge information
+    [Efi,Efv,p0,n0,Eiv] = adv_Model_gen(temp+273.15,info(index).doping,type); 
+    %Now, what is the energy level of Ti referenced to the intrinsic level?
+    EtEi_Tidd = Et_Tidd-Eiv; %eV
+    %same for Mo
+    EtEi_Mod = Et_Mod-Eiv; %eV
+    k_Mod(i) = calculate_Mod(temp+273.15);
+    %We need to get the experimental value
+    Et_now = Et{i,1}; 
+    k_now = k{i,1};
+    %Get the value at our new Et
+    k_LeTID_Ti(i) = interp1(Et_now,k_now,EtEi_Tidd); 
+    k_LeTID_Mo(i) = interp1(Et_now,k_now),EtEi_Mod); 
+    T(i) = temp+273.15; 
+end
 %% Plot the k-values for Mo-d for each temperature on top of current plot
 %Assume a constant defect energy level
 Et_Mod_min = 0.28; %eV
