@@ -24,10 +24,10 @@ SOFTWARE.
 
 %This script analyzes TIDLS measurements taken with WCT-120TS. 
 clear all; close all; 
-directory = 'C:\Users\Malloryj\Dropbox (MIT)\TIDLS at UNSW\Advanced system measurements\By sample\A41-6\Summary files'; 
+directory = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\January 9 2017\Hpass-1'; 
 before_directory = 'C:\Users\Mallory\Dropbox (MIT)\TIDLS at UNSW\Advanced system measurements\20160727\for_processing\before';
 after_directory = 'C:\Users\Mallory\Dropbox (MIT)\TIDLS at UNSW\Advanced system measurements\20160727\for_processing\after';
-processing_directory = 'C:\Users\Malloryj\Dropbox (MIT)\TIDLS at UNSW\Advanced system measurements\By sample\A41-6\Summary files';
+processing_directory = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\January 9 2017\Hpass-1';
 SRV_directory = 'C:\Users\Malloryj\Dropbox (MIT)\TIDLS at UNSW\Advanced system measurements\By sample\16-6-28-P-2\Summary files';
 deg_directory = 'C:\Users\Mallory\Dropbox (MIT)\TIDLS at UNSW\PERC LeTID Advanced System\Harmonic difference\degraded';
 undeg_directory = 'C:\Users\Mallory\Dropbox (MIT)\TIDLS at UNSW\PERC LeTID Advanced System\Harmonic difference\undegraded';
@@ -69,8 +69,8 @@ for file = 1:length(fileList)
     res{file,1} = xlsread(this_file,'User','C6');
     oc{file,1} = xlsread(this_file,'User','E6');
     temp{file,1} = 25;
-    meas_res{file,1} = xlsread(this_file,'Summary','Q2');
-    calib{file,1} = xlsread(this_file,'Summary','T2');
+    meas_res{file,1} = xlsread(this_file,'Summary','M2');%'Q2');
+    calib{file,1} = xlsread(this_file,'Summary','S2');%'T2');
     doping{file,1} = xlsread(this_file,'Summary','E2');
 end
 info = struct('filename',fileListShort,'thickness',thick,'resistivity',res,'measured_resistivity',meas_res,'optical_constant',oc,'calibration_factor',calib,'temperature',temp,'doping',doping);
