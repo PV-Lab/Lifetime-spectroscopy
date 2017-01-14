@@ -24,10 +24,10 @@ SOFTWARE.
 
 %This script analyzes TIDLS measurements taken with WCT-120TS. 
 clear all; close all; 
-directory = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\January 9 2017\Hpass-1'; 
+directory = 'C:\Users\Mallory Jensen\Documents\LeTID\PERC LeTID Advanced System\Harmonic difference'; 
 before_directory = 'C:\Users\Mallory\Dropbox (MIT)\TIDLS at UNSW\Advanced system measurements\20160727\for_processing\before';
 after_directory = 'C:\Users\Mallory\Dropbox (MIT)\TIDLS at UNSW\Advanced system measurements\20160727\for_processing\after';
-processing_directory = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\January 9 2017\Hpass-1';
+processing_directory = 'C:\Users\Mallory Jensen\Documents\LeTID\PERC LeTID Advanced System\Harmonic difference';
 SRV_directory = 'C:\Users\Malloryj\Dropbox (MIT)\TIDLS at UNSW\Advanced system measurements\By sample\16-6-28-P-2\Summary files';
 deg_directory = 'C:\Users\Mallory\Dropbox (MIT)\TIDLS at UNSW\PERC LeTID Advanced System\Harmonic difference\degraded';
 undeg_directory = 'C:\Users\Mallory\Dropbox (MIT)\TIDLS at UNSW\PERC LeTID Advanced System\Harmonic difference\undegraded';
@@ -1042,8 +1042,10 @@ k_Tidd = zeros(length(info),1);
 k_LeTID_Ti = zeros(length(info),1); 
 k_LeTID_Mo = zeros(length(info),1); 
 T = zeros(length(info),1); 
+tau_n0_LeTID_Ti = zeros(length(info),1); 
+tau_n0_LeTID_Mo = zeros(length(info),1); 
 for i = 1:length(info)
-    temp = info(index).temperature; 
+    temp = info(i).temperature; 
     %Get the k-value for Ti at this temperature
     k_Tidd(i) = calculate_Tidd(temp); 
     %Get the band edge information
@@ -1056,11 +1058,35 @@ for i = 1:length(info)
     %We need to get the experimental value
     Et_now = Et{i,1}; 
     k_now = k{i,1};
+    taun0_now = 1./alphanN{i,1};
+    [vth_e,vth_h] = vth_em(temp+273.15);
+    taun0_now = 1./(taun0_now.*vth_e);
     %Get the value at our new Et
     k_LeTID_Ti(i) = interp1(Et_now,k_now,EtEi_Tidd); 
-    k_LeTID_Mo(i) = interp1(Et_now,k_now),EtEi_Mod); 
+    k_LeTID_Mo(i) = interp1(Et_now,k_now,EtEi_Mod); 
+    tau_n0_LeTID_Ti(i) = interp1(Et_now,taun0_now,EtEi_Tidd);
+    tau_n0_LeTID_Mo(i) = interp1(Et_now,taun0_now,EtEi_Mod);
     T(i) = temp+273.15; 
 end
+figure;
+plot(T,k_LeTID_Ti,'o'); 
+hold all;
+plot(T,k_Tidd,'s'); 
+hold all; 
+plot(T,k_LeTID_Mo,'^'); 
+hold all; 
+plot(T,k_Mod,'*'); 
+xlabel('temperature [K]');
+ylabel('k value [-]'); 
+legend('k value @ Ti_d_d','Literature Ti_d_d','k_value @ Mo_d','Literature Mo_d'); 
+to_copy = [T,k_LeTID_Ti,k_Tidd,k_LeTID_Mo,k_Mod];
+figure;
+plot(T,tau_n0_LeTID_Ti,'o'); 
+hold all;
+plot(T,tau_n0_LeTID_Mo,'s'); 
+xlabel('temperature [K]'); 
+ylabel('tau_n_0'); 
+legend('Ti','Mo');
 %% Plot the k-values for Mo-d for each temperature on top of current plot
 %Assume a constant defect energy level
 Et_Mod_min = 0.28; %eV
