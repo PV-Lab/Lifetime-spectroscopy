@@ -84,3 +84,67 @@ for i = 1:length(samples)
     [deltan,tau] = remove_duplicates(datanow(:,1),datanow(:,2));
     lifetime_store(i) = interp1(deltan,tau,1e15); 
 end
+
+%% Analyze different states together
+clear all; close all; clc;
+savedirname = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation';
+dirname1 = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\January 9 2017';
+dirname2 = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\January 13 2017'; 
+samples = {'44a','45a','49a','50a','52a','53a','54a','55a','56a','60a','61a','C-1','C-2','H-1','H-2','FZ'};
+for i = 1:length(samples)
+    try 
+        load([dirname1 '\' samples{i} '\Raw_data.mat']); 
+        load([dirname1 '\' samples{i} '\meas_info.mat']); 
+        flag = 1; 
+    catch
+        %If that's not successful, just tell me that the sample doesn't
+        %exist for that dirname
+        warning(['Error accessing data for dirname1, sample ' samples{i}]);
+        flag = 0; 
+    end
+    h=figure('units','normalized','outerposition',[0 0 1 1]);
+    curves = [];
+    label = {};
+    count = 1;
+    if flag == 1
+        for j = 1:length(dataSave)
+            datanow = dataSave{j}; 
+            curves(count)=loglog(datanow(:,1),datanow(:,2),'LineWidth',2); 
+            hold all; 
+            label{count} = ['Set 1, #' num2str(j)];
+            xlim([5e13 1e17])
+            count = count+1; 
+        end
+    end
+    try 
+        load([dirname2 '\' samples{i} '\Raw_data.mat']); 
+        load([dirname2 '\' samples{i} '\meas_info.mat']); 
+        flag = 1; 
+    catch
+        %If that's not successful, just tell me that the sample doesn't
+        %exist for that dirname
+        warning(['Error accessing data for dirname2, sample ' samples{i}]);
+        flag = 0; 
+    end
+    if flag == 1
+        for j = 1:length(dataSave)
+            datanow = dataSave{j}; 
+            curves(count)=loglog(datanow(:,1),datanow(:,2),'LineWidth',2); 
+            hold all; 
+            label{count} = ['Set 2, #' num2str(j)];
+            xlim([5e13 1e17])
+            count = count+1; 
+        end
+    end
+    xlabel('excess carrier density [cm^-^3]','FontSize',30); 
+    ylabel('lifetime [s]','FontSize',30);
+    title(samples{i},'FontSize',30);
+    legend(curves',label');
+    if strcmp(samples{i},'C-1')==1 || strcmp(samples{i},'C-2')==1 || strcmp(samples{i},'H-1')==1 ||...
+        strcmp(samples{i},'H-2')==1 || strcmp(samples{i},'FZ')==1
+        ylim([1e-4 1e-2]);
+    end
+    set(0,'defaultAxesFontSize', 20)
+    hgsave(h,[savedirname '\' samples{i} '_lifetime summary']);
+    print(h,'-dpng','-r0',[savedirname '\' samples{i} '_lifetime summary.png']);
+end
