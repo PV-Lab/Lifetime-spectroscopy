@@ -23,9 +23,9 @@ SOFTWARE.
 %}
 %% First process the raw data
 clear all; close all; clc; 
-dirname = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\January 13 2017'; 
+dirname = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\January 17 2017'; 
 % samples = {'44a','45a','49a','50a','52a','53a','54a','55a','56a','60a','61a','C-1','C-2','H-1','H-2','FZ'};
-samples = {'H-2','FZ'};
+samples = {'44a','45a','49a','50a','52a','53a','54a','55a','56a','60a','61a','H-1','H-2','FZ','FZ-12'};
 for index = 1:length(samples)
     [fileList,fileListShort] = getAllFiles([dirname '\' samples{index}]); 
     savename = [dirname '\' samples{index} '\Raw_data.mat']';
@@ -51,8 +51,9 @@ end
 clear all; close all; clc;
 %Process data after HF passivation
 
-dirname = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\January 13 2017'; 
-samples = {'44a','45a','49a','50a','52a','53a','54a','55a','56a','60a','61a','C-1','C-2','H-1','H-2','FZ'};
+dirname = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\January 17 2017'; 
+% samples = {'44a','45a','49a','50a','52a','53a','54a','55a','56a','60a','61a','C-1','C-2','H-1','H-2','FZ'};
+samples = {'44a','45a','49a','50a','52a','53a','54a','55a','56a','60a','61a','H-1','H-2','FZ','FZ-12'};
 lifetime_store = zeros(length(samples),1); 
 
 for i = 1:length(samples)
@@ -82,7 +83,13 @@ for i = 1:length(samples)
     end
     datanow = dataSave{index}; 
     [deltan,tau] = remove_duplicates(datanow(:,1),datanow(:,2));
-    lifetime_store(i) = interp1(deltan,tau,1e15); 
+    %There's a little bug in this program, for now just do this... 
+    try
+        lifetime_store(i) = interp1(deltan,tau,1e15); 
+    catch
+        [deltan,tau] = remove_duplicates(deltan,tau);
+        lifetime_store(i) = interp1(deltan,tau,1e15);
+    end
 end
 
 %% Analyze different states together
@@ -90,50 +97,36 @@ clear all; close all; clc;
 savedirname = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation';
 dirname1 = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\January 9 2017';
 dirname2 = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\January 13 2017'; 
-samples = {'44a','45a','49a','50a','52a','53a','54a','55a','56a','60a','61a','C-1','C-2','H-1','H-2','FZ'};
+dirname3 = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\January 17 2017'; 
+dirnames = {dirname1 dirname2 dirname3}; 
+% samples = {'44a','45a','49a','50a','52a','53a','54a','55a','56a','60a','61a','C-1','C-2','H-1','H-2','FZ'};
+samples = {'44a','45a','49a','50a','52a','53a','54a','55a','56a','60a','61a','H-1','H-2','FZ','FZ-12'};
+savename = '_1000s_lifetime summary';
 for i = 1:length(samples)
-    try 
-        load([dirname1 '\' samples{i} '\Raw_data.mat']); 
-        load([dirname1 '\' samples{i} '\meas_info.mat']); 
-        flag = 1; 
-    catch
-        %If that's not successful, just tell me that the sample doesn't
-        %exist for that dirname
-        warning(['Error accessing data for dirname1, sample ' samples{i}]);
-        flag = 0; 
-    end
     h=figure('units','normalized','outerposition',[0 0 1 1]);
     curves = [];
     label = {};
     count = 1;
-    if flag == 1
-        for j = 1:length(dataSave)
-            datanow = dataSave{j}; 
-            curves(count)=loglog(datanow(:,1),datanow(:,2),'LineWidth',2); 
-            hold all; 
-            label{count} = ['Set 1, #' num2str(j)];
-            xlim([5e13 1e17])
-            count = count+1; 
+    for k = 1:length(dirnames)
+        try 
+            load([dirnames{k} '\' samples{i} '\Raw_data.mat']); 
+            load([dirnames{k} '\' samples{i} '\meas_info.mat']); 
+            flag = 1; 
+        catch
+            %If that's not successful, just tell me that the sample doesn't
+            %exist for that dirname
+            warning(['Error accessing data for directory ' num2str(k) ', sample ' samples{i}]);
+            flag = 0; 
         end
-    end
-    try 
-        load([dirname2 '\' samples{i} '\Raw_data.mat']); 
-        load([dirname2 '\' samples{i} '\meas_info.mat']); 
-        flag = 1; 
-    catch
-        %If that's not successful, just tell me that the sample doesn't
-        %exist for that dirname
-        warning(['Error accessing data for dirname2, sample ' samples{i}]);
-        flag = 0; 
-    end
-    if flag == 1
-        for j = 1:length(dataSave)
-            datanow = dataSave{j}; 
-            curves(count)=loglog(datanow(:,1),datanow(:,2),'LineWidth',2); 
-            hold all; 
-            label{count} = ['Set 2, #' num2str(j)];
-            xlim([5e13 1e17])
-            count = count+1; 
+        if flag == 1
+            for j = 1:length(dataSave)
+                datanow = dataSave{j}; 
+                curves(count)=loglog(datanow(:,1),datanow(:,2),'LineWidth',2); 
+                hold all; 
+                label{count} = ['Set ' num2str(k) ', #' num2str(j)];
+                xlim([5e13 1e17])
+                count = count+1; 
+            end
         end
     end
     xlabel('excess carrier density [cm^-^3]','FontSize',30); 
@@ -145,6 +138,6 @@ for i = 1:length(samples)
         ylim([1e-4 1e-2]);
     end
     set(0,'defaultAxesFontSize', 20)
-    hgsave(h,[savedirname '\' samples{i} '_lifetime summary']);
-    print(h,'-dpng','-r0',[savedirname '\' samples{i} '_lifetime summary.png']);
+    hgsave(h,[savedirname '\' samples{i} savename]);
+    print(h,'-dpng','-r0',[savedirname '\' samples{i} savename '.png']);
 end
