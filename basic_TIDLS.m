@@ -1058,7 +1058,7 @@ for i = 1:length(info)
     %We need to get the experimental value
     Et_now = Et{i,1}; 
     k_now = k{i,1};
-    taun0_now = 1./alphanN{i,1};
+    taun0_now = (1./alphanN{i,1}).*(1/(1e6));
     [vth_e,vth_h] = vth_em(temp+273.15);
     taun0_now = 1./(taun0_now.*vth_e);
     %Get the value at our new Et
