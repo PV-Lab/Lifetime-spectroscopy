@@ -721,12 +721,24 @@ for i = 1:length(info)
 %     hold all;
 end
 %The Et vector should be the same for each defect
-Et_vector = Et{index,j}; 
+% Et_vector = Et{index,j}; 
+%We need to interpolate now
+Et_vector = Et{1,1}; %25C, 1st defect
+k_revised = cell(size(k)); 
+[temps,defects] = size(k); 
+for i = 1:defects
+    for j = 1:temps
+        k_now = k{j,i}; 
+        k_revised{j,i} = interp1(Et{j,i},k_now,Et_vector); 
+    end
+end
+       
 for i = 1:length(Et_vector)
-    [temps,defects] = size(k); 
+%     [temps,defects] = size(k);  
     for j = 1:defects
         for q = 1:temps
-            k_now = k{q,j};
+%             k_now = k{q,j};
+            k_now = k_revised{q,j};
             if isnan(k_now(i))==1
                all_T(j,q) = NaN; 
             else
