@@ -238,6 +238,7 @@ figure(lifetime_norm);
 xlabel('time [s]','FontSize',25); 
 ylabel('norm. lifetime [-]','FontSize',25); 
 legend(labels); 
+axis([0 3000 0 2]);
 title('control samples','FontSize',25); 
 set(0,'defaultAxesFontSize', 20)
 hgsave(lifetime_norm,[savedirname '\controls_norm' savename]);
@@ -271,6 +272,7 @@ figure(lifetime_norm);
 xlabel('time [s]','FontSize',25); 
 ylabel('norm. lifetime [-]','FontSize',25); 
 legend(labels); 
+axis([0 3000 0 2]);
 title('unfired samples','FontSize',25); 
 set(0,'defaultAxesFontSize', 20)
 hgsave(lifetime_norm,[savedirname '\unfired_norm' savename]);
@@ -301,6 +303,7 @@ set(0,'defaultAxesFontSize', 20)
 hgsave(lifetime_raw,[savedirname '\fired' savename]);
 print(lifetime_raw,'-dpng','-r0',[savedirname '\fired' savename '.png']);
 figure(lifetime_norm); 
+axis([0 3000 0 2]);
 xlabel('time [s]','FontSize',25); 
 ylabel('norm. lifetime [-]','FontSize',25); 
 legend(labels); 
