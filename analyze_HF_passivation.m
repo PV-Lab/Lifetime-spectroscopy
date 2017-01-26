@@ -23,7 +23,7 @@ SOFTWARE.
 %}
 %% First process the raw data
 clear all; close all; clc; 
-dirname = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\January 23 2017'; 
+dirname = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\January 25 2017'; 
 % samples = {'44a','45a','49a','50a','52a','53a','54a','55a','56a','60a','61a','C-1','C-2','H-1','H-2','FZ'};
 samples = {'44a','45a','49a','50a','52a','53a','54a','55a','56a','60a','61a','H-1','H-2','FZ','FZ-12'};
 for index = 1:length(samples)
@@ -51,7 +51,7 @@ end
 clear all; close all; clc;
 %Process data after HF passivation
 
-dirname = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\January 23 2017'; 
+dirname = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\January 25 2017'; 
 % samples = {'44a','45a','49a','50a','52a','53a','54a','55a','56a','60a','61a','C-1','C-2','H-1','H-2','FZ'};
 samples = {'44a','45a','49a','50a','52a','53a','54a','55a','56a','60a','61a','H-1','H-2','FZ','FZ-12'};
 lifetime_store = zeros(length(samples),1); 
@@ -100,6 +100,7 @@ dirname2 = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF 
 dirname3 = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\January 17 2017'; 
 dirname4 = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\January 19 2017';
 dirname5 = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\January 23 2017';
+dirname6 = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\January 25 2017';
 dirnames = {dirname1 dirname2 dirname3 dirname4 dirname5}; 
 % samples = {'44a','45a','49a','50a','52a','53a','54a','55a','56a','60a','61a','C-1','C-2','H-1','H-2','FZ'};
 samples = {'44a','45a','49a','50a','52a','53a','54a','55a','56a','60a','61a','H-1','H-2','FZ','FZ-12'};
@@ -153,7 +154,8 @@ end
 %% Make the degradation curves
 clear all; close all; clc; 
 savedirname = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation';
-savename = '_3000s_degradation';
+savename = '_4000s_degradation';
+max_time = 4000; 
 meas_details = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\measurement_details.xlsx'; 
 deltan_target = 5e14; %target injection level for the measurements
 %Get the measurement details
@@ -207,7 +209,7 @@ control = {'H-1','H-2','FZ','FZ-12';...
     'Unfired Cz (120 min H)','Fired Cz (120 min H)','FZ passivation','FZ degradation'};
 fired = {'49a','53a','56a','52a','55a','60a';...
     '0 min','10 min','30 min','120 min','30 min no H','LeTID control'};
-unfired = {'61a','54a','50a','45a','45a','60a';...
+unfired = {'61a','54a','50a','45a','44a','60a';...
     '0 min','10 min','30 min','120 min','30 min no H','LeTID control'};
 
 lifetime_raw=figure('units','normalized','outerposition',[0 0 1 1]);
@@ -238,7 +240,7 @@ figure(lifetime_norm);
 xlabel('time [s]','FontSize',25); 
 ylabel('norm. lifetime [-]','FontSize',25); 
 legend(labels); 
-axis([0 3000 0 2]);
+axis([0 max_time 0 2]);
 title('control samples','FontSize',25); 
 set(0,'defaultAxesFontSize', 20)
 hgsave(lifetime_norm,[savedirname '\controls_norm' savename]);
@@ -272,7 +274,7 @@ figure(lifetime_norm);
 xlabel('time [s]','FontSize',25); 
 ylabel('norm. lifetime [-]','FontSize',25); 
 legend(labels); 
-axis([0 3000 0 2]);
+axis([0 max_time 0 2]);
 title('unfired samples','FontSize',25); 
 set(0,'defaultAxesFontSize', 20)
 hgsave(lifetime_norm,[savedirname '\unfired_norm' savename]);
@@ -303,7 +305,7 @@ set(0,'defaultAxesFontSize', 20)
 hgsave(lifetime_raw,[savedirname '\fired' savename]);
 print(lifetime_raw,'-dpng','-r0',[savedirname '\fired' savename '.png']);
 figure(lifetime_norm); 
-axis([0 3000 0 2]);
+axis([0 max_time 0 2]);
 xlabel('time [s]','FontSize',25); 
 ylabel('norm. lifetime [-]','FontSize',25); 
 legend(labels); 
