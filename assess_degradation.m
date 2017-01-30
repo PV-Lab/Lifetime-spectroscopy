@@ -24,8 +24,8 @@ SOFTWARE.
 
 %Plot the degradation curves of all samples
 clc;clear all; close all; 
-measurement_log = 'C:\Users\Mallory\Documents\PERC mc-Si degradation\Experiment 0\measurement_summary.xlsx';
-directory = 'C:\Users\Mallory\Documents\PERC mc-Si degradation\Experiment 0\rev resistivity, OC';
+measurement_log = 'C:\Users\Mallory Jensen\Documents\LeTID\Experiment 0\measurement_summary.xlsx';
+directory = 'C:\Users\Mallory Jensen\Documents\LeTID\Experiment 0\rev resistivity, OC';
 %Define the samples as they are listed in the filenames
 samples = {'64-5' '69-5','FZ'};
 %Read in the data with the times
@@ -43,9 +43,9 @@ filename_end = {'_1-64_avg5.xlsm' '.xlsm' '_avg5.xlsm'};
 
 colors = {'r','g','b','m','c','y'};
 
-zero_filenames = {'C:\Users\Mallory\Documents\PERC mc-Si degradation\Experiment 0\rev resistivity, OC\64-5\64-5_afterAnneal_1-64_avg5.xlsm',...
-    'C:\Users\Mallory\Documents\PERC mc-Si degradation\Experiment 0\rev resistivity, OC\69-5\69-5_afterAnneal_avg5.xlsm',...
-    'C:\Users\Mallory\Documents\PERC mc-Si degradation\Experiment 0\rev resistivity, OC\FZ\FZ_afterAnneal_avg5.xlsm'};
+zero_filenames = {'C:\Users\Mallory Jensen\Documents\LeTID\Experiment 0\rev resistivity, OC\64-5\64-5_afterAnneal_1-64_avg5.xlsm',...
+    'C:\Users\Mallory Jensen\Documents\LeTID\Experiment 0\rev resistivity, OC\69-5\69-5_afterAnneal_avg5.xlsm',...
+    'C:\Users\Mallory Jensen\Documents\LeTID\Experiment 0\rev resistivity, OC\FZ\FZ_afterAnneal_avg5.xlsm'};
 
 %First load all of the data. Capture the injection-dependent lifetime
 %curves
@@ -113,8 +113,8 @@ for i = 1:length(samples)
 end
 %% Degradation 2 1/1
 clc;clear all; close all; 
-measurement_log = 'C:\Users\Mallory\Documents\PERC mc-Si degradation\Experiment 0\Degradation 2\measurement_summary_1-1.xlsx';
-directory = 'C:\Users\Mallory\Documents\PERC mc-Si degradation\Experiment 0\Degradation 2';
+measurement_log = 'C:\Users\Mallory Jensen\Documents\LeTID\Experiment 0\Degradation 2\measurement_summary_1-1.xlsx';
+directory = 'C:\Users\Mallory Jensen\Documents\LeTID\Experiment 0\Degradation 2';
 %Define the samples as they are listed in the filenames
 samples = {'64-5' '69-5','FZ','68-13'};
 %Read in the data with the times
@@ -132,10 +132,10 @@ filename_end = {'_1-1.xlsm' '.xlsm' '_1-64_avg5.xlsm' '_1-1.xlsm'};
 
 colors = {'r','g','b','m','c','y'};
 
-zero_filenames = {'C:\Users\Mallory\Documents\PERC mc-Si degradation\Experiment 0\Degradation 2\64-5\1-1\64-5_afterAnneal_1-1_avg5.xlsm',...
-    'C:\Users\Mallory\Documents\PERC mc-Si degradation\Experiment 0\Degradation 2\69-5\1-1\69-5_afterAnneal_avg5.xlsm',...
-    'C:\Users\Mallory\Documents\PERC mc-Si degradation\Experiment 0\Degradation 2\FZ\FZ_afterAnneal_1-64_avg5.xlsm',...
-    'C:\Users\Mallory\Documents\PERC mc-Si degradation\Experiment 0\Degradation 2\68-13\68-13_before_1-1_avg5.xlsm'};
+zero_filenames = {'C:\Users\Mallory Jensen\Documents\LeTID\Experiment 0\Degradation 2\64-5\1-1\64-5_afterAnneal_1-1_avg5.xlsm',...
+    'C:\Users\Mallory Jensen\Documents\LeTID\Experiment 0\Degradation 2\69-5\1-1\69-5_afterAnneal_avg5.xlsm',...
+    'C:\Users\Mallory Jensen\Documents\LeTID\Experiment 0\Degradation 2\FZ\FZ_afterAnneal_1-64_avg5.xlsm',...
+    'C:\Users\Mallory Jensen\Documents\LeTID\Experiment 0\Degradation 2\68-13\68-13_before_1-1_avg5.xlsm'};
 
 %First load all of the data. Capture the injection-dependent lifetime
 %curves
