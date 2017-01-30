@@ -366,15 +366,18 @@ plot(Bred_900_2_t,Bred_900_2_tau);
 
 %% Given the loaded data, try now to analyze the evolution along the degradation curve
 clc;clear all; close all; 
-directory = 'C:\Users\Mallory\Documents\PERC mc-Si degradation\Experiment 0\Degradation 2';
+directory = 'C:\Users\Mallory Jensen\Documents\LeTID\Experiment 0\rev resistivity, OC'; 
+% directory = 'C:\Users\Mallory\Documents\PERC mc-Si degradation\Experiment 0\Degradation 2';
 % load([directory '\processed_data.mat']);
-load([directory '\processed_data_1-1_20161103.mat']);
-sample_index = 4; 
+% load([directory '\processed_data_1-1_20161103.mat']);
+load([directory '\processed_data_8e14_20161122.mat']);
+% sample_index = 4; 
+sample_index = 2; 
 %Find the fully degraded state which will correspond to the minimum
 %normalized degraded lifetime
-% max_deg_index = find(lifetime_deg_norm(sample_index,:)==min(lifetime_deg_norm(sample_index,:))); 
+max_deg_index = find(lifetime_deg_norm(sample_index,:)==min(lifetime_deg_norm(sample_index,:))); 
 %For now, max is the last index for this sample
-max_deg_index = 28; 
+% max_deg_index = 28; 
 data_maxdeg = dataSave{sample_index,max_deg_index}; 
 %Find the fully UNdegraded state which is the state that we started in
 data_mindeg = dataSave{sample_index,1}; 
@@ -388,6 +391,7 @@ ylabel('Lifetime [s]','FontSize',20);
 legend('Fully undegraded','Fully degraded'); 
 
 %Try calculating the SRH lifetime always relative to the initial state
+to_calc = [80 85 87 91 92 93 96]; 
 % to_calc = [20 29 39 43 46 47];
 % labels = [500 1000 10000 100000 200021 300297 380757]; %degradation
 % to_calc = [6 11 20 24]; %deg 2
@@ -499,7 +503,7 @@ xlabel('E_t-E_v [eV]','FontSize',20);
 ylabel('\tau_{n0} [\mus]','FontSize',20);
 legend(h4,num2str(label));
 title('Defect 2','FontSize',30);
-save([directory '\fitted_defect_parameters.mat'],'Et','alphanN','k','two_defects','T','doping','type','samples','labels');
+save([directory '\fitted_defect_parameters_addedRegen.mat'],'Et','alphanN','k','two_defects','T','doping','type','samples','labels');
 %% Vary the lifetime assess the uncertainty in k values
 clc;clear all; close all; 
 directory = 'C:\Users\Mallory\Documents\PERC mc-Si degradation\Experiment 0\rev resistivity, OC';
@@ -832,13 +836,14 @@ for i = 1:length(samples)
 end
 %% Assess lifetime fitting with same parameters as previous publication
 clc;clear all; close all; 
-directory = 'C:\Users\Mallory\Documents\PERC mc-Si degradation\Experiment 0\Degradation 2';
-load([directory '\processed_data_1-1_20161103.mat']);
+directory = 'C:\Users\Mallory Jensen\Documents\LeTID\Experiment 0\rev resistivity, OC';
+% load([directory '\processed_data_1-1_20161103.mat']);
+load([directory '\processed_data_8e14_20161122.mat']);
 sample_index = 2;
 %Find the fully degraded state which will correspond to the minimum
 %normalized degraded lifetime
-% max_deg_index = find(lifetime_deg_norm(sample_index,:)==min(lifetime_deg_norm(sample_index,:))); 
-max_deg_index = 22; 
+max_deg_index = find(lifetime_deg_norm(sample_index,:)==min(lifetime_deg_norm(sample_index,:))); 
+% max_deg_index = 22; 
 data_maxdeg = dataSave{sample_index,max_deg_index}; 
 %Find the fully UNdegraded state which is the state that we started in
 data_mindeg = dataSave{sample_index,1}; 
@@ -862,16 +867,19 @@ legend('Fully undegraded','Fully degraded');
 
 %REGENERATION
 % to_calc = [47 55 61 70 74 75 77 79]; 
+to_calc = [80 85 87 91 92 93 96]; %added values for review
+% to_calc = [80 87 91 92 93 96]; %added values for review
+% to_calc = [80 91 92 93 96]; %added values for review
 
 %DEGRADATION 2
-to_calc = [22];
+% to_calc = [22];
 
 %SEMIFABRICATE DEGRADATION
 % to_calc = [12 13 14 15 16 20 24 28]; %deg semifabricate
 
 [num_samples,num_measurements] = size(dataSave); 
-% times_num = filename_details{2,2}; times_num = times_num(:,4); 
-times_num = filename_details{sample_index,2}; times_num = times_num(:,1); 
+times_num = filename_details{2,2}; times_num = times_num(:,4); 
+% times_num = filename_details{sample_index,2}; times_num = times_num(:,1); 
 SRHfig = figure;
 taufig = figure;
 h2(1)=loglog(data_mindeg(:,1),data_mindeg(:,2),'LineWidth',3); 
@@ -943,34 +951,37 @@ for i = 1:length(to_calc)
     elseif type == 'n'
         X = (p0+deltan_rev)./(n0+deltan_rev);
      end
-    xlswrite([directory '\Linearized_data.xlsx'],[X,tau_rev],['Sheet' num2str(i)]); 
-    [one_defect{i,1},MSE_one{i,1},two_defects{i,1},MSE_two{i,1},three_defects{i,1},MSE_three{i,1},all_parameters_store{i,1},all_MSE_store{i,1}] = fit_murphy_master(X,tau_rev.*1e6,25,directory,fit_tries);
-    to_write = zeros(6,3); 
-    to_write(1:2,1) = one_defect{i,1}';
-    twodef = two_defects{i,1}; 
-    to_write(1:2,2) = twodef(1,:)';
-    to_write(3:4,2) = twodef(2,:)';
-    threedef = three_defects{i,1}; 
-    to_write(1:2,3) = threedef(1,:)';
-    to_write(3:4,3) =threedef(2,:)';
-    to_write(5:6,3) = threedef(3,:)';
-    xlswrite([directory '\Linearized_data.xlsx'],to_write,['Sheet' num2str(i)],'C1:E6'); 
+    xlswrite([directory '\Linearized_data_addedRegen.xlsx'],[X,tau_rev],['Sheet' num2str(i)]); 
+%     [one_defect{i,1},MSE_one{i,1},two_defects{i,1},MSE_two{i,1},three_defects{i,1},MSE_three{i,1},all_parameters_store{i,1},all_MSE_store{i,1}] = fit_murphy_master(X,tau_rev.*1e6,25,directory,fit_tries);
+%     to_write = zeros(6,3); 
+%     to_write(1:2,1) = one_defect{i,1}';
+%     twodef = two_defects{i,1}; 
+%     to_write(1:2,2) = twodef(1,:)';
+%     to_write(3:4,2) = twodef(2,:)';
+%     threedef = three_defects{i,1}; 
+%     to_write(1:2,3) = threedef(1,:)';
+%     to_write(3:4,3) =threedef(2,:)';
+%     to_write(5:6,3) = threedef(3,:)';
+%     xlswrite([directory '\Linearized_data_addedRegen.xlsx'],to_write,['Sheet' num2str(i)],'C1:E6'); 
 end
 %Now pause and refine fits in Excel. 
 %% After fits refined in Excel, make Ek curves
 clear all; close all; 
+directory = 'C:\Users\Mallory Jensen\Documents\LeTID\Experiment 0\rev resistivity, OC\Processed regeneration\added for review';
 % directory = 'C:\Users\Mallory\Documents\PERC mc-Si degradation\Experiment 0\rev resistivity, OC\Processed degraded';
-directory = 'C:\Users\Mallory\Documents\PERC mc-Si degradation\Experiment 0\Degradation 2\Analyzing 1-1';
+% directory = 'C:\Users\Mallory\Documents\PERC mc-Si degradation\Experiment 0\Degradation 2\Analyzing 1-1';
 % to_calc = [15 20 29 39 43 46 47]; %degradation
 % to_calc = [47 55 61 70 74 75 77 79]; %regeneration
 % to_calc = [12 13 14 15 16 20 24 28]; %deg semifabricate
 % to_calc = [12 16 20 24 28]; %deg semifabricate
-to_calc = [11 13 16 20 24 22];%Degradation 2
+% to_calc = [11 13 16 20 24 22];%Degradation 2
+to_calc = [80 85 87 91 92 93 96]; %added values for review
 % label = {'8.3 min';'16.7 min';'2.8 hr';'27.8 hr';'55.6 hr';'83.4 hr';'105.8 hr'}; %degradation
 % label = {'105.8 hr';'214.9 hr';'290.6 hr';'425.0 hr';'572.5 hr';'646.0 hr';'715.2 hr';'759.4 hr'}; %regeneration
 % label = {'8 min';'17 min';'3 hr';'28 hr';'56 hr';'83 hr';'106 hr'}; %degradation
 % label = {'106 hr';'215 hr';'290 hr';'425 hr';'572 hr';'646 hr';'715 hr';'759 hr'}; %regeneration
-label = {'17 min';'50 min';'1.7 hr';'2.8 hr';'14.3 hr';'8.3 hr'};
+% label = {'17 min';'50 min';'1.7 hr';'2.8 hr';'14.3 hr';'8.3 hr'};
+label = {'2752980s','3012600s','3210480s','3963900s','4213650s','4554330s','5002890s'};
 % label = {'2000s';'6000s';'10000s';'51642s';'102375s';'3000s';'4000s';'5000s'};
 %Now let's take this SRH lifetime and try fitting it!
 doping = 9.09e15; 
@@ -1013,9 +1024,9 @@ k= cell(length(to_calc),2);
 alphanN= cell(length(to_calc),2); 
 for i = 1:length(to_calc)
     best_fit_hold = two_defects{i,1};
-    [slopes,IX] = sort(best_fit_hold(:,1));
-    best_fit_hold(:,1) = best_fit_hold(IX,1); 
-    best_fit_hold(:,2) = best_fit_hold(IX,2); 
+%     [slopes,IX] = sort(best_fit_hold(:,1));
+%     best_fit_hold(:,1) = best_fit_hold(IX,1); 
+%     best_fit_hold(:,2) = best_fit_hold(IX,2); 
 %     for j = 1:length(best_fit_hold)
 %         [Et{i,j},k{i,j},alphanN{i,j}]=generate_Ek(best_fit_hold(j,:),T,doping,type);
 %     end
