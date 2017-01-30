@@ -23,9 +23,10 @@ SOFTWARE.
 %}
 %% First process the raw data
 clear all; close all; clc; 
-dirname = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\January 25 2017'; 
+dirname = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\January 27 2017'; 
 % samples = {'44a','45a','49a','50a','52a','53a','54a','55a','56a','60a','61a','C-1','C-2','H-1','H-2','FZ'};
-samples = {'44a','45a','49a','50a','52a','53a','54a','55a','56a','60a','61a','H-1','H-2','FZ','FZ-12'};
+% samples = {'44a','45a','49a','50a','52a','53a','54a','55a','56a','60a','61a','H-1','H-2','FZ','FZ-12','68-2'};
+samples = {'68-2'};
 for index = 1:length(samples)
     [fileList,fileListShort] = getAllFiles([dirname '\' samples{index}]); 
     savename = [dirname '\' samples{index} '\Raw_data.mat']';
@@ -51,15 +52,16 @@ end
 clear all; close all; clc;
 %Process data after HF passivation
 
-dirname = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\January 25 2017'; 
+dirname = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\January 27 2017'; 
 % samples = {'44a','45a','49a','50a','52a','53a','54a','55a','56a','60a','61a','C-1','C-2','H-1','H-2','FZ'};
-samples = {'44a','45a','49a','50a','52a','53a','54a','55a','56a','60a','61a','H-1','H-2','FZ','FZ-12'};
+samples = {'44a','45a','49a','50a','52a','53a','54a','55a','56a','60a','61a','H-1','H-2','FZ','FZ-12','68-2'};
 lifetime_store = zeros(length(samples),1); 
 
 for i = 1:length(samples)
     load([dirname '\' samples{i} '\Raw_data.mat']); 
     load([dirname '\' samples{i} '\meas_info.mat']); 
     h=figure('units','normalized','outerposition',[0 0 1 1]);
+    label = {};
     for j = 1:length(dataSave)
         datanow = dataSave{j}; 
         curves(j)=loglog(datanow(:,1),datanow(:,2),'LineWidth',2); 
@@ -101,10 +103,11 @@ dirname3 = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF 
 dirname4 = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\January 19 2017';
 dirname5 = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\January 23 2017';
 dirname6 = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\January 25 2017';
-dirnames = {dirname1 dirname2 dirname3 dirname4 dirname5}; 
+dirname7 = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\January 27 2017';
+dirnames = {dirname1 dirname2 dirname3 dirname4 dirname5 dirname6 dirname7}; 
 % samples = {'44a','45a','49a','50a','52a','53a','54a','55a','56a','60a','61a','C-1','C-2','H-1','H-2','FZ'};
-samples = {'44a','45a','49a','50a','52a','53a','54a','55a','56a','60a','61a','H-1','H-2','FZ','FZ-12'};
-savename = '_3000s_lifetime summary';
+samples = {'44a','45a','49a','50a','52a','53a','54a','55a','56a','60a','61a','H-1','H-2','FZ','FZ-12','68-2'};
+savename = '_5000s_lifetime summary';
 for i = 1:length(samples)
     h=figure('units','normalized','outerposition',[0 0 1 1]);
     curves = [];
@@ -154,8 +157,8 @@ end
 %% Make the degradation curves
 clear all; close all; clc; 
 savedirname = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation';
-savename = '_4000s_degradation';
-max_time = 4000; 
+savename = '_5000s_degradation';
+max_time = 5000; 
 meas_details = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\measurement_details.xlsx'; 
 deltan_target = 5e14; %target injection level for the measurements
 %Get the measurement details
@@ -205,8 +208,8 @@ for i = 1:length(samples)
 end
 
 %Now, which samples do we want to plot together?
-control = {'H-1','H-2','FZ','FZ-12';...
-    'Unfired Cz (120 min H)','Fired Cz (120 min H)','FZ passivation','FZ degradation'};
+control = {'H-1','H-2','FZ','FZ-12','68-2';...
+    'Unfired Cz (120 min H)','Fired Cz (120 min H)','FZ passivation','FZ degradation','mc-Si undegraded'};
 fired = {'49a','53a','56a','52a','55a','60a';...
     '0 min','10 min','30 min','120 min','30 min no H','LeTID control'};
 unfired = {'61a','54a','50a','45a','44a','60a';...
