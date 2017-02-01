@@ -391,11 +391,12 @@ ylabel('Lifetime [s]','FontSize',20);
 legend('Fully undegraded','Fully degraded'); 
 
 %Try calculating the SRH lifetime always relative to the initial state
-to_calc = [80 85 87 91 92 93 96]; 
+
+% to_calc = [80 85 87 91 92 93 96]; 
 % to_calc = [20 29 39 43 46 47];
 % labels = [500 1000 10000 100000 200021 300297 380757]; %degradation
 % to_calc = [6 11 20 24]; %deg 2
-to_calc = [8 11 16 20 24 28]; %deg semifabricate
+% to_calc = [8 11 16 20 24 28]; %deg semifabricate
 [num_samples,num_measurements] = size(dataSave); 
 times_num = filename_details{sample_index,2}; times_num = times_num(:,2); 
 SRHfig = figure;
@@ -864,10 +865,11 @@ legend('Fully undegraded','Fully degraded');
 %29=10000s or 2:46:40, 39=100000s or 24:224:160, 43=200021s or 51:270:221,
 %46=300297 or 79:261:237, 47=380757 or 101:282:237
 % to_calc = [15 20 29 39 43 46 47];
+to_calc = [12 13 14];
 
 %REGENERATION
 % to_calc = [47 55 61 70 74 75 77 79]; 
-to_calc = [80 85 87 91 92 93 96]; %added values for review
+% to_calc = [80 85 87 91 92 93 96]; %added values for review
 % to_calc = [80 87 91 92 93 96]; %added values for review
 % to_calc = [80 91 92 93 96]; %added values for review
 
@@ -951,23 +953,23 @@ for i = 1:length(to_calc)
     elseif type == 'n'
         X = (p0+deltan_rev)./(n0+deltan_rev);
      end
-    xlswrite([directory '\Linearized_data_addedRegen.xlsx'],[X,tau_rev],['Sheet' num2str(i)]); 
-%     [one_defect{i,1},MSE_one{i,1},two_defects{i,1},MSE_two{i,1},three_defects{i,1},MSE_three{i,1},all_parameters_store{i,1},all_MSE_store{i,1}] = fit_murphy_master(X,tau_rev.*1e6,25,directory,fit_tries);
-%     to_write = zeros(6,3); 
-%     to_write(1:2,1) = one_defect{i,1}';
-%     twodef = two_defects{i,1}; 
-%     to_write(1:2,2) = twodef(1,:)';
-%     to_write(3:4,2) = twodef(2,:)';
-%     threedef = three_defects{i,1}; 
-%     to_write(1:2,3) = threedef(1,:)';
-%     to_write(3:4,3) =threedef(2,:)';
-%     to_write(5:6,3) = threedef(3,:)';
-%     xlswrite([directory '\Linearized_data_addedRegen.xlsx'],to_write,['Sheet' num2str(i)],'C1:E6'); 
+    xlswrite([directory '\Linearized_data_addedEarlyDeg.xlsx'],[X,tau_rev],['Sheet' num2str(i)]); 
+    [one_defect{i,1},MSE_one{i,1},two_defects{i,1},MSE_two{i,1},three_defects{i,1},MSE_three{i,1},all_parameters_store{i,1},all_MSE_store{i,1}] = fit_murphy_master(X,tau_rev.*1e6,25,directory,fit_tries);
+    to_write = zeros(6,3); 
+    to_write(1:2,1) = one_defect{i,1}';
+    twodef = two_defects{i,1}; 
+    to_write(1:2,2) = twodef(1,:)';
+    to_write(3:4,2) = twodef(2,:)';
+    threedef = three_defects{i,1}; 
+    to_write(1:2,3) = threedef(1,:)';
+    to_write(3:4,3) =threedef(2,:)';
+    to_write(5:6,3) = threedef(3,:)';
+    xlswrite([directory '\Linearized_data_addedEarlyDeg.xlsx'],to_write,['Sheet' num2str(i)],'C1:E6'); 
 end
 %Now pause and refine fits in Excel. 
 %% After fits refined in Excel, make Ek curves
 clear all; close all; 
-directory = 'C:\Users\Mallory Jensen\Documents\LeTID\Experiment 0\rev resistivity, OC\Processed regeneration\added for review';
+directory = 'C:\Users\Mallory Jensen\Documents\LeTID\Experiment 0\rev resistivity, OC\Processed degraded\added for review';
 % directory = 'C:\Users\Mallory\Documents\PERC mc-Si degradation\Experiment 0\rev resistivity, OC\Processed degraded';
 % directory = 'C:\Users\Mallory\Documents\PERC mc-Si degradation\Experiment 0\Degradation 2\Analyzing 1-1';
 % to_calc = [15 20 29 39 43 46 47]; %degradation
@@ -975,13 +977,15 @@ directory = 'C:\Users\Mallory Jensen\Documents\LeTID\Experiment 0\rev resistivit
 % to_calc = [12 13 14 15 16 20 24 28]; %deg semifabricate
 % to_calc = [12 16 20 24 28]; %deg semifabricate
 % to_calc = [11 13 16 20 24 22];%Degradation 2
-to_calc = [80 85 87 91 92 93 96]; %added values for review
+% to_calc = [80 85 87 91 92 93 96]; %added values for review
+to_calc = [11 12 13 14]; %added early degradation values for review
 % label = {'8.3 min';'16.7 min';'2.8 hr';'27.8 hr';'55.6 hr';'83.4 hr';'105.8 hr'}; %degradation
 % label = {'105.8 hr';'214.9 hr';'290.6 hr';'425.0 hr';'572.5 hr';'646.0 hr';'715.2 hr';'759.4 hr'}; %regeneration
 % label = {'8 min';'17 min';'3 hr';'28 hr';'56 hr';'83 hr';'106 hr'}; %degradation
 % label = {'106 hr';'215 hr';'290 hr';'425 hr';'572 hr';'646 hr';'715 hr';'759 hr'}; %regeneration
 % label = {'17 min';'50 min';'1.7 hr';'2.8 hr';'14.3 hr';'8.3 hr'};
-label = {'2752980s','3012600s','3210480s','3963900s','4213650s','4554330s','5002890s'};
+% label = {'2752980s','3012600s','3210480s','3963900s','4213650s','4554330s','5002890s'};
+label = {'100s','200s','300s','400s'};
 % label = {'2000s';'6000s';'10000s';'51642s';'102375s';'3000s';'4000s';'5000s'};
 %Now let's take this SRH lifetime and try fitting it!
 doping = 9.09e15; 
@@ -1054,9 +1058,13 @@ for i = 1:length(to_calc)
         end
         %Get rid of any negative k values
         indices = find(k_now<0); 
-        Et_now(indices) = []; 
-        k_now(indices) = []; 
-        alphanN_now(indices) = []; 
+        if length(indices)<length(k_now)
+            Et_now(indices) = []; 
+            k_now(indices) = []; 
+            alphanN_now(indices) = [];  
+        else
+            warning(['All of the entries were negative for defect ' num2str(j) ', time ' label{i}]);
+        end
         Et{i,j} = Et_now; 
         k{i,j} = k_now; 
         alphanN{i,j} = alphanN_now; 
@@ -1113,7 +1121,7 @@ xlabel('E_t-E_v [eV]','FontSize',30);
 ylabel('\tau_{n0} [\mus]','FontSize',30);
 legend(h4,label);
 title('Defect 2','FontSize',30);
-save([directory '\fitted_defect_parameters_deg2.mat'],'Et','alphanN','k','two_defects','T','doping','type','label');
+save([directory '\fitted_defect_parameters_earlyDeg.mat'],'Et','alphanN','k','two_defects','T','doping','type','label');
 %% Summarize defect parameters throughout both degradation and regeneration
 clear all; close all; clc;
 directory = 'C:\Users\Mallory\Documents\PERC mc-Si degradation\Experiment 0\rev resistivity, OC\Processed degraded';
