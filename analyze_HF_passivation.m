@@ -23,10 +23,10 @@ SOFTWARE.
 %}
 %% First process the raw data
 clear all; close all; clc; 
-dirname = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\February 2 2017'; 
+dirname = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\February 6 2017'; 
 % samples = {'44a','45a','49a','50a','52a','53a','54a','55a','56a','60a','61a','C-1','C-2','H-1','H-2','FZ'};
-% samples = {'44a','45a','49a','50a','52a','53a','54a','55a','56a','60a','61a','H-1','H-2','FZ','FZ-12','68-2'};
-samples = {'56a','60a','61a','H-1','H-2','FZ','FZ-12','68-2'};
+samples = {'44a','45a','49a','50a','52a','53a','54a','55a','56a','60a','61a','H-1','H-2','FZ','FZ-12','68-2'};
+% samples = {'56a','60a','61a','H-1','H-2','FZ','FZ-12','68-2'};
 % samples = {'68-2'};
 for index = 1:length(samples)
     [fileList,fileListShort] = getAllFiles([dirname '\' samples{index}]); 
@@ -53,7 +53,7 @@ end
 clear all; close all; clc;
 %Process data after HF passivation
 
-dirname = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\February 2 2017'; 
+dirname = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\February 6 2017'; 
 % samples = {'44a','45a','49a','50a','52a','53a','54a','55a','56a','60a','61a','C-1','C-2','H-1','H-2','FZ'};
 samples = {'44a','45a','49a','50a','52a','53a','54a','55a','56a','60a','61a','H-1','H-2','FZ','FZ-12','68-2'};
 lifetime_store = zeros(length(samples),1); 
@@ -107,10 +107,11 @@ dirname6 = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF 
 dirname7 = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\January 27 2017';
 dirname8 = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\January 31 2017';
 dirname9 = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\February 2 2017';
-dirnames = {dirname1 dirname2 dirname3 dirname4 dirname5 dirname6 dirname7 dirname8 dirname9}; 
+dirname10 = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\February 6 2017';
+dirnames = {dirname1 dirname2 dirname3 dirname4 dirname5 dirname6 dirname7 dirname8 dirname9 dirname10}; 
 % samples = {'44a','45a','49a','50a','52a','53a','54a','55a','56a','60a','61a','C-1','C-2','H-1','H-2','FZ'};
 samples = {'44a','45a','49a','50a','52a','53a','54a','55a','56a','60a','61a','H-1','H-2','FZ','FZ-12','68-2'};
-savename = '_20000s_lifetime summary';
+savename = '_20000s_redo_lifetime summary';
 for i = 1:length(samples)
     h=figure('units','normalized','outerposition',[0 0 1 1]);
     curves = [];
