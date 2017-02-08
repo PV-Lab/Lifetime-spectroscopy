@@ -43,13 +43,13 @@ for i = 1:length(filenames)
 end
 
 %% Now try averaging for a series 
-clear all; close all; 
-dirname = 'C:\Users\Malloryj\Dropbox (MIT)\TIDLS at UNSW\Advanced system measurements\20160905\16-6-28-P-2';
-sample = '16-6-28-P-2'; 
-Ctonum = '_IRap_1-1_';
+clear all; close all; clc;
+dirname = 'C:\Users\Mallory Jensen\Dropbox (MIT)\TIDLS at UNSW\Advanced system measurements\20160830\94-20-8';
+sample = '94-20-8'; 
+Ctonum = 'C_glassND_1-1_';
 time_before = .001; %s
-T = [25]; 
-num_repeats = [5]; 
+T = [25 50 100 150]; 
+num_repeats = [10 10 10 10]; 
 [dataSave] = average_QSSPL(dirname,sample,T,num_repeats,time_before,Ctonum);
 
 %Now, given this data, we want to write this to a new file which can be
