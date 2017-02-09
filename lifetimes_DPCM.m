@@ -36,32 +36,46 @@ clear all; close all; clc;
  lifetime_store = cell(size(time_index)); 
  deltan_store = cell(size(time_index)); 
  
+ %Find the fully UNdegraded state which is the state that we started in
+data_mindeg = dataSave{sample_index,1}; 
+ 
  figure;
  
  for i = 1:length(time_index)
      datanow = dataSave{sample_index,time_index(i)}; 
-     h(i)=loglog(datanow(:,1),datanow(:,2)); 
+     
+     %We need to interpolate the lifetime
+     tau_measure = interp1(datanow(:,1),datanow(:,2),data_mindeg(:,1)); 
+     tau_SRH = ((1./tau_measure)-(1./data_mindeg(:,2))).^(-1);
+     h(i)=loglog(data_mindeg(:,1),tau_SRH); 
      hold all; 
      %Let's sample the data
-     min_inj = min(datanow(:,1)); 
+     min_inj = min(data_mindeg(:,1)); 
      if min_inj<1e14
          min_inj = 1e14; 
      end
      max_inj = 2e16; 
      %Find where those are
-     mindiff = abs(datanow(:,1)-min_inj);
+     mindiff = abs(data_mindeg(:,1)-min_inj);
      min_index = find(mindiff==min(mindiff)); 
-     maxdiff = abs(datanow(:,1)-max_inj); 
+     maxdiff = abs(data_mindeg(:,1)-max_inj); 
      max_index = find(maxdiff==min(maxdiff)); 
-     abs_min = datanow(:,1); abs_min = abs_min(min_index); 
-     abs_max = datanow(:,1); abs_max = abs_max(max_index); 
+     abs_min = data_mindeg(:,1); abs_min = abs_min(min_index);
+     while abs_min<1e14
+         min_index = min_index+1;
+         abs_min = data_mindeg(:,1); abs_min = abs_min(min_index);
+     end
+     abs_max = data_mindeg(:,1); abs_max = abs_max(max_index); 
+     while abs_max>2e16
+         max_index = max_index-1;
+         abs_max = data_mindeg(:,1); abs_max = abs_max(max_index);
+     end
      deltans = logspace(log10(abs_min),log10(abs_max),10); 
-     lifetimes = interp1(datanow(:,1),datanow(:,2),deltans);
+     lifetimes = interp1(data_mindeg(:,1),tau_SRH,deltans);
      if min_inj==abs_min
          %then this is truly the first index and we should have a nan
          if isnan(lifetimes(1))==1
-             lifetime_now = datanow(:,2);
-             lifetimes(1)=lifetime_now(1); 
+             lifetimes(1)=tau_SRH(1); 
          end
      end
      lifetime_store{i} = lifetimes';
