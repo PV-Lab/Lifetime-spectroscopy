@@ -23,7 +23,7 @@ SOFTWARE.
 %}
 %% First process the raw data
 clear all; close all; clc; 
-dirname = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\February 8 2017'; 
+dirname = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\February 15 2017'; 
 % samples = {'44a','45a','49a','50a','52a','53a','54a','55a','56a','60a','61a','C-1','C-2','H-1','H-2','FZ'};
 samples = {'44a','45a','49a','50a','52a','53a','54a','55a','56a','60a','61a','H-1','H-2','FZ','FZ-12','68-2'};
 % samples = {'56a','60a','61a','H-1','H-2','FZ','FZ-12','68-2'};
@@ -53,7 +53,7 @@ end
 clear all; close all; clc;
 %Process data after HF passivation
 
-dirname = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\February 8 2017'; 
+dirname = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\February 15 2017'; 
 % samples = {'44a','45a','49a','50a','52a','53a','54a','55a','56a','60a','61a','C-1','C-2','H-1','H-2','FZ'};
 samples = {'44a','45a','49a','50a','52a','53a','54a','55a','56a','60a','61a','H-1','H-2','FZ','FZ-12','68-2'};
 lifetime_store = zeros(length(samples),1); 
@@ -109,10 +109,15 @@ dirname8 = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF 
 dirname9 = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\February 2 2017';
 dirname10 = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\February 6 2017';
 dirname11 = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\February 8 2017';
-dirnames = {dirname1 dirname2 dirname3 dirname4 dirname5 dirname6 dirname7 dirname8 dirname9 dirname10 dirname11}; 
+dirname12 = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\February 13 2017';
+dirname13 = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\February 15 2017';
+% dirnames = {dirname1 dirname2 dirname3 dirname4 dirname5 dirname6 dirname7 dirname8 dirname9 dirname10 dirname11 dirname12}; 
+dirnames = {dirname2 dirname3 dirname4 dirname5 dirname6 dirname7 dirname8 dirname10 dirname11 dirname12 dirname13}; 
+labels = {'initial','1000s','2000s','3000s','4000s','5000s','10000s','20000s','30000s','40000s','50000s'};
+cm = colormap(hsv(length(dirnames))); 
 % samples = {'44a','45a','49a','50a','52a','53a','54a','55a','56a','60a','61a','C-1','C-2','H-1','H-2','FZ'};
 samples = {'44a','45a','49a','50a','52a','53a','54a','55a','56a','60a','61a','H-1','H-2','FZ','FZ-12','68-2'};
-savename = '_30000s_lifetime summary';
+savename = '_50000s_lifetime summary';
 for i = 1:length(samples)
     h=figure('units','normalized','outerposition',[0 0 1 1]);
     curves = [];
@@ -138,9 +143,10 @@ for i = 1:length(samples)
             end
             for j  = t %just the second measurement in each set
                 datanow = dataSave{j}; 
-                curves(count)=loglog(datanow(:,1),datanow(:,2),'LineWidth',2); 
+                curves(count)=loglog(datanow(:,1),datanow(:,2),'LineWidth',2,'color',cm(k,:)); 
                 hold all; 
-                label{count} = ['Set ' num2str(k) ', #' num2str(j)];
+%                 label{count} = ['Set ' num2str(k) ', #' num2str(j)];
+                label{count} = labels{k};
                 xlim([5e13 1e17])
                 count = count+1; 
             end
@@ -162,10 +168,10 @@ end
 %% Make the degradation curves
 clear all; close all; clc; 
 savedirname = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation';
-savename = '_30000s_degradation';
-max_time = 30000; 
+savename = '_50000s_degradation';
+max_time = 50000; 
 meas_details = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\measurement_details_removingInitial.xlsx'; 
-deltan_target = 5e14; %target injection level for the measurements
+deltan_target = 6e14; %target injection level for the measurements, changed to 6e14 on 2/13/17 from 5e14
 %Get the measurement details
 [meas,samples] = xlsread(meas_details,'measurements');
 samples(1,:) = []; 
@@ -203,6 +209,9 @@ for i = 1:length(samples)
             catch
                 [deltan,tau] = remove_duplicates(deltan,tau);
                 lifetime_store(j,1) = interp1(deltan,tau,deltan_target);
+            end
+            if isnan(lifetime_store(j,1))==1
+                disp(['Lifetime at ' num2str(deltan_target) ' was NaN for sample ' samples{i} ', time ' num2str(meas_thissample(j)) 's']);
             end
         end
     end
