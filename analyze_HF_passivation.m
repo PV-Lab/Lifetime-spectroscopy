@@ -23,7 +23,7 @@ SOFTWARE.
 %}
 %% First process the raw data
 clear all; close all; clc; 
-dirname = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\March 8 2017'; 
+dirname = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\March 17 2017'; 
 % samples = {'44a','45a','49a','50a','52a','53a','54a','55a','56a','60a','61a','C-1','C-2','H-1','H-2','FZ'};
 samples = {'44a','45a','49a','50a','52a','53a','54a','55a','56a','60a','61a','H-1','H-2','FZ','FZ-12','68-2'};
 % samples = {'56a','60a','61a','H-1','H-2','FZ','FZ-12','68-2'};
@@ -54,7 +54,7 @@ end
 clear all; close all; clc;
 %Process data after HF passivation
 
-dirname = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\March 8 2017'; 
+dirname = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\March 17 2017'; 
 % samples = {'44a','45a','49a','50a','52a','53a','54a','55a','56a','60a','61a','C-1','C-2','H-1','H-2','FZ'};
 samples = {'44a','45a','49a','50a','52a','53a','54a','55a','56a','60a','61a','H-1','H-2','FZ','FZ-12','68-2'};
 lifetime_store = zeros(length(samples),1); 
@@ -92,7 +92,12 @@ for i = 1:length(samples)
         lifetime_store(i) = interp1(deltan,tau,1e15); 
     catch
         [deltan,tau] = remove_duplicates(deltan,tau);
-        lifetime_store(i) = interp1(deltan,tau,1e15);
+        try 
+            lifetime_store(i) = interp1(deltan,tau,1e15);
+        catch
+            [deltan,tau] = remove_duplicates(deltan,tau);
+            lifetime_store(i) = interp1(deltan,tau,1e15);
+        end
     end
 end
 
@@ -116,13 +121,16 @@ dirname14 = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF
 % dirname15 = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\March 1 2017'; 
 dirname15 = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\March 1 2017\revised calibration';
 dirname16 = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\March 8 2017';
+dirname17 = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\March 11 2017';
+dirname18 = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\March 15 2017';
+dirname19 = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\March 17 2017';
 % dirnames = {dirname1 dirname2 dirname3 dirname4 dirname5 dirname6 dirname7 dirname8 dirname9 dirname10 dirname11 dirname12}; 
-dirnames = {dirname2 dirname3 dirname4 dirname5 dirname6 dirname7 dirname8 dirname10 dirname11 dirname12 dirname13 dirname14 dirname15 dirname16}; 
-labels = {'initial','1000s','2000s','3000s','4000s','5000s','10000s','20000s','30000s','40000s','50000s' '60000s' '70000s' '80000s'};
+dirnames = {dirname2 dirname3 dirname4 dirname5 dirname6 dirname7 dirname8 dirname10 dirname11 dirname12 dirname13 dirname14 dirname15 dirname16 dirname17 dirname18 dirname19}; 
+labels = {'initial','1000s','2000s','3000s','4000s','5000s','10000s','20000s','30000s','40000s','50000s' '60000s' '70000s' '80000s' '90000s' '100000s' '154495'};
 cm = colormap(hsv(length(dirnames))); 
 % samples = {'44a','45a','49a','50a','52a','53a','54a','55a','56a','60a','61a','C-1','C-2','H-1','H-2','FZ'};
 samples = {'44a','45a','49a','50a','52a','53a','54a','55a','56a','60a','61a','H-1','H-2','FZ','FZ-12','68-2'};
-savename = '_80000s_lifetime summary';
+savename = '_154495s_lifetime summary';
 for i = 1:length(samples)
     h=figure('units','normalized','outerposition',[0 0 1 1]);
     curves = [];
@@ -173,8 +181,8 @@ end
 %% Make the degradation curves
 clear all; close all; clc; 
 savedirname = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation';
-savename = '_80000s_revcal_degradation';
-max_time = 80000; 
+savename = '_154495s_degradation';
+max_time = 154495; 
 meas_details = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\measurement_details_removingInitial.xlsx'; 
 deltan_target = 6e14; %target injection level for the measurements, changed to 6e14 on 2/13/17 from 5e14
 %Get the measurement details
@@ -231,16 +239,41 @@ for i = 1:length(samples)
     norm_lifetime_all{i} = [meas_thissample' lifetime_store./lifetime_store(1)];
 end
 
+%Now try to get the degradation curve, removing the surface component
+SRV_control = 'FZ';
+FZ_dop = 5.7e15;
+[De,Dh] = diffusivity(300,'p',FZ_dop,deltan_target); 
+D_FZ  = De; 
+W_FZ = .028; 
+index = find(strcmp(SRV_control,samples)==1);
+raw_now = lifetime_all{index};
+SRV = zeros(length(raw_now),1); 
+for i = 1:length(SRV)
+    tau_intr = Richter(300,deltan_target,FZ_dop,'p');
+    tau_surf = ((1./raw_now(i,2))-(1./tau_intr)).^(-1);
+    SRV(i) = W_FZ./((tau_surf-((1/D_FZ)*((W_FZ/pi)^2))).*2);
+end
+figure;
+plot(raw_now(:,1),SRV); 
+axis([0 max_time 0 10]);
+xlabel('time [s]','FontSize',25); 
+ylabel('SRV [cm/s]','FontSize',25); 
+SRV_t = raw_now(:,1); 
+
 %Now, which samples do we want to plot together?
 control = {'H-1','H-2','FZ','FZ-12','68-2';...
     'Unfired Cz (120 min H)','Fired Cz (120 min H)','FZ passivation','FZ degradation','mc-Si undegraded'};
+control_param = [5e15 5e15 5e15 5e15 9e15; .025 .025 .025 .02 .017]; %first row doping, second row thickness 
 fired = {'49a','53a','56a','52a','55a','60a';...
     '0 min','10 min','30 min','120 min','30 min no H','LeTID control'};
+fired_param = []; %first row doping, second row thickness
 unfired = {'61a','54a','50a','45a','44a','60a';...
     '0 min','10 min','30 min','120 min','30 min no H','LeTID control'};
+unfired_param = []; %first row doping, second row thickness
 
 lifetime_raw=figure('units','normalized','outerposition',[0 0 1 1]);
 lifetime_norm=figure('units','normalized','outerposition',[0 0 1 1]);
+lifetime_norm_corr=figure('units','normalized','outerposition',[0 0 1 1]);
 [nothing,samp] = size(control); 
 labels = {}; 
 for i = 1:samp
@@ -252,8 +285,22 @@ for i = 1:samp
     hold all; 
     figure(lifetime_norm); 
     plot(norm_now(:,1),norm_now(:,2),'-o','LineWidth',3,'MarkerSize',10);
+    hold all;  
+    %Get the lifetime, accounting for surface
+    doping_now = control_param(1,i); 
+    W_now = control_param(2,i); 
+    [D_now,Dh] = diffusivity(300,'p',doping_now,deltan_target);
+    tau_rev = zeros(length(raw_now),1); 
+    for j = 1:length(raw_now)
+        t_index = find(SRV_t==raw_now(j,1)); 
+        tau = raw_now(j,2); 
+        tau_surf = (W_now./(2.*SRV(t_index)))+((1/D_now).*((W_now/pi)^2)); %cm/s
+        tau_rev(j) = ((1./tau)-(1./tau_surf))^(-1); 
+    end
+    figure(lifetime_norm_corr); 
+    plot(norm_now(:,1),tau_rev./tau_rev(1),'-o','LineWidth',3,'MarkerSize',10);
     hold all; 
-    labels{i,1} = control{2,i}; 
+    labels{i,1} = control{2,i};
 end
 figure(lifetime_raw); 
 xlabel('time [s]','FontSize',25); 
@@ -272,6 +319,15 @@ title('control samples','FontSize',25);
 set(0,'defaultAxesFontSize', 20)
 hgsave(lifetime_norm,[savedirname '\controls_norm' savename]);
 print(lifetime_norm,'-dpng','-r0',[savedirname '\controls_norm' savename '.png']);
+figure(lifetime_norm_corr); 
+xlabel('time [s]','FontSize',25); 
+ylabel('norm. lifetime (no surface) [-]','FontSize',25); 
+legend(labels); 
+axis([0 max_time 0 2]);
+title('control samples (surface removed)','FontSize',25); 
+set(0,'defaultAxesFontSize', 20)
+hgsave(lifetime_norm_corr,[savedirname '\controls_norm_nosurf' savename]);
+print(lifetime_norm_corr,'-dpng','-r0',[savedirname '\controls_norm_nosurf' savename '.png']);
     
 lifetime_raw=figure('units','normalized','outerposition',[0 0 1 1]);
 lifetime_norm=figure('units','normalized','outerposition',[0 0 1 1]);
