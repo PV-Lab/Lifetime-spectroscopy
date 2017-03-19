@@ -244,7 +244,7 @@ SRV_control = 'FZ';
 FZ_dop = 5.7e15;
 [De,Dh] = diffusivity(300,'p',FZ_dop,deltan_target); 
 D_FZ  = De; 
-W_FZ = .028; 
+W_FZ = .027; 
 index = find(strcmp(SRV_control,samples)==1);
 raw_now = lifetime_all{index};
 SRV = zeros(length(raw_now),1); 
