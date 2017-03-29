@@ -16,7 +16,7 @@ k_B = 8.61733238e-5; %eV/K
 [Eg] = Sze(T); %eV
 
 %We are going to sweep through different k values and energy levels
-k = linspace(k_min,k_max,500); 
+k = linspace(k_min,k_max,1000); 
 Et = linspace(0,Eg,100); %eV, referenced to valence band edge
 
 f = zeros(length(k),length(Et)); 
@@ -32,14 +32,14 @@ for i = 1:length(k)
     end
 end
 
-figure;
-[X,Y] = meshgrid(Et',k); 
-surf(X,Y,f,'LineStyle','none');
-grid off;
-colormap('parula'); 
-view([0 90]); 
-xlabel('E_t-E_v [eV]','FontSize',20); 
-ylabel('k = \sigma_n/\sigma_p','FontSize',20); 
-axis([0 Eg k_min k_max]);
+% figure;
+% [X,Y] = meshgrid(Et',k); 
+% surf(X,Y,f,'LineStyle','none');
+% grid off;
+% colormap('parula'); 
+% view([0 90]); 
+% xlabel('E_t-E_v [eV]','FontSize',20); 
+% ylabel('k = \sigma_n/\sigma_p','FontSize',20); 
+% axis([0 Eg k_min k_max]);
 
 end
