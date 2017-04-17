@@ -23,7 +23,7 @@ SOFTWARE.
 %}
 %% First process the raw data
 clear all; close all; clc; 
-dirname = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\April 11 2017'; 
+dirname = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\April 13 2017'; 
 % samples = {'44a','45a','49a','50a','52a','53a','54a','55a','56a','60a','61a','C-1','C-2','H-1','H-2','FZ'};
 samples = {'44a','45a','49a','50a','52a','53a','54a','55a','56a','60a','61a','H-1','H-2','FZ','FZ-12','68-2'};
 % samples = {'56a','60a','61a','H-1','H-2','FZ','FZ-12','68-2'};
@@ -54,7 +54,7 @@ end
 clear all; close all; clc;
 %Process data after HF passivation
 
-dirname = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\April 11 2017'; 
+dirname = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\April 13 2017'; 
 % samples = {'44a','45a','49a','50a','52a','53a','54a','55a','56a','60a','61a','C-1','C-2','H-1','H-2','FZ'};
 samples = {'44a','45a','49a','50a','52a','53a','54a','55a','56a','60a','61a','H-1','H-2','FZ','FZ-12','68-2'};
 lifetime_store = zeros(length(samples),1); 
@@ -129,13 +129,19 @@ dirname20 = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF
 dirname21 = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\March 30 2017';
 dirname22 = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\April 3 2017';
 dirname23 = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\April 11 2017';
+dirname24 = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\April 13 2017';
 % dirnames = {dirname1 dirname2 dirname3 dirname4 dirname5 dirname6 dirname7 dirname8 dirname9 dirname10 dirname11 dirname12}; 
-dirnames = {dirname2 dirname3 dirname4 dirname5 dirname6 dirname7 dirname8 dirname10 dirname11 dirname12 dirname13 dirname14 dirname15 dirname16 dirname17 dirname18 dirname19 dirname20 dirname21 dirname22 dirname23}; 
-labels = {'initial','1000s','2000s','3000s','4000s','5000s','10000s','20000s','30000s','40000s','50000s' '60000s' '70000s' '80000s' '90000s' '100000s' '154495' '206005' '258325' '300025' '349990'};
+dirnames = {dirname2 dirname3 dirname4 dirname5 dirname6 dirname7 dirname8 ...
+    dirname10 dirname11 dirname12 dirname13 dirname14 dirname15 dirname16 ...
+    dirname17 dirname18 dirname19 dirname20 dirname21 dirname22 dirname23 ...
+    dirname24}; 
+labels = {'initial','1000s','2000s','3000s','4000s','5000s','10000s',...
+    '20000s','30000s','40000s','50000s','60000s','70000s','80000s','90000s',...
+    '100000s','154495','206005','258325','300025','349990','402730s'};
 cm = colormap(hsv(length(dirnames))); 
 % samples = {'44a','45a','49a','50a','52a','53a','54a','55a','56a','60a','61a','C-1','C-2','H-1','H-2','FZ'};
 samples = {'44a','45a','49a','50a','52a','53a','54a','55a','56a','60a','61a','H-1','H-2','FZ','FZ-12','68-2'};
-savename = '_349990s_lifetime summary';
+savename = '_402730s_lifetime summary';
 for i = 1:length(samples)
     h=figure('units','normalized','outerposition',[0 0 1 1]);
     curves = [];
@@ -186,8 +192,8 @@ end
 %% Make the degradation curves
 clear all; close all; clc; 
 savedirname = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation';
-savename = '_349990s_degradation';
-max_time = 349990; 
+savename = '_402730s_degradation';
+max_time = 402730; 
 meas_details = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\measurement_details_removingInitial.xlsx'; 
 deltan_target = 6e14; %target injection level for the measurements, changed to 6e14 on 2/13/17 from 5e14
 %Get the measurement details
