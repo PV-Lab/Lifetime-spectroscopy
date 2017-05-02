@@ -137,15 +137,16 @@ loglog(togetherPL(:,1),togetherPL(:,2),'k--','LineWidth',2);
 
 %% 
 clear all; close all; 
-sample = '16-6-28-P-2'; 
-dirname = 'C:\Users\Malloryj\Dropbox (MIT)\TIDLS at UNSW\Advanced system measurements\By sample\16-6-28-P-2\Summary files'; 
-T = [-100 -50 25 100]; %C
+sample = '69-6'; 
+dirname = 'C:\Users\Mallory Jensen\Documents\LeTID\PERC LeTID Advanced System\After QSSPL Analyzer fix\69-6\Summary files'; 
+save_dirname = 'C:\Users\Mallory Jensen\Documents\LeTID\PERC LeTID Advanced System\After QSSPL Analyzer fix\Harmonic sum\degraded';
+T = [25 50 100 150 200]; %C
 dataStore = cell(length(T),1); 
 figure; 
 for i = 1:length(T)
-%     filename = [dirname '\' num2str(T(i)) 'C\' sample '.txt']; 
+    filename = [dirname '\' num2str(T(i)) 'C\' sample '.txt']; 
 %     filename = [dirname '\' num2str(T(i)) 'C\' sample '_' num2str(T(i)) 'C.txt'];
-    filename = [dirname '\' num2str(T(i)) 'C\' sample '_' num2str(T(i)) 'C_PC.txt'];
+%     filename = [dirname '\' num2str(T(i)) 'C\' sample '_' num2str(T(i)) 'C_PC.txt'];
     format_for_TIDLS(filename,[dirname '\' num2str(T(i)) 'C'],'PC');
     load([dirname '\' num2str(T(i)) 'C\Raw_data.mat']); 
     data_now = dataSave; 
@@ -162,21 +163,21 @@ for i = 1:length(T)
     dataStore{i} = togetherPC; 
 end
 
-T = [186 231 297 364]; 
+T = [297 320 368 415 462]; 
 for i = 1:length(T)
     temperature{i} = T(i)-273.15; 
-    resistivity{i} = 2.7; 
-    thickness{i} = .0273; 
-    OC{i} = 0.7; 
+    resistivity{i} = 1.6; 
+    thickness{i} = .0175; 
+    OC{i} = 0.2; 
     calibration_factor{i} = 1; 
-    doping{i} = 5.2e15; 
-    fileListShort{i} = [sample '_' num2str(T(i)) 'C'];
+    doping{i} = 9.1e15; 
+    fileListShort{i} = [sample '_' num2str(T(i)) 'K'];
 end
 info = struct('filename',fileListShort,'thickness',thickness,'resistivity',...
     resistivity,'measured_resistivity',resistivity,'optical_constant',OC,...
     'calibration_factor',calibration_factor,'temperature',temperature,'doping',doping);
-save([dirname '\meas_info.mat'],'info'); 
+save([save_dirname '\meas_info.mat'],'info'); 
 
 dataSave = dataStore; 
-save([dirname '\Raw_data.mat'],'dataSave'); 
+save([save_dirname '\Raw_data.mat'],'dataSave'); 
 

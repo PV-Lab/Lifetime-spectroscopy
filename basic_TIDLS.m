@@ -24,13 +24,13 @@ SOFTWARE.
 
 %This script analyzes TIDLS measurements taken with WCT-120TS. 
 clear all; close all; 
-directory = 'C:\Users\Mallory Jensen\Documents\LeTID\PERC LeTID Advanced System\Harmonic difference'; 
+directory = 'C:\Users\Mallory Jensen\Documents\LeTID\PERC LeTID Advanced System\After QSSPL Analyzer fix\Harmonic sum'; 
 before_directory = 'C:\Users\Mallory\Dropbox (MIT)\TIDLS at UNSW\Advanced system measurements\20160727\for_processing\before';
 after_directory = 'C:\Users\Mallory\Dropbox (MIT)\TIDLS at UNSW\Advanced system measurements\20160727\for_processing\after';
-processing_directory = 'C:\Users\Mallory Jensen\Documents\LeTID\PERC LeTID Advanced System\Harmonic difference';
+processing_directory = 'C:\Users\Mallory Jensen\Documents\LeTID\PERC LeTID Advanced System\After QSSPL Analyzer fix\Harmonic sum';
 SRV_directory = 'C:\Users\Malloryj\Dropbox (MIT)\TIDLS at UNSW\Advanced system measurements\By sample\16-6-28-P-2\Summary files';
-deg_directory = 'C:\Users\Mallory\Dropbox (MIT)\TIDLS at UNSW\PERC LeTID Advanced System\Harmonic difference\degraded';
-undeg_directory = 'C:\Users\Mallory\Dropbox (MIT)\TIDLS at UNSW\PERC LeTID Advanced System\Harmonic difference\undegraded';
+deg_directory = 'C:\Users\Mallory Jensen\Documents\LeTID\PERC LeTID Advanced System\After QSSPL Analyzer fix\Harmonic sum\degraded';
+undeg_directory = 'C:\Users\Mallory Jensen\Documents\LeTID\PERC LeTID Advanced System\After QSSPL Analyzer fix\Harmonic sum\undegraded';
 %type - p or n
 type = 'p';
 %Fit range for Joe
@@ -1180,8 +1180,8 @@ for i = 1:length(data_undeg)
     loglog(dataNow_deg(:,1),dataNow_deg(:,2),'.'); 
     xlabel('Excess carrier density [cm^-^3]','FontSize',30); 
     ylabel('Lifetime [s]','FontSize',30);
-%     legend('Undegraded','Degraded');
-    legend('PDG','As-grown');
+    legend('Undegraded','Degraded');
+%     legend('PDG','As-grown');
     title(['Temperature = ' num2str(info_undeg(i).temperature) 'C, ' num2str(info_deg(i).temperature) 'C'],'FontSize',30);
     hgsave(h,[directory '\Lifetime' num2str(round(info_undeg(i).temperature))]);
     print(h,'-dpng','-r0',[directory '\Lifetime ' num2str(round(info_undeg(i).temperature)) '.png']); 
@@ -1204,7 +1204,7 @@ for i = 1:length(data_undeg)
         tau_SRH_now = ((1./tau_undeg_interp)-(1./tau_deg)).^(-1);
     end
     %Plot the result along with the other temperatures
-    figure(SRH_fig); 
+    h2=figure(SRH_fig); 
     curves(i) = loglog(deltan_deg,tau_SRH_now,'LineWidth',2);
     hold all; 
     labels{i} = [num2str(round(info_undeg(i).temperature))];
@@ -1216,8 +1216,8 @@ end
 xlabel('Excess carrier density [cm^-^3]','FontSize',30); 
 ylabel('Lifetime [s]','FontSize',30);
 legend(curves',labels);
-hgsave(h,[directory '\SRH lifetimes']);
-print(h,'-dpng','-r0',[directory '\SRH lifetimes.png']); 
+hgsave(h2,[directory '\SRH lifetimes']);
+print(h2,'-dpng','-r0',[directory '\SRH lifetimes.png']); 
 lifetime_breakdown = struct('deltan',deltan_store,'tau_SRH',tau_SRH_store);
 % save([deg_directory '\lifetime_breakdown.mat'],'lifetime_breakdown');
 save([processing_directory '\lifetime_breakdown.mat'],'lifetime_breakdown');
