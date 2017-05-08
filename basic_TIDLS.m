@@ -736,7 +736,7 @@ end
 for i = 1:length(Et_vector)
 %     [temps,defects] = size(k);  
     for j = 1:defects
-        for q = 1:4%temps
+        for q = 1:temps %4 (to exclude 250C) or temps
 %             k_now = k{q,j};
             k_now = k_revised{q,j};
             if isnan(k_now(i))==1
