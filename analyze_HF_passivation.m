@@ -23,9 +23,11 @@ SOFTWARE.
 %}
 %% First process the raw data
 clear all; close all; clc; 
-dirname = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\April 27 2017'; 
+dirname = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\May 5 2017'; 
 % samples = {'44a','45a','49a','50a','52a','53a','54a','55a','56a','60a','61a','C-1','C-2','H-1','H-2','FZ'};
-samples = {'44a','45a','49a','50a','52a','53a','54a','55a','56a','60a','61a','H-1','H-2','FZ','FZ-12','68-2'};
+% samples = {'44a','45a','49a','50a','52a','53a','54a','55a','56a','60a','61a','H-1','H-2','FZ','FZ-12','68-2'};
+% samples = {'44a','45a','49a','50a','52a','53a','54a','55a','56a','60a','61a','H-1','H-2','FZ','FZ-12','68-2','66-2','68-4'};
+samples = {'61a','H-1','H-2','FZ','FZ-12','68-2','66-2','68-4'};
 % samples = {'56a','60a','61a','H-1','H-2','FZ','FZ-12','68-2'};
 % samples = {'FZ-12','68-2'};
 % samples = {'H-1','H-2','FZ','FZ-12','68-2'};
@@ -36,6 +38,13 @@ for index = 1:length(samples)
     %We also want to store all of the information for each file
     %T, thickness, resistivity (entered/measured), type, optical constant, calibration,
     %1/64 or 1/1
+    thick = cell(size(fileList));
+    res = cell(size(fileList));
+    oc = cell(size(fileList));
+    temp = cell(size(fileList));
+    meas_res = cell(size(fileList));
+    calib = cell(size(fileList));
+    doping = cell(size(fileList));
     for file = 1:length(fileList)
         this_file = fileList{file};
         thick{file,1} = xlsread(this_file,'User','B6');
@@ -54,9 +63,9 @@ end
 clear all; close all; clc;
 %Process data after HF passivation
 
-dirname = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\April 27 2017'; 
+dirname = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\May 5 2017'; 
 % samples = {'44a','45a','49a','50a','52a','53a','54a','55a','56a','60a','61a','C-1','C-2','H-1','H-2','FZ'};
-samples = {'44a','45a','49a','50a','52a','53a','54a','55a','56a','60a','61a','H-1','H-2','FZ','FZ-12','68-2'};
+samples = {'44a','45a','49a','50a','52a','53a','54a','55a','56a','60a','61a','H-1','H-2','FZ','FZ-12','68-2','66-2','68-4'};
 lifetime_store = zeros(length(samples),1); 
 
 for i = 1:length(samples)
@@ -133,19 +142,21 @@ dirname24 = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF
 dirname25 = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\April 20 2017';
 dirname26 = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\April 21 2017';
 dirname27 = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\April 27 2017';
+dirname28 = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\May 3 2017';
+dirname29 = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\May 5 2017';
 % dirnames = {dirname1 dirname2 dirname3 dirname4 dirname5 dirname6 dirname7 dirname8 dirname9 dirname10 dirname11 dirname12}; 
 dirnames = {dirname2 dirname3 dirname4 dirname5 dirname6 dirname7 dirname8 ...
     dirname10 dirname11 dirname12 dirname13 dirname14 dirname15 dirname16 ...
     dirname17 dirname18 dirname19 dirname20 dirname21 dirname22 dirname23 ...
-    dirname24 dirname25 dirname26 dirname27}; 
+    dirname24 dirname25 dirname26 dirname27 dirname28 dirname29}; 
 labels = {'initial','1000s','2000s','3000s','4000s','5000s','10000s',...
     '20000s','30000s','40000s','50000s','60000s','70000s','80000s','90000s',...
     '100000s','154495','206005','258325','300025','349990','402730s',...
-    '454750s','508360s' '601540s'};
+    '454750s','508360s' '601540s', '702100s','801610s'};
 cm = colormap(hsv(length(dirnames))); 
 % samples = {'44a','45a','49a','50a','52a','53a','54a','55a','56a','60a','61a','C-1','C-2','H-1','H-2','FZ'};
-samples = {'44a','45a','49a','50a','52a','53a','54a','55a','56a','60a','61a','H-1','H-2','FZ','FZ-12','68-2'};
-savename = '_601540s_lifetime summary';
+samples = {'44a','45a','49a','50a','52a','53a','54a','55a','56a','60a','61a','H-1','H-2','FZ','FZ-12','68-2','66-2','68-4'};
+savename = '_801610s_lifetime summary';
 for i = 1:length(samples)
     h=figure('units','normalized','outerposition',[0 0 1 1]);
     curves = [];
@@ -196,8 +207,8 @@ end
 %% Make the degradation curves
 clear all; close all; clc; 
 savedirname = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation';
-savename = '_601540s_degradation';
-max_time = 601540; 
+savename = '_801610s_degradation';
+max_time = 801610; 
 meas_details = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\measurement_details_removingInitial.xlsx'; 
 deltan_target = 6e14; %target injection level for the measurements, changed to 6e14 on 2/13/17 from 5e14
 %Get the measurement details
@@ -276,15 +287,18 @@ ylabel('SRV [cm/s]','FontSize',25);
 SRV_t = raw_now(:,1); 
 
 %Now, which samples do we want to plot together?
-control = {'H-1','H-2','FZ','FZ-12','68-2';...
-    'Unfired Cz (120 min H)','Fired Cz (120 min H)','FZ passivation','FZ degradation','mc-Si undegraded'};
-control_param = [5e15 5e15 5e15 5e15 9e15; .025 .025 .025 .02 .017]; %first row doping, second row thickness 
+control = {'H-1','H-2','FZ','FZ-12','68-2','66-2';...
+    'Unfired Cz (120 min H)','Fired Cz (120 min H)','FZ passivation','FZ degradation','mc-Si 950C fired undegraded','mc-Si 750C fired undegraded'};
+control_param = [5e15 5e15 5e15 5e15 9e15 9e15; .025 .025 .025 .02 .017 0.017]; %first row doping, second row thickness 
 fired = {'49a','53a','56a','52a','55a','60a';...
     '0 min','10 min','30 min','120 min','30 min no H','LeTID control'};
 fired_param = []; %first row doping, second row thickness
 unfired = {'61a','54a','50a','45a','44a','60a';...
     '0 min','10 min','30 min','120 min','30 min no H','LeTID control'};
 unfired_param = []; %first row doping, second row thickness
+compE = {'68-2','68-4','66-2';...
+    'mc-Si 950C firing no layers','mc-Si 950C firing w/ layers','mc-Si 750C firing undegraded'};
+compE_param = []; 
 
 lifetime_raw=figure('units','normalized','outerposition',[0 0 1 1]);
 lifetime_norm=figure('units','normalized','outerposition',[0 0 1 1]);
@@ -306,7 +320,8 @@ for i = 1:samp
     W_now = control_param(2,i); 
     [D_now,Dh] = diffusivity(300,'p',doping_now,deltan_target);
     tau_rev = zeros(length(raw_now),1); 
-    for j = 1:length(raw_now)
+    [num_meas,columns] = size(raw_now); 
+    for j = 1:num_meas
         t_index = find(SRV_t==raw_now(j,1)); 
         tau = raw_now(j,2); 
         tau_surf = (W_now./(2.*SRV(t_index)))+((1/D_now).*((W_now/pi)^2)); %cm/s
@@ -411,4 +426,38 @@ title('fired samples','FontSize',25);
 set(0,'defaultAxesFontSize', 20)
 hgsave(lifetime_norm,[savedirname '\fired_norm' savename]);
 print(lifetime_norm,'-dpng','-r0',[savedirname '\fired_norm' savename '.png']);
+
+lifetime_raw=figure('units','normalized','outerposition',[0 0 1 1]);
+lifetime_norm=figure('units','normalized','outerposition',[0 0 1 1]);
+[nothing,samp] = size(compE); 
+labels = {};
+for i = 1:samp
+    index = find(strcmp(compE{1,i},samples)==1);
+    raw_now = lifetime_all{index}; 
+    norm_now = norm_lifetime_all{index}; 
+    figure(lifetime_raw); 
+    plot(raw_now(:,1),raw_now(:,2),'-o','LineWidth',3,'MarkerSize',10); 
+    hold all; 
+    figure(lifetime_norm); 
+    plot(norm_now(:,1),norm_now(:,2),'-o','LineWidth',3,'MarkerSize',10);
+    hold all; 
+    labels{i,1} = compE{2,i}; 
+end
+figure(lifetime_raw); 
+xlabel('time [s]','FontSize',25); 
+ylabel('lifetime [s]','FontSize',25); 
+legend(labels); 
+title('Company E samples','FontSize',25); 
+set(0,'defaultAxesFontSize', 20)
+hgsave(lifetime_raw,[savedirname '\compE' savename]);
+print(lifetime_raw,'-dpng','-r0',[savedirname '\compE' savename '.png']);
+figure(lifetime_norm); 
+axis([0 max_time 0 2]);
+xlabel('time [s]','FontSize',25); 
+ylabel('norm. lifetime [-]','FontSize',25); 
+legend(labels); 
+title('Company E samples','FontSize',25); 
+set(0,'defaultAxesFontSize', 20)
+hgsave(lifetime_norm,[savedirname '\compE_norm' savename]);
+print(lifetime_norm,'-dpng','-r0',[savedirname '\compE_norm' savename '.png']);
 
