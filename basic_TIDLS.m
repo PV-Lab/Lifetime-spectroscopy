@@ -24,13 +24,13 @@ SOFTWARE.
 
 %This script analyzes TIDLS measurements taken with WCT-120TS. 
 clear all; close all; 
-directory = 'C:\Users\Mallory Jensen\Documents\LeTID\PERC LeTID Advanced System\After QSSPL Analyzer fix\Harmonic sum'; 
+directory = 'C:\Users\Mallory Jensen\Documents\LeTID\PERC LeTID Advanced System\Comparisons to UNSW\UNSW data\Lifetime data'; 
 before_directory = 'C:\Users\Mallory\Dropbox (MIT)\TIDLS at UNSW\Advanced system measurements\20160727\for_processing\before';
 after_directory = 'C:\Users\Mallory\Dropbox (MIT)\TIDLS at UNSW\Advanced system measurements\20160727\for_processing\after';
-processing_directory = 'C:\Users\Mallory Jensen\Documents\LeTID\PERC LeTID Advanced System\After QSSPL Analyzer fix\Harmonic sum';
+processing_directory = 'C:\Users\Mallory Jensen\Documents\LeTID\PERC LeTID Advanced System\Comparisons to UNSW\UNSW data\Lifetime data\Crop obvious artifacts';
 SRV_directory = 'C:\Users\Malloryj\Dropbox (MIT)\TIDLS at UNSW\Advanced system measurements\By sample\16-6-28-P-2\Summary files';
-deg_directory = 'C:\Users\Mallory Jensen\Documents\LeTID\PERC LeTID Advanced System\After QSSPL Analyzer fix\Harmonic sum\degraded';
-undeg_directory = 'C:\Users\Mallory Jensen\Documents\LeTID\PERC LeTID Advanced System\After QSSPL Analyzer fix\Harmonic sum\undegraded';
+deg_directory = 'C:\Users\Mallory Jensen\Documents\LeTID\PERC LeTID Advanced System\Comparisons to UNSW\UNSW data\Lifetime data\After degradation';
+undeg_directory = 'C:\Users\Mallory Jensen\Documents\LeTID\PERC LeTID Advanced System\Comparisons to UNSW\UNSW data\Lifetime data\Before degradation';
 %type - p or n
 type = 'p';
 %Fit range for Joe
@@ -1056,16 +1056,19 @@ k_LeTID_Mo = zeros(length(info),1);
 T = zeros(length(info),1); 
 tau_n0_LeTID_Ti = zeros(length(info),1); 
 tau_n0_LeTID_Mo = zeros(length(info),1); 
+EtEi_Tidd = zeros(length(info),1); 
+EtEi_Mod = zeros(length(info),1); 
 for i = 1:length(info)
+    index = i; 
     temp = info(i).temperature; 
     %Get the k-value for Ti at this temperature
     k_Tidd(i) = calculate_Tidd(temp); 
     %Get the band edge information
     [Efi,Efv,p0,n0,Eiv] = adv_Model_gen(temp+273.15,info(index).doping,type); 
     %Now, what is the energy level of Ti referenced to the intrinsic level?
-    EtEi_Tidd = Et_Tidd-Eiv; %eV
+    EtEi_Tidd(i) = Et_Tidd-Eiv; %eV
     %same for Mo
-    EtEi_Mod = Et_Mod-Eiv; %eV
+    EtEi_Mod(i) = Et_Mod-Eiv; %eV
     k_Mod(i) = calculate_Mod(temp+273.15);
     %We need to get the experimental value
     Et_now = Et{i,1}; 
@@ -1074,10 +1077,10 @@ for i = 1:length(info)
     [vth_e,vth_h] = vth_em(temp+273.15);
     taun0_now = 1./(taun0_now.*vth_e);
     %Get the value at our new Et
-    k_LeTID_Ti(i) = interp1(Et_now,k_now,EtEi_Tidd); 
-    k_LeTID_Mo(i) = interp1(Et_now,k_now,EtEi_Mod); 
-    tau_n0_LeTID_Ti(i) = interp1(Et_now,taun0_now,EtEi_Tidd);
-    tau_n0_LeTID_Mo(i) = interp1(Et_now,taun0_now,EtEi_Mod);
+    k_LeTID_Ti(i) = interp1(Et_now,k_now,EtEi_Tidd(i)); 
+    k_LeTID_Mo(i) = interp1(Et_now,k_now,EtEi_Mod(i)); 
+    tau_n0_LeTID_Ti(i) = interp1(Et_now,taun0_now,EtEi_Tidd(i));
+    tau_n0_LeTID_Mo(i) = interp1(Et_now,taun0_now,EtEi_Mod(i));
     T(i) = temp+273.15; 
 end
 figure;
@@ -1091,7 +1094,7 @@ plot(T,k_Mod,'*');
 xlabel('temperature [K]');
 ylabel('k value [-]'); 
 legend('k value @ Ti_d_d','Literature Ti_d_d','k_value @ Mo_d','Literature Mo_d'); 
-to_copy = [T,k_LeTID_Ti,k_Tidd,k_LeTID_Mo,k_Mod];
+to_copy = [T,EtEi_Tidd,k_LeTID_Ti,k_Tidd,EtEi_Mod,k_LeTID_Mo,k_Mod];
 figure;
 plot(T,tau_n0_LeTID_Ti,'o'); 
 hold all;
