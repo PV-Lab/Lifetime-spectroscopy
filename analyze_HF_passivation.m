@@ -210,6 +210,7 @@ clear all; close all; clc;
 savedirname = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation';
 savename = '_902260s_degradation';
 max_time = 902260; 
+time_shift_E = 801610; %amount of time to shift company E measurements over for comparison after switch
 meas_details = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\measurement_details_removingInitial.xlsx'; 
 deltan_target = 6e14; %target injection level for the measurements, changed to 6e14 on 2/13/17 from 5e14
 %Get the measurement details
@@ -323,10 +324,14 @@ for i = 1:samp
     tau_rev = zeros(length(raw_now),1); 
     [num_meas,columns] = size(raw_now); 
     for j = 1:num_meas
-        t_index = find(SRV_t==raw_now(j,1)); 
-        tau = raw_now(j,2); 
-        tau_surf = (W_now./(2.*SRV(t_index)))+((1/D_now).*((W_now/pi)^2)); %cm/s
-        tau_rev(j) = ((1./tau)-(1./tau_surf))^(-1); 
+        try
+            t_index = find(SRV_t==raw_now(j,1)); 
+            tau = raw_now(j,2); 
+            tau_surf = (W_now./(2.*SRV(t_index)))+((1/D_now).*((W_now/pi)^2)); %cm/s
+            tau_rev(j) = ((1./tau)-(1./tau_surf))^(-1); 
+        catch
+            disp(['There was an error calculating the surface lifetime for ' control{1,i} ', time ' num2str(raw_now(j,1)) 's']);
+        end
     end
     figure(lifetime_norm_corr); 
     plot(norm_now(:,1),tau_rev./tau_rev(1),'-o','LineWidth',3,'MarkerSize',10);
@@ -435,7 +440,15 @@ labels = {};
 for i = 1:samp
     index = find(strcmp(compE{1,i},samples)==1);
     raw_now = lifetime_all{index}; 
-    norm_now = norm_lifetime_all{index}; 
+    norm_now = norm_lifetime_all{index};
+    if strcmp(compE{1,i},'68-2')==1 
+        remove = find(raw_now(:,1)<time_shift_E); 
+        raw_now(remove,:) = []; 
+        remove = find(norm_now(:,1)<time_shift_E); 
+        norm_now(remove,:) = []; 
+    end
+    raw_now(:,1) = raw_now(:,1)-time_shift_E; 
+    norm_now(:,1) = norm_now(:,1)-time_shift_E; 
     figure(lifetime_raw); 
     plot(raw_now(:,1),raw_now(:,2),'-o','LineWidth',3,'MarkerSize',10); 
     hold all; 
