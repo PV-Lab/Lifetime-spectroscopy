@@ -475,3 +475,11 @@ set(0,'defaultAxesFontSize', 20)
 hgsave(lifetime_norm,[savedirname '\compE_norm' savename]);
 print(lifetime_norm,'-dpng','-r0',[savedirname '\compE_norm' savename '.png']);
 
+%% A few helpful plots for analysis
+% First plot: initial lifetimes versus MIRHP time
+% Second plot: Histogram of measured control lifetimes for mc-Si sample,
+% with mean and standard deviation
+% Third plot: Histogram of measured control lifetimes for FZ passivation 
+% sample with mean and standard deviation
+% Fourth plot: Histogram of measured control lifetimes for FZ degradation
+% sample with mean and standard deviation
