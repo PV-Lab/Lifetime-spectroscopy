@@ -137,17 +137,17 @@ loglog(togetherPL(:,1),togetherPL(:,2),'k--','LineWidth',2);
 
 %% 
 clear all; close all; 
-sample = '69-6'; 
-dirname = 'C:\Users\Mallory Jensen\Documents\LeTID\PERC LeTID Advanced System\After QSSPL Analyzer fix\69-6\Summary files'; 
-save_dirname = 'C:\Users\Mallory Jensen\Documents\LeTID\PERC LeTID Advanced System\After QSSPL Analyzer fix\Harmonic sum\degraded';
-T = [25 50 100 150 200]; %C
+sample = 'WaferA'; 
+dirname = 'C:\Users\Mallory Jensen\Documents\LeTID\PERC LeTID Advanced System\Comparisons to UNSW\UNSW data\Lifetime data\Before degradation'; 
+save_dirname = 'C:\Users\Mallory Jensen\Documents\LeTID\PERC LeTID Advanced System\Comparisons to UNSW\UNSW data\Lifetime data\Before degradation';
+T = [-25 0 25 50 75]; %C
 dataStore = cell(length(T),1); 
 figure; 
 for i = 1:length(T)
-    filename = [dirname '\' num2str(T(i)) 'C\' sample '.txt']; 
-%     filename = [dirname '\' num2str(T(i)) 'C\' sample '_' num2str(T(i)) 'C.txt'];
+%     filename = [dirname '\' num2str(T(i)) 'C\' sample '.txt']; 
+    filename = [dirname '\' num2str(T(i)) 'C\' sample '_' num2str(T(i)) 'C.txt'];
 %     filename = [dirname '\' num2str(T(i)) 'C\' sample '_' num2str(T(i)) 'C_PC.txt'];
-    format_for_TIDLS(filename,[dirname '\' num2str(T(i)) 'C'],'PC');
+    format_for_TIDLS(filename,[dirname '\' num2str(T(i)) 'C'],'PL');
     load([dirname '\' num2str(T(i)) 'C\Raw_data.mat']); 
     data_now = dataSave; 
     for j = 1:length(data_now)
@@ -163,14 +163,14 @@ for i = 1:length(T)
     dataStore{i} = togetherPC; 
 end
 
-T = [297 320 368 415 462]; 
+T = [248.15 273.15 298.15 323.15 348.15]; 
 for i = 1:length(T)
     temperature{i} = T(i)-273.15; 
-    resistivity{i} = 1.6; 
-    thickness{i} = .0175; 
+    resistivity{i} = 1.8; 
+    thickness{i} = .018; 
     OC{i} = 0.2; 
     calibration_factor{i} = 1; 
-    doping{i} = 9.1e15; 
+    doping{i} = 8.1e15; 
     fileListShort{i} = [sample '_' num2str(T(i)) 'K'];
 end
 info = struct('filename',fileListShort,'thickness',thickness,'resistivity',...
