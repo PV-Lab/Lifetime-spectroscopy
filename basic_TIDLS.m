@@ -24,10 +24,10 @@ SOFTWARE.
 
 %This script analyzes TIDLS measurements taken with WCT-120TS. 
 clear all; close all; 
-directory = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\January 9 2017\Hpass-1'; 
+directory = 'C:\Users\Mallory Jensen\Documents\Lifetime spectroscopy\UNSW Carlos data analysis\data\Lifetimes processed'; 
 before_directory = 'C:\Users\Mallory\Dropbox (MIT)\TIDLS at UNSW\Advanced system measurements\20160727\for_processing\before';
 after_directory = 'C:\Users\Mallory\Dropbox (MIT)\TIDLS at UNSW\Advanced system measurements\20160727\for_processing\after';
-processing_directory = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\January 9 2017\Hpass-1';
+processing_directory = 'C:\Users\Mallory Jensen\Documents\Lifetime spectroscopy\UNSW Carlos data analysis\analysis';
 SRV_directory = 'C:\Users\Malloryj\Dropbox (MIT)\TIDLS at UNSW\Advanced system measurements\By sample\16-6-28-P-2\Summary files';
 deg_directory = 'C:\Users\Mallory\Dropbox (MIT)\TIDLS at UNSW\PERC LeTID Advanced System\Harmonic difference\degraded';
 undeg_directory = 'C:\Users\Mallory\Dropbox (MIT)\TIDLS at UNSW\PERC LeTID Advanced System\Harmonic difference\undegraded';
@@ -679,9 +679,9 @@ load([processing_directory '\best_fits.mat']);
 label = zeros(1,1); 
 defect1 = figure;
 co={[0 0 0]; [0.5 0 0.9]; [0 0 1]; [0 1 1]; [0 1 0];  [1 1 0]; [1 0.6 0]; [1 0 0]; [0.8 0.5 0]};
-defect2 = figure;
+% defect2 = figure;
 tau_defect1 = figure;
-tau_defect2 = figure; 
+% tau_defect2 = figure; 
 % defect3 = figure;
 %I want these to be in order of increasing temperature
 % for i = 1:length(info)
@@ -692,8 +692,8 @@ tau_defect2 = figure;
 for i = 1:length(info)
 %     index = for_iteration(i);
     index = i; 
-%     best_fit = best_fits(index).one_defect; 
-    best_fit = best_fits(index).two_defects;
+    best_fit = best_fits(index).one_defect; 
+%     best_fit = best_fits(index).two_defects;
 %     best_fit = best_fits(index).three_defects;
 %     Let's sort this to try to match up defects between temperatures
 %     [slopes,IX] = sort(best_fit(:,1));
@@ -710,12 +710,12 @@ for i = 1:length(info)
     figure(tau_defect1); 
     h3(i)=plot(Et{index,1},1./alphanN{index,1},'-','LineWidth',2,'Color',co{i}); 
     hold all;
-    figure(defect2);
-    h2(i)=plot(Et{index,2},k{index,2},'-','LineWidth',2,'Color',co{i});
-    hold all;
-    figure(tau_defect2); 
-    h4(i)=plot(Et{index,2},1./alphanN{index,2},'-','LineWidth',2,'Color',co{i}); 
-    hold all; 
+%     figure(defect2);
+%     h2(i)=plot(Et{index,2},k{index,2},'-','LineWidth',2,'Color',co{i});
+%     hold all;
+%     figure(tau_defect2); 
+%     h4(i)=plot(Et{index,2},1./alphanN{index,2},'-','LineWidth',2,'Color',co{i}); 
+%     hold all; 
 %     figure(defect3);
 %     h3(i)=plot(Et{index,3},k{index,3},'-','LineWidth',2,'Color',co{i});
 %     hold all;
@@ -753,24 +753,24 @@ xlabel('E_t-E_i [eV]','FontSize',20);
 ylabel('k [-]','FontSize',20);
 legend(h1,num2str(label));
 title('Defect 1','FontSize',30); 
-figure(defect2); 
-% xlabel('E_t-E_v [eV]','FontSize',20); 
-xlabel('E_t-E_i [eV]','FontSize',20); 
-ylabel('k [-]','FontSize',20);
-legend(h2,num2str(label));
-title('Defect 2','FontSize',30); 
+% figure(defect2); 
+% % xlabel('E_t-E_v [eV]','FontSize',20); 
+% xlabel('E_t-E_i [eV]','FontSize',20); 
+% ylabel('k [-]','FontSize',20);
+% legend(h2,num2str(label));
+% title('Defect 2','FontSize',30); 
 figure(tau_defect1); 
 % xlabel('E_t-E_v [eV]','FontSize',20); 
 xlabel('E_t-E_i [eV]','FontSize',20); 
 ylabel('\tau_{n0} [s]','FontSize',20);
 legend(h3,num2str(label));
 title('Defect 1','FontSize',30);
-figure(tau_defect2); 
-% xlabel('E_t-E_v [eV]','FontSize',20); 
-xlabel('E_t-E_i [eV]','FontSize',20); 
-ylabel('\tau_{n0} [s]','FontSize',20);
-legend(h4,num2str(label));
-title('Defect 2','FontSize',30);
+% figure(tau_defect2); 
+% % xlabel('E_t-E_v [eV]','FontSize',20); 
+% xlabel('E_t-E_i [eV]','FontSize',20); 
+% ylabel('\tau_{n0} [s]','FontSize',20);
+% legend(h4,num2str(label));
+% title('Defect 2','FontSize',30);
 % figure(defect3); 
 % xlabel('E_t-E_v [eV]','FontSize',20); 
 % ylabel('k [-]','FontSize',20);
@@ -781,11 +781,11 @@ plot(Et_vector,std_dev(:,1),'LineWidth',3);
 xlabel('E_t-E_v [eV]','FontSize',20);
 ylabel('Standard deviation in k','FontSize',20); 
 title('Defect 1','FontSize',30); 
-figure; 
-plot(Et_vector,std_dev(:,2),'LineWidth',3); 
-xlabel('E_t-E_v [eV]','FontSize',20);
-ylabel('Standard deviation in k','FontSize',20); 
-title('Defect 2','FontSize',30); 
+% figure; 
+% plot(Et_vector,std_dev(:,2),'LineWidth',3); 
+% xlabel('E_t-E_v [eV]','FontSize',20);
+% ylabel('Standard deviation in k','FontSize',20); 
+% title('Defect 2','FontSize',30); 
 %% Plot all the E-k curves on the same plot because we don't know which defect belongs where
 %We need to load our data first
 load([processing_directory '\meas_info.mat']); 
@@ -914,7 +914,7 @@ semilogy(1000./T,tau_LLI.*1e6,'o');
 xlabel('1000/T [1/K]','FontSize',20);
 ylabel('Lifetime in low-level injection (\mus)','FontSize',20);   
 %% Make best fits from Excel 
-filename = [processing_directory '\IDLS two and three curve fitting.xlsm'];
+filename = [processing_directory '\IDLS two and three curve fitting_crop1e14.xlsm'];
 load([processing_directory '\meas_info.mat']); 
 fits = xlsread(filename,'Summary','B3:E11'); %Note - they should be sorted in increasing temperature
 [m,n] = size(fits); 
@@ -928,8 +928,9 @@ for i = 1:m
 %     index = for_iteration(i);
     index = i;
     defect_1 = fits(i,1:2); 
-    defect_2 = fits(i,3:4); 
-    best_fits(index).two_defects = [defect_1;defect_2];
+%     defect_2 = fits(i,3:4); 
+%     best_fits(index).two_defects = [defect_1;defect_2];
+    best_fits(index).one_defect = [defect_1]; 
 %     two_defects{i,1} = [defect_1;defect_2];
 end
 % best_fits = struct('two_defects',two_defects);
