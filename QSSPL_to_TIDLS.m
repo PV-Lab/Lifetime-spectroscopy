@@ -137,15 +137,15 @@ loglog(togetherPL(:,1),togetherPL(:,2),'k--','LineWidth',2);
 
 %% 
 clear all; close all; 
-sample = '16-6-28-P-2'; 
-dirname = 'C:\Users\Malloryj\Dropbox (MIT)\TIDLS at UNSW\Advanced system measurements\By sample\16-6-28-P-2\Summary files'; 
-T = [-100 -50 25 100]; %C
+sample = 'Carlos'; 
+dirname = 'C:\Users\Mallory Jensen\Documents\Lifetime spectroscopy\UNSW Carlos data analysis\data\Lifetimes processed'; 
+T = [-25 0 25 50 75]; %C
 dataStore = cell(length(T),1); 
 figure; 
 for i = 1:length(T)
 %     filename = [dirname '\' num2str(T(i)) 'C\' sample '.txt']; 
-%     filename = [dirname '\' num2str(T(i)) 'C\' sample '_' num2str(T(i)) 'C.txt'];
-    filename = [dirname '\' num2str(T(i)) 'C\' sample '_' num2str(T(i)) 'C_PC.txt'];
+    filename = [dirname '\' num2str(T(i)) 'C\' sample '_' num2str(T(i)) 'C.txt'];
+%     filename = [dirname '\' num2str(T(i)) 'C\' sample '_' num2str(T(i)) 'C_PC.txt'];
     format_for_TIDLS(filename,[dirname '\' num2str(T(i)) 'C'],'PC');
     load([dirname '\' num2str(T(i)) 'C\Raw_data.mat']); 
     data_now = dataSave; 
@@ -162,14 +162,15 @@ for i = 1:length(T)
     dataStore{i} = togetherPC; 
 end
 
-T = [186 231 297 364]; 
+T = [-22 2 25 47 71];
+T = T + 273.15; 
 for i = 1:length(T)
     temperature{i} = T(i)-273.15; 
-    resistivity{i} = 2.7; 
-    thickness{i} = .0273; 
-    OC{i} = 0.7; 
+    resistivity{i} = 2.02; 
+    thickness{i} = .0284; 
+    OC{i} = 1; 
     calibration_factor{i} = 1; 
-    doping{i} = 5.2e15; 
+    doping{i} = 7.1e15; 
     fileListShort{i} = [sample '_' num2str(T(i)) 'C'];
 end
 info = struct('filename',fileListShort,'thickness',thickness,'resistivity',...
