@@ -24,13 +24,13 @@ SOFTWARE.
 
 %This script analyzes TIDLS measurements taken with WCT-120TS. 
 clear all; close all; 
-directory = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\January 9 2017\Hpass-1'; 
+directory = 'C:\Users\Mallory Jensen\Documents\LeTID\PERC LeTID Advanced System\Files after measurement\50C'; 
 before_directory = 'C:\Users\Mallory\Dropbox (MIT)\TIDLS at UNSW\Advanced system measurements\20160727\for_processing\before';
 after_directory = 'C:\Users\Mallory\Dropbox (MIT)\TIDLS at UNSW\Advanced system measurements\20160727\for_processing\after';
-processing_directory = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\January 9 2017\Hpass-1';
+processing_directory = 'C:\Users\Mallory Jensen\Documents\LeTID\PERC LeTID Advanced System\Files after measurement\50C';
 SRV_directory = 'C:\Users\Malloryj\Dropbox (MIT)\TIDLS at UNSW\Advanced system measurements\By sample\16-6-28-P-2\Summary files';
-deg_directory = 'C:\Users\Mallory\Dropbox (MIT)\TIDLS at UNSW\PERC LeTID Advanced System\Harmonic difference\degraded';
-undeg_directory = 'C:\Users\Mallory\Dropbox (MIT)\TIDLS at UNSW\PERC LeTID Advanced System\Harmonic difference\undegraded';
+deg_directory = 'C:\Users\Mallory Jensen\Documents\LeTID\PERC LeTID Advanced System\Files after measurement\50C\deg';
+undeg_directory = 'C:\Users\Mallory Jensen\Documents\LeTID\PERC LeTID Advanced System\Files after measurement\50C\undeg';
 %type - p or n
 type = 'p';
 %Fit range for Joe
@@ -57,9 +57,9 @@ info = struct('filename',fileListShort,'thickness',thick,'resistivity',res,'meas
 save([directory '\meas_info.mat'],'info'); 
 %% Collect and process raw data - WCT-120 OLD files
 %Find all of the files in the directory
-[fileList,fileListShort] = getAllFiles(directory); 
+[fileList,fileListShort] = getAllFiles(deg_directory); 
 %Get the injection-dependent lifetime data for all files
-process_xls_data(directory,[directory '\Raw_data.mat']);
+process_xls_data(deg_directory,[deg_directory '\Raw_data.mat']);
 %We also want to store all of the information for each file
 %T, thickness, resistivity (entered/measured), type, optical constant, calibration,
 %1/64 or 1/1
