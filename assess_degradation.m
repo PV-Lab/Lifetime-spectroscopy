@@ -24,10 +24,10 @@ SOFTWARE.
 
 %Plot the degradation curves of all samples
 clc;clear all; close all; 
-measurement_log = 'C:\Users\Mallory Jensen\Documents\LeTID\Experiment 0\measurement_summary.xlsx';
-directory = 'C:\Users\Mallory Jensen\Documents\LeTID\Experiment 0\rev resistivity, OC';
+measurement_log = 'C:\Users\Mallory Jensen\Documents\LeTID\XRF\SERIS deg\measurement_summary.xlsx';
+directory = 'C:\Users\Mallory Jensen\Documents\LeTID\XRF\SERIS deg\Summary';
 %Define the samples as they are listed in the filenames
-samples = {'64-5' '69-5','FZ'};
+samples = {'SALb_mid_broken','SAHb_mid','PSHb_mid','PSLb_mid'};
 %Read in the data with the times
 filename_details = cell(length(samples),2); 
 for i = 1:length(samples)
@@ -36,17 +36,17 @@ for i = 1:length(samples)
     filename_details{i,2} = num; 
 end
 filename_start = [directory '\']; 
-filename_end = {'_1-64_avg5.xlsm' '.xlsm' '_avg5.xlsm'}; 
+filename_end = {'.xlsm' '.xlsm' '.xlsm' '.xlsm'}; 
 
 %Time intervals
 % times = [0, 10:10:100, 200:100:1000, 2000:1000:10000 20000:10000:50000];
 
 colors = {'r','g','b','m','c','y'};
 
-zero_filenames = {'C:\Users\Mallory Jensen\Documents\LeTID\Experiment 0\rev resistivity, OC\64-5\64-5_afterAnneal_1-64_avg5.xlsm',...
-    'C:\Users\Mallory Jensen\Documents\LeTID\Experiment 0\rev resistivity, OC\69-5\69-5_afterAnneal_avg5.xlsm',...
-    'C:\Users\Mallory Jensen\Documents\LeTID\Experiment 0\rev resistivity, OC\FZ\FZ_afterAnneal_avg5.xlsm'};
-
+zero_filenames = {[directory '\SALb_mid_broken_0s.xlsm'],...
+    [directory '\SAHb_mid_0s.xlsm'],...
+    [directory '\PSHb_mid_0s.xlsm'],...
+    [directory '\PSLb_mid_0s.xlsm']};
 %First load all of the data. Capture the injection-dependent lifetime
 %curves
 for i = 1:length(samples)
@@ -65,10 +65,10 @@ for i = 1:length(samples)
         else
             if i == 1 || i == 2
                  %Make the filename the way we expect it
-                filename = [filename_start samples{i}  '\' samples{i} '_' times_str{j} filename_end{i}];
+                filename = [filename_start samples{i} '_' times_str{j} filename_end{i}];
             else
                 %Make the filename the way we expect it
-                filename = [filename_start samples{i}  '\' samples{i} '_' times_str{j} filename_end{i}];
+                filename = [filename_start samples{i} '_' times_str{j} filename_end{i}];
             end
         end
         %For the new spreadsheet
@@ -111,187 +111,7 @@ for i = 1:length(samples)
     title(['Sample ' samples{i}],'FontSize',30);
     legend(h,num2str(label')); 
 end
-%% Degradation 2 1/1
-clc;clear all; close all; 
-measurement_log = 'C:\Users\Mallory Jensen\Documents\LeTID\Experiment 0\Degradation 2\measurement_summary_1-1.xlsx';
-directory = 'C:\Users\Mallory Jensen\Documents\LeTID\Experiment 0\Degradation 2';
-%Define the samples as they are listed in the filenames
-samples = {'64-5' '69-5','FZ','68-13'};
-%Read in the data with the times
-filename_details = cell(length(samples),2); 
-for i = 1:length(samples)
-    [num,txt,raw] = xlsread(measurement_log,samples{i}); 
-    filename_details{i,1} = txt(2:end,1:2); 
-    filename_details{i,2} = num; 
-end
-filename_start = [directory '\']; 
-filename_end = {'_1-1.xlsm' '.xlsm' '_1-64_avg5.xlsm' '_1-1.xlsm'}; 
 
-%Time intervals
-% times = [0, 10:10:100, 200:100:1000, 2000:1000:10000 20000:10000:50000];
-
-colors = {'r','g','b','m','c','y'};
-
-zero_filenames = {'C:\Users\Mallory Jensen\Documents\LeTID\Experiment 0\Degradation 2\64-5\1-1\64-5_afterAnneal_1-1_avg5.xlsm',...
-    'C:\Users\Mallory Jensen\Documents\LeTID\Experiment 0\Degradation 2\69-5\1-1\69-5_afterAnneal_avg5.xlsm',...
-    'C:\Users\Mallory Jensen\Documents\LeTID\Experiment 0\Degradation 2\FZ\FZ_afterAnneal_1-64_avg5.xlsm',...
-    'C:\Users\Mallory Jensen\Documents\LeTID\Experiment 0\Degradation 2\68-13\68-13_before_1-1_avg5.xlsm'};
-
-%First load all of the data. Capture the injection-dependent lifetime
-%curves
-for i = 1:length(samples)
-    figure; 
-    count = 1; 
-    h = []; 
-    label = []; 
-    %Get the number of files
-    times_str = filename_details{i,1}; 
-    times_str = times_str(:,2); 
-    times_num = filename_details{i,2}; 
-    times_num = times_num(:,1); 
-    for j = 1:length(times_str)
-        if times_num(j)==0
-            filename = zero_filenames{i};
-        else
-            if i == 1 || i == 2
-                 %Make the filename the way we expect it
-                filename = [filename_start samples{i}  '\1-1\' samples{i} '_' times_str{j} filename_end{i}];
-            else
-                %Make the filename the way we expect it
-                filename = [filename_start samples{i}  '\' samples{i} '_' times_str{j} filename_end{i}];
-            end
-        end
-        %For the new spreadsheet
-        data = xlsread(filename,'RawData','E4:G124');
-        tau = data(:,1); %seconds
-        deltan = data(:,3); %cm^-3
-        %We need to check and make sure no deltan (x-values) are repeated. This
-        %will interfere with the interpolation. 
-        deltan = flipud(deltan);
-        tau = flipud(tau); 
-        [deltan,IX] = sort(deltan); 
-        tau = tau(IX); 
-        store_index = []; 
-        count_index = 1; 
-        for k = 1:length(deltan)
-            index = find(deltan==deltan(k)); 
-            [m,n] = size(index); 
-            if m>1
-                store_index(count_index:count_index+m-2) = index(2:end); 
-                count_index = count_index+1; 
-            end
-        end
-        deltan(store_index) = [];
-        tau(store_index) = [];
-        dataSave{i,j} = [deltan,tau];
-        %Plot the data as we're going. We'll plot everything but we'll only
-        %label the curves on the magnitude change
-        if round(log10(times_num(j)))==log10(times_num(j))
-            h(count) = loglog(deltan,tau.*1e6,[colors{count} '--'],'LineWidth',3);
-            label(count) = times_num(j); 
-            count = count+1;  
-        else
-            loglog(deltan,tau.*1e6,'.','MarkerEdgeColor',[0.5 0.5 0.5],'MarkerSize',6);
-        end
-        hold on; 
-    end
-    %Label the figure
-    xlabel('Excess carrier density [cm^-^3]','FontSize',30); 
-    ylabel('Lifetime [\mus]','FontSize',30); 
-    title(['Sample ' samples{i}],'FontSize',30);
-    legend(h,num2str(label')); 
-end
-%% Assess degradation for 1/64 files
-%Plot the degradation curves of all samples
-clc;clear all; close all; 
-measurement_log = 'C:\Users\Mallory\Documents\PERC mc-Si degradation\Experiment 0\Degradation 2\measurement_summary_1-64.xlsx';
-directory = 'C:\Users\Mallory\Documents\PERC mc-Si degradation\Experiment 0\Degradation 2';
-%Define the samples as they are listed in the filenames
-samples = {'64-5' '69-5','FZ','68-13'};
-%Read in the data with the times
-filename_details = cell(length(samples),2); 
-for i = 1:length(samples)
-    [num,txt,raw] = xlsread(measurement_log,samples{i}); 
-    filename_details{i,1} = txt(2:end,1:2); 
-    filename_details{i,2} = num; 
-end
-filename_start = [directory '\']; 
-filename_end = {'_1-64_avg5.xlsm' '_1-64_avg5.xlsm' '_1-64_avg5.xlsm' '_1-1.xlsm'}; 
-
-%Time intervals
-% times = [0, 10:10:100, 200:100:1000, 2000:1000:10000 20000:10000:50000];
-
-colors = {'r','g','b','m','c','y'};
-
-zero_filenames = {'C:\Users\Mallory\Documents\PERC mc-Si degradation\Experiment 0\Degradation 2\64-5\1-64\64-5_afterAnneal_1-64_avg5.xlsm',...
-    'C:\Users\Mallory\Documents\PERC mc-Si degradation\Experiment 0\Degradation 2\69-5\1-64\69-5_afterAnneal_1-64_avg5.xlsm',...
-    'C:\Users\Mallory\Documents\PERC mc-Si degradation\Experiment 0\Degradation 2\FZ\FZ_afterAnneal_1-64_avg5.xlsm',...
-    'C:\Users\Mallory\Documents\PERC mc-Si degradation\Experiment 0\Degradation 2\68-13\68-13_before_1-1_avg5.xlsm'};
-
-%First load all of the data. Capture the injection-dependent lifetime
-%curves
-for i = 1:length(samples)
-    figure; 
-    count = 1; 
-    h = []; 
-    label = []; 
-    %Get the number of files
-    times_str = filename_details{i,1}; 
-    times_str = times_str(:,2); 
-    times_num = filename_details{i,2}; 
-    times_num = times_num(:,1); 
-    for j = 1:length(times_str)
-        if times_num(j)==0
-            filename = zero_filenames{i};
-        else
-            if i == 1 || i == 2
-                 %Make the filename the way we expect it
-                filename = [filename_start samples{i}  '\1-64\' samples{i} '_' times_str{j} filename_end{i}];
-            else
-                %Make the filename the way we expect it
-                filename = [filename_start samples{i}  '\' samples{i} '_' times_str{j} filename_end{i}];
-            end
-        end
-        %For the new spreadsheet
-        data = xlsread(filename,'RawData','E4:G124');
-        tau = data(:,1); %seconds
-        deltan = data(:,3); %cm^-3
-        %We need to check and make sure no deltan (x-values) are repeated. This
-        %will interfere with the interpolation. 
-        deltan = flipud(deltan);
-        tau = flipud(tau); 
-        [deltan,IX] = sort(deltan); 
-        tau = tau(IX); 
-        store_index = []; 
-        count_index = 1; 
-        for k = 1:length(deltan)
-            index = find(deltan==deltan(k)); 
-            [m,n] = size(index); 
-            if m>1
-                store_index(count_index:count_index+m-2) = index(2:end); 
-                count_index = count_index+1; 
-            end
-        end
-        deltan(store_index) = [];
-        tau(store_index) = [];
-        dataSave{i,j} = [deltan,tau];
-        %Plot the data as we're going. We'll plot everything but we'll only
-        %label the curves on the magnitude change
-        if round(log10(times_num(j)))==log10(times_num(j))
-            h(count) = loglog(deltan,tau.*1e6,[colors{count} '--'],'LineWidth',3);
-            label(count) = times_num(j); 
-            count = count+1;  
-        else
-            loglog(deltan,tau.*1e6,'.','MarkerEdgeColor',[0.5 0.5 0.5],'MarkerSize',6);
-        end
-        hold on; 
-    end
-    %Label the figure
-    xlabel('Excess carrier density [cm^-^3]','FontSize',30); 
-    ylabel('Lifetime [\mus]','FontSize',30); 
-    title(['Sample ' samples{i}],'FontSize',30);
-    legend(h,num2str(label')); 
-end
 %% Process and save the data after it's been loaded
 
 %Choose one injection level and plot the lifetime at that injection level
@@ -304,7 +124,7 @@ for i = 1:length(samples)
     times_str = filename_details{i,1}; 
     times_str = times_str(:,2); 
     times_num = filename_details{i,2}; 
-    times_num = times_num(:,1); 
+    times_num = times_num(:,4); 
     for j = 1:length(times_num)
         data_now = dataSave{i,j}; 
         lifetime_deg(i,j) = interp1(data_now(:,1),data_now(:,2),injection); 
@@ -323,7 +143,7 @@ for i = 1:length(samples);
     times_str = filename_details{i,1}; 
     times_str = times_str(:,2); 
     times_num = filename_details{i,2}; 
-    times_num = times_num(:,1); 
+    times_num = times_num(:,4); 
 %     lifetime_deg_norm(i,:) = lifetime_deg(i,:)./max(lifetime_deg(i,:)); 
     lifetime_deg_norm(i,:) = lifetime_deg(i,:)./lifetime_deg(i,1);
     semilogx(times_num,lifetime_deg_norm(i,1:length(times_num)),'o','MarkerSize',12,'LineWidth',2); 
@@ -334,7 +154,7 @@ ylabel('Normalized lifetime [-]','FontSize',30);
 legend(samples); 
 
 %Save the data 
-save([directory '\processed_data_8e14_20161122.mat'],'dataSave','lifetime_deg_norm','lifetime_deg','filename_details','samples','times_num');
+save([directory '\processed_data_8e14_20170611.mat'],'dataSave','lifetime_deg_norm','lifetime_deg','filename_details','samples','times_num');
 %% Plot literature degradation curves on top of an open figure
 dirname = 'C:\Users\Mallory\Documents\PERC mc-Si degradation\Literature figures';
 %Load Bredemeier published data
