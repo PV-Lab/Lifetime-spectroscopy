@@ -23,15 +23,9 @@ SOFTWARE.
 %}
 %% First process the raw data
 clear all; close all; clc; 
-dirname = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\June 13 2017'; 
-% samples = {'44a','45a','49a','50a','52a','53a','54a','55a','56a','60a','61a','C-1','C-2','H-1','H-2','FZ'};
-% samples = {'44a','45a','49a','50a','52a','53a','54a','55a','56a','60a','61a','H-1','H-2','FZ','FZ-12','68-2'};
-% samples = {'44a','45a','49a','50a','52a','53a','54a','55a','56a','60a','61a','H-1','H-2','FZ','FZ-12','68-2','66-2','68-4'};
-% samples = {'66-2','68-4','S1-lg'};
-samples = {'H-1','H-2','FZ','FZ-12','68-2','66-2','68-4'};
-% samples = {'56a','60a','61a','H-1','H-2','FZ','FZ-12','68-2'};
-% samples = {'FZ-12','68-2'};
-% samples = {'H-1','H-2','FZ','FZ-12','68-2'};
+dirname = 'C:\Users\Mallory Jensen\Documents\LeTID\PDG\as-received lifetimes'; 
+samples = {'1-4','2-2','2-4','3-1','3-2','3-4','4-1','4-2','4-4','5-1','5-2',...
+    '5-4','6-1','6-2','6-4','7-1','7-4','8-1','8-4','FZ-1','FZ-2'};
 for index = 1:length(samples)
     [fileList,fileListShort] = getAllFiles([dirname '\' samples{index}]); 
     savename = [dirname '\' samples{index} '\Raw_data.mat']';
@@ -64,9 +58,9 @@ end
 clear all; close all; clc;
 %Process data after HF passivation
 
-dirname = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\June 13 2017'; 
-% samples = {'44a','45a','49a','50a','52a','53a','54a','55a','56a','60a','61a','C-1','C-2','H-1','H-2','FZ'};
-samples = {'44a','45a','49a','50a','52a','53a','54a','55a','56a','60a','61a','H-1','H-2','FZ','FZ-12','68-2','66-2','68-4'};
+dirname = 'C:\Users\Mallory Jensen\Documents\LeTID\PDG\as-received lifetimes'; 
+samples = {'1-4','2-2','2-4','3-1','3-2','3-4','4-1','4-2','4-4','5-1','5-2',...
+    '5-4','6-1','6-2','6-4','7-1','7-4','8-1','8-4','FZ-1','FZ-2'};
 lifetime_store = zeros(length(samples),1); 
 
 for i = 1:length(samples)
