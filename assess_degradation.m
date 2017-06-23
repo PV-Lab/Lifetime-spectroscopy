@@ -125,16 +125,18 @@ for i = 1:length(samples)
     times_str = times_str(:,2); 
     times_num = filename_details{i,2}; 
     times_num = times_num(:,4); 
+    times_num(1) = 10; 
     for j = 1:length(times_num)
         data_now = dataSave{i,j}; 
         lifetime_deg(i,j) = interp1(data_now(:,1),data_now(:,2),injection); 
     end
-    semilogx(times_num,lifetime_deg(i,1:length(times_num)).*1e6,'o','MarkerSize',12,'LineWidth',2); 
+    loglog(times_num,lifetime_deg(i,1:length(times_num)).*1e6,'-','MarkerSize',12,'LineWidth',4); 
     hold all; 
 end
-xlabel('Degradation time [s]','FontSize',30); 
-ylabel('Lifetime [\mus]','FontSize',30);
-legend(samples); 
+xlabel('degradation time [s]','FontSize',30); 
+ylabel('lifetime [\mus]','FontSize',30);
+legend('low firing','high firing','PDG high firing','PDG low firing'); 
+axis([1e1 1e6 3 1e2])
 
 %Normalized degradation
 figure; 
