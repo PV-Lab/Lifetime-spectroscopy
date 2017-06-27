@@ -217,7 +217,7 @@ end
 %% Make the degradation curves
 clear all; close all; clc; 
 savedirname = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation';
-savename = '_2024170s_degradation';
+savename = '_2024170s_degradation_log';
 max_time = 2024170; 
 time_shift_E = 801610; %amount of time to shift company E measurements over for comparison after switch
 meas_details = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\measurement_details_removingInitial.xlsx'; 
@@ -319,12 +319,18 @@ labels = {};
 for i = 1:samp
     index = find(strcmp(control{1,i},samples)==1);
     raw_now = lifetime_all{index}; 
-    norm_now = norm_lifetime_all{index}; 
+    norm_now = norm_lifetime_all{index};
+    if raw_now(1,1)==0
+        raw_now(1,1) = 1; 
+    end
+    if norm_now(1,1)==0
+        norm_now(1,1) = 1; 
+    end
     figure(lifetime_raw); 
-    plot(raw_now(:,1),raw_now(:,2),'-o','LineWidth',3,'MarkerSize',10); 
+    semilogx(raw_now(:,1),raw_now(:,2),'-o','LineWidth',3,'MarkerSize',10); 
     hold all; 
     figure(lifetime_norm); 
-    plot(norm_now(:,1),norm_now(:,2),'-o','LineWidth',3,'MarkerSize',10);
+    semilogx(norm_now(:,1),norm_now(:,2),'-o','LineWidth',3,'MarkerSize',10);
     hold all;  
     %Get the lifetime, accounting for surface
     doping_now = control_param(1,i); 
@@ -343,7 +349,7 @@ for i = 1:samp
         end
     end
     figure(lifetime_norm_corr); 
-    plot(norm_now(:,1),tau_rev./tau_rev(1),'-o','LineWidth',3,'MarkerSize',10);
+    semilogx(norm_now(:,1),tau_rev./tau_rev(1),'-o','LineWidth',3,'MarkerSize',10);
     hold all; 
     labels{i,1} = control{2,i};
 end
@@ -382,11 +388,17 @@ for i = 1:samp
     index = find(strcmp(unfired{1,i},samples)==1);
     raw_now = lifetime_all{index}; 
     norm_now = norm_lifetime_all{index}; 
+    if raw_now(1,1)==0
+        raw_now(1,1) = 1; 
+    end
+    if norm_now(1,1)==0
+        norm_now(1,1) = 1; 
+    end
     figure(lifetime_raw); 
-    plot(raw_now(:,1),raw_now(:,2),'-o','LineWidth',3,'MarkerSize',10); 
+    semilogx(raw_now(:,1),raw_now(:,2),'-o','LineWidth',3,'MarkerSize',10); 
     hold all; 
     figure(lifetime_norm); 
-    plot(norm_now(:,1),norm_now(:,2),'-o','LineWidth',3,'MarkerSize',10);
+    semilogx(norm_now(:,1),norm_now(:,2),'-o','LineWidth',3,'MarkerSize',10);
     hold all; 
     labels{i,1} = unfired{2,i}; 
 end
@@ -416,11 +428,17 @@ for i = 1:samp
     index = find(strcmp(fired{1,i},samples)==1);
     raw_now = lifetime_all{index}; 
     norm_now = norm_lifetime_all{index}; 
+    if raw_now(1,1)==0
+        raw_now(1,1) = 1; 
+    end
+    if norm_now(1,1)==0
+        norm_now(1,1) = 1; 
+    end
     figure(lifetime_raw); 
-    plot(raw_now(:,1),raw_now(:,2),'-o','LineWidth',3,'MarkerSize',10); 
+    semilogx(raw_now(:,1),raw_now(:,2),'-o','LineWidth',3,'MarkerSize',10); 
     hold all; 
     figure(lifetime_norm); 
-    plot(norm_now(:,1),norm_now(:,2),'-o','LineWidth',3,'MarkerSize',10);
+    semilogx(norm_now(:,1),norm_now(:,2),'-o','LineWidth',3,'MarkerSize',10);
     hold all; 
     labels{i,1} = fired{2,i}; 
 end
@@ -450,6 +468,12 @@ for i = 1:samp
     index = find(strcmp(compE{1,i},samples)==1);
     raw_now = lifetime_all{index}; 
     norm_now = norm_lifetime_all{index};
+    if raw_now(1,1)==0
+        raw_now(1,1) = 1; 
+    end
+    if norm_now(1,1)==0
+        norm_now(1,1) = 1; 
+    end
     if strcmp(compE{1,i},'68-2')==1 
         remove = find(raw_now(:,1)<time_shift_E); 
         raw_now(remove,:) = []; 
@@ -461,10 +485,10 @@ for i = 1:samp
     raw_now(:,1) = raw_now(:,1)-time_shift_E; 
     norm_now(:,1) = norm_now(:,1)-time_shift_E;
     figure(lifetime_raw); 
-    plot(raw_now(:,1),raw_now(:,2),'-o','LineWidth',3,'MarkerSize',10); 
+    semilogx(raw_now(:,1),raw_now(:,2),'-o','LineWidth',3,'MarkerSize',10); 
     hold all; 
     figure(lifetime_norm); 
-    plot(norm_now(:,1),norm_now(:,2),'-o','LineWidth',3,'MarkerSize',10);
+    semilogx(norm_now(:,1),norm_now(:,2),'-o','LineWidth',3,'MarkerSize',10);
     hold all; 
     labels{i,1} = compE{2,i}; 
 end
