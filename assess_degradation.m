@@ -156,7 +156,7 @@ ylabel('Normalized lifetime [-]','FontSize',30);
 legend(samples); 
 
 %Save the data 
-save([directory '\processed_data_8e14_20170611.mat'],'dataSave','lifetime_deg_norm','lifetime_deg','filename_details','samples','times_num');
+save([directory '\processed_data_8e14_20170724.mat'],'dataSave','lifetime_deg_norm','lifetime_deg','filename_details','samples','times_num');
 %% Plot literature degradation curves on top of an open figure
 dirname = 'C:\Users\Mallory\Documents\PERC mc-Si degradation\Literature figures';
 %Load Bredemeier published data
