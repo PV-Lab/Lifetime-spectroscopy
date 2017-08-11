@@ -23,8 +23,8 @@ SOFTWARE.
 %}
 %% First process the raw data
 clear all; close all; clc; 
-dirname = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\August 9 2017'; 
-samples = {'44b','45b','49b','50b','52b','53b','54b','55b','56b','60b','61b','C-1','C-2'};
+dirname = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\August 11 2017'; 
+samples = {'44b','45b','49b','50b','52b','53b','54b','55b','56b','60b','61b','C-1','C-2','FZ','68-2','68-4','66-2','17-7-26-STD-1','17-8-7-600-1'};
 for index = 1:length(samples)
     [fileList,fileListShort] = getAllFiles([dirname '\' samples{index}]); 
     savename = [dirname '\' samples{index} '\Raw_data.mat']';
@@ -57,8 +57,8 @@ end
 clear all; close all; clc;
 %Process data after HF passivation
 
-dirname = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\August 9 2017'; 
-samples = {'44b','45b','49b','50b','52b','53b','54b','55b','56b','60b','61b','C-1','C-2'};
+dirname = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\August 11 2017'; 
+samples = {'44b','45b','49b','50b','52b','53b','54b','55b','56b','60b','61b','C-1','C-2','FZ','68-2','68-4','66-2','17-7-26-STD-1','17-8-7-600-1'};
 lifetime_store = zeros(length(samples),1); 
 
 for i = 1:length(samples)
@@ -107,9 +107,10 @@ end
 clear all; close all; clc;
 savedirname = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation';
 dirname1 = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\August 9 2017'; 
+dirname2 = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\August 11 2017'; 
 samples = {'44b','45b','49b','50b','52b','53b','54b','55b','56b','60b','61b','C-1','C-2','66-2','FZ'};
-dirnames = {dirname1}; 
-labels = {'initial'};
+dirnames = {dirname1 dirname2}; 
+labels = {'initial' '50s'};
 cm = colormap(hsv(length(dirnames)));
 savename = '_setb_initial_lifetime summary';
 for i = 1:length(samples)
@@ -164,7 +165,7 @@ end
 %% Make the degradation curves
 clear all; close all; clc; 
 savedirname = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation';
-savename = '_initial_degradation';
+savename = '_50s_degradation';
 max_time = 100; 
 time_shift_E = 801610; %amount of time to shift company E measurements over for comparison after switch
 meas_details = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\measurement_details_setb.xlsx'; 
