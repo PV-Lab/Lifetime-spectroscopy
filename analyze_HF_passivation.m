@@ -155,19 +155,20 @@ dirname35 = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF
 dirname36 = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\June 13 2017';
 dirname37 = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\July 12 2017';
 dirname38 = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\August 9 2017';
+dirname39 = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\August 11 2017';
 % dirnames = {dirname1 dirname2 dirname3 dirname4 dirname5 dirname6 dirname7 dirname8 dirname9 dirname10 dirname11 dirname12}; 
 dirnames = {dirname2 dirname3 dirname4 dirname5 dirname6 dirname7 dirname8 ...
     dirname10 dirname11 dirname12 dirname13 dirname14 dirname15 dirname16 ...
     dirname17 dirname18 dirname19 dirname20 dirname21 dirname22 dirname23 ...
     dirname24 dirname25 dirname26 dirname27 dirname28 dirname29 dirname30 ...
     dirname31 dirname32 dirname33 dirname34,dirname35,dirname36 dirname37 ...
-    dirname38}; 
+    dirname38 dirname39}; 
 labels = {'initial','1000s','2000s','3000s','4000s','5000s','10000s',...
     '20000s','30000s','40000s','50000s','60000s','70000s','80000s','90000s',...
     '100000s','154495','206005','258325','300025','349990','402730s',...
     '454750s','508360s' '601540s', '702100s','801610s','902260s',...
     '1004410s','1167760s','1408600s','1579630s','1804090s','2024170s',...
-    '2509510s','2536210s'};
+    '2509510s','2536210s','2561230s'};
 cm = colormap(hsv(length(dirnames))); 
 % samples = {'44a','45a','49a','50a','52a','53a','54a','55a','56a','60a','61a','C-1','C-2','H-1','H-2','FZ'};
 % samples = {'44a','45a','49a','50a','52a','53a','54a','55a','56a','60a','61a','H-1','H-2','FZ','FZ-12','68-2','66-2','68-4'};
@@ -223,8 +224,8 @@ end
 %% Make the degradation curves
 clear all; close all; clc; 
 savedirname = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation';
-savename = '_2536210s_degradation_log';
-max_time = 2536210; 
+savename = '_2561230s_degradation_log';
+max_time = 2561230; 
 time_shift_E = 801610; %amount of time to shift company E measurements over for comparison after switch
 meas_details = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\measurement_details_removingInitial.xlsx'; 
 deltan_target = 6e14; %target injection level for the measurements, changed to 6e14 on 2/13/17 from 5e14
