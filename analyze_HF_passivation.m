@@ -218,8 +218,8 @@ end
 %% Make the degradation curves
 clear all; close all; clc; 
 savedirname = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation';
-savename = '_2561230s_degradation';
-max_time = 2561230; 
+savename = '_3140860s_degradation';
+max_time = 3140860; 
 time_shift_E = 801610; %amount of time to shift company E measurements over for comparison after switch
 meas_details = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\measurement_details_removingInitial.xlsx'; 
 deltan_target = 6e14; %target injection level for the measurements, changed to 6e14 on 2/13/17 from 5e14
