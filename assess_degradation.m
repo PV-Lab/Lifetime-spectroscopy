@@ -116,8 +116,8 @@ end
 
 %Choose one injection level and plot the lifetime at that injection level
 %Now that we have data stored, it's easy enough just to cycle through it
-injection = 8e14; %cm-3
-% injection = 1e15; 
+% injection = 8e14; %cm-3
+injection = 5e14; 
 figure; 
 for i = 1:length(samples)
     %Get the number of files
@@ -156,7 +156,7 @@ ylabel('Normalized lifetime [-]','FontSize',30);
 legend(samples); 
 
 %Save the data 
-save([directory '\processed_data_8e14_20170831.mat'],'dataSave','lifetime_deg_norm','lifetime_deg','filename_details','samples','times_num');
+save([directory '\processed_data_5e14_20170901.mat'],'dataSave','lifetime_deg_norm','lifetime_deg','filename_details','samples','times_num');
 %% Plot literature degradation curves on top of an open figure
 dirname = 'C:\Users\Mallory\Documents\PERC mc-Si degradation\Literature figures';
 %Load Bredemeier published data
