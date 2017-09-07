@@ -23,7 +23,7 @@ SOFTWARE.
 %}
 %% First process the raw data
 clear all; close all; clc; 
-dirname = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\September 6 2017\6000s'; 
+dirname = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\September 7 2017\7000s'; 
 samples = {'Ti-h-5','Ni-h-5','Mo-h-5','V-h-5','C-h-5','Ti-L-5','Ni-L-5','Mo-L-5','V-L-5','C-L-5','17-7-27-1','17-7-27-2'};
 % samples = {'Ni-L-5','Mo-L-5','V-L-5','C-L-5','17-7-27-1','17-7-27-2'};
 for index = 1:length(samples)
@@ -52,7 +52,7 @@ end
 clear all; close all; clc;
 %Process data after HF passivation
 
-dirname = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\September 6 2017\6000s'; 
+dirname = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\September 7 2017\7000s'; 
 samples = {'Ti-h-5','Ni-h-5','Mo-h-5','V-h-5','C-h-5','Ti-L-5','Ni-L-5','Mo-L-5','V-L-5','C-L-5','17-7-27-1','17-7-27-2'};
 lifetime_store = zeros(length(samples),1); 
 
@@ -100,7 +100,7 @@ end
 
 %% Analyze different states together
 clear all; close all; clc;
-savedirname = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\Summary\6000s';
+savedirname = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\Summary\7000s';
 dirname1 = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\August 16 2017';
 dirname2 = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\August 17 2017\250s';
 dirname3 = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\August 17 2017\500s';
@@ -113,13 +113,14 @@ dirname9 = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated sampl
 dirname10 = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\September 5 2017\4000s';
 dirname11 = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\September 5 2017\5000s';
 dirname12 = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\September 6 2017\6000s';
+dirname13 = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\September 7 2017\7000s';
 dirnames = {dirname2 dirname3 dirname4 dirname5 dirname6 dirname7 dirname8 ...
-    dirname10 dirname11 dirname12}; 
+    dirname10 dirname11 dirname12 dirname13}; 
 labels = {'initial','250s','500s','501s','750s','1000s','2000s',...
-    '3000s','4000s','4001s','5000s','6000s'};
+    '3000s','4000s','4001s','5000s','6000s','7000s'};
 cm = colormap(hsv(length(dirnames))); 
 samples = {'Ti-h-5','Ni-h-5','Mo-h-5','V-h-5','C-h-5','Ti-L-5','Ni-L-5','Mo-L-5','V-L-5','C-L-5','17-7-27-1','17-7-27-2'};
-savename = '_6000s_lifetime summary';
+savename = '_7000s_lifetime summary';
 for i = 1:length(samples)
     h=figure('units','normalized','outerposition',[0 0 1 1]);
     curves = [];
@@ -169,9 +170,9 @@ end
 
 %% Make the degradation curves
 clear all; close all; clc; 
-savedirname = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\Summary\6000s';
-savename = '_6000s_degradation';
-max_time = 6000; 
+savedirname = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\Summary\7000s';
+savename = '_7000s_degradation';
+max_time = 7000; 
 meas_details = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\measurement_details.xlsx'; 
 deltan_target = 8e14; %target injection level for the measurements, changed to 6e14 on 2/13/17 from 5e14
 %Get the measurement details
