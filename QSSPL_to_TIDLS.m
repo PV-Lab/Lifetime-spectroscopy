@@ -44,12 +44,12 @@ end
 
 %% Now try averaging for a series 
 clear all; close all; clc;
-dirname = 'C:\Users\Mallory Jensen\Dropbox (MIT)\TIDLS at UNSW\Advanced system measurements\20160830\94-20-8';
-sample = '94-20-8'; 
-Ctonum = 'C_glassND_1-1_';
+dirname = 'C:\Users\Mallory Jensen\Documents\Noncontact crucible\TIDLS UNSW\Data\sorted by sample\16 6 28 N 1\25C\9-26-16';
+sample = '16-6-28-N-1'; 
+Ctonum = 'glass_1-1_';
 time_before = .001; %s
-T = [25 50 100 150]; 
-num_repeats = [10 10 10 10]; 
+T = [25]; 
+num_repeats = [5]; 
 [dataSave] = average_QSSPL(dirname,sample,T,num_repeats,time_before,Ctonum);
 
 %Now, given this data, we want to write this to a new file which can be
@@ -137,15 +137,16 @@ loglog(togetherPL(:,1),togetherPL(:,2),'k--','LineWidth',2);
 
 %% 
 clear all; close all; 
-sample = '16-6-28-P-2'; 
-dirname = 'C:\Users\Malloryj\Dropbox (MIT)\TIDLS at UNSW\Advanced system measurements\By sample\16-6-28-P-2\Summary files'; 
-T = [-100 -50 25 100]; %C
+sample = '16-6-28-N-1'; 
+dirname = 'C:\Users\Mallory Jensen\Documents\Noncontact crucible\TIDLS UNSW\Data\sorted by sample\16 6 28 N 1\25C\9-26-16'; 
+T = [25]; %C
 dataStore = cell(length(T),1); 
 figure; 
 for i = 1:length(T)
 %     filename = [dirname '\' num2str(T(i)) 'C\' sample '.txt']; 
 %     filename = [dirname '\' num2str(T(i)) 'C\' sample '_' num2str(T(i)) 'C.txt'];
-    filename = [dirname '\' num2str(T(i)) 'C\' sample '_' num2str(T(i)) 'C_PC.txt'];
+%     filename = [dirname '\' num2str(T(i)) 'C\' sample '_' num2str(T(i)) 'C_PC.txt'];
+    filename = [dirname '\' sample '.txt']; 
     format_for_TIDLS(filename,[dirname '\' num2str(T(i)) 'C'],'PC');
     load([dirname '\' num2str(T(i)) 'C\Raw_data.mat']); 
     data_now = dataSave; 
