@@ -27,12 +27,16 @@ function [dataSave] = average_QSSPL(dirname,sample,T,num_repeats,time_before,Cto
     for i = 1:length(T)
         for j =1:num_repeats(i)
             %Make filename
+            
 %             filename = [dirname '\' sample '_' num2str(T(i)) Ctonum num2str(j)...
 %                 '.Raw Data.dat'];
+
 %             filename = [dirname '\' sample Ctonum num2str(j)...
 %                 '.Raw Data.dat'];
+
 %             filename = [dirname '\' sample Ctonum num2str(j)...
 %                 '.Raw Data.dat'];
+
             filename = [dirname '\' sample '_' Ctonum num2str(j)...
                 '.Raw Data.dat'];
             %Make the savename
