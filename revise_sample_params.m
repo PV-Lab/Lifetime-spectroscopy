@@ -76,3 +76,46 @@ for i = 1:length(samples)
         end
     end
 end
+
+%% Another version to modify PCPL files 
+
+clear all; close all; 
+
+%Get the sample parameters
+sample_params = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Sample measurements.xlsx'; 
+[params,names_params] = xlsread(sample_params,'sample summary','A2:D13');
+
+dir_PL = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\PCPL\PCPL August 8 2017'; 
+samples = {'C-L-5','Mo-L-5','Ni-L-5','Ti-L-5','V-L-5'}; 
+exposure = [10, 10, 10, 30, 30];
+LP = [25 30 35 40 45 50 55 60 65 70 75 80];
+    
+for i = 1:length(samples)
+    %Get the proper parameters
+    params_index = find(strcmp(names_params,samples{i})==1); 
+    params_this_sample = params(params_index,:); 
+    for j = 1:length(LP)
+        %Make the filename
+        filename = [dir_PL '\' samples{i} '_' num2str(exposure(i)) 's_' num2str(LP(j)) 'LP.xlsm']; 
+        try
+            %Write the thickness
+            xlswrite(filename,params_this_sample(1),'User','B6'); 
+        catch
+            disp(['There was an error with ' filename ' thickness']); 
+        end
+        try
+            %Write the optical constant
+            xlswrite(filename,params_this_sample(3),'User','E6'); 
+        catch
+            disp(['There was an error with ' filename ' optical constant']); 
+        end
+        try
+            %Write the resistivity
+            xlswrite(filename,params_this_sample(2),'User','C6'); 
+        catch
+            disp(['There was an error with ' filename ' resistivity']); 
+        end
+    end
+end
+        
+
