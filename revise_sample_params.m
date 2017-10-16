@@ -38,37 +38,39 @@ sample_params = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Sample measur
 [params,names_params] = xlsread(sample_params,'sample summary','A2:D13'); 
 
 for i = 1:length(samples)
-    meas_thissample = meas(i,:);
-    %Get the proper parameters
-    params_index = find(strcmp(names_params,samples{i})==1); 
-    params_this_sample = params(params_index,:); 
-    for j = 1:length(meas_thissample)
-        if isnan(meas_thissample(j))==0
-            %now create the proper directory name
-            findex = find(meas_thissample(j)==times);  
-            dirname = [filenames{findex} '\' samples{i}];
-            %Get all of the files in this directory
-            fileList = dir(fullfile(dirname,'*.xlsm')); 
-            fileList = {fileList.name}'; 
-            for k = 1:length(fileList)
-                filename = fullfile(dirname,fileList{k}); 
-                try
-                    %Write the thickness
-                    xlswrite(filename,params_this_sample(1)*1e-4,'User','B6'); 
-                catch
-                    disp(['There was an error with ' filename ' thickness']); 
-                end
-                try
-                    %Write the optical constant
-                    xlswrite(filename,params_this_sample(3),'User','E6'); 
-                catch
-                    disp(['There was an error with ' filename ' optical constant']); 
-                end
-                try
-                    %Write the resistivity
-                    xlswrite(filename,params_this_sample(2),'User','C6'); 
-                catch
-                    disp(['There was an error with ' filename ' resistivity']); 
+    if strcmp(samples{i},'C-h-5')==0 && strcmp(samples{i},'C-L-5')==0
+        meas_thissample = meas(i,:);
+        %Get the proper parameters
+        params_index = find(strcmp(names_params,samples{i})==1); 
+        params_this_sample = params(params_index,:); 
+        for j = 1:length(meas_thissample)
+            if isnan(meas_thissample(j))==0
+                %now create the proper directory name
+                findex = find(meas_thissample(j)==times);  
+                dirname = [filenames{findex} '\' samples{i}];
+                %Get all of the files in this directory
+                fileList = dir(fullfile(dirname,'*.xlsm')); 
+                fileList = {fileList.name}'; 
+                for k = 1:length(fileList)
+                    filename = fullfile(dirname,fileList{k}); 
+                    try
+                        %Write the thickness
+                        xlswrite(filename,params_this_sample(1),'User','B6'); 
+                    catch
+                        disp(['There was an error with ' filename ' thickness']); 
+                    end
+                    try
+                        %Write the optical constant
+                        xlswrite(filename,params_this_sample(3),'User','E6'); 
+                    catch
+                        disp(['There was an error with ' filename ' optical constant']); 
+                    end
+                    try
+                        %Write the resistivity
+                        xlswrite(filename,params_this_sample(2),'User','C6'); 
+                    catch
+                        disp(['There was an error with ' filename ' resistivity']); 
+                    end
                 end
             end
         end
