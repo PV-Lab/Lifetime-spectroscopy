@@ -83,7 +83,7 @@ clear all; close all;
 
 %Get the sample parameters
 sample_params = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Sample measurements.xlsx'; 
-[params,names_params] = xlsread(sample_params,'sample summary','A2:D13');
+[params,names_params] = xlsread(sample_params,'sample summary','A2:E13');
 
 dir_PL = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\PCPL\PCPL August 8 2017'; 
 samples = {'C-L-5','Mo-L-5','Ni-L-5','Ti-L-5','V-L-5'}; 
@@ -105,7 +105,7 @@ for i = 1:length(samples)
         end
         try
             %Write the optical constant
-            xlswrite(filename,params_this_sample(3),'User','E6'); 
+            xlswrite(filename,params_this_sample(4),'User','E6'); 
         catch
             disp(['There was an error with ' filename ' optical constant']); 
         end
