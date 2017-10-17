@@ -30,7 +30,7 @@ title('Maps before alignment');
 
 [optimizer,metric] = imregconfig('Multimodal');
 
-moving_aligned = imregister(moving,fixed,'affine',optimizer,metric); 
+moving_aligned = imregister(moving,fixed,'similarity',optimizer,metric); 
 
 figure;
 imshowpair(fixed,moving_aligned,'blend');
