@@ -23,36 +23,42 @@ SOFTWARE.
 %}
 %% First process the raw data
 clear all; close all; clc; 
-dirname = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\September 7 2017\7000s'; 
+dirname = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\September 26 2017'; 
 samples = {'Ti-h-5','Ni-h-5','Mo-h-5','V-h-5','C-h-5','Ti-L-5','Ni-L-5','Mo-L-5','V-L-5','C-L-5','17-7-27-1','17-7-27-2'};
 % samples = {'Ni-L-5','Mo-L-5','V-L-5','C-L-5','17-7-27-1','17-7-27-2'};
 for index = 1:length(samples)
-    [fileList,fileListShort] = getAllFiles([dirname '\' samples{index}]); 
+%     [fileList,fileListShort] = getAllFiles([dirname '\' samples{index}]); 
+    %Get all of the files in this directory
+    fileList = dir(fullfile([dirname '\' samples{index}],'*.xlsm')); 
+    fileList = {fileList.name}'; 
     savename = [dirname '\' samples{index} '\Raw_data.mat']';
     process_xls_data([dirname '\' samples{index}],savename);
     %We also want to store all of the information for each file
     %T, thickness, resistivity (entered/measured), type, optical constant, calibration,
     %1/64 or 1/1
     for file = 1:length(fileList)
-        this_file = fileList{file};
+        this_file = fullfile([dirname '\' samples{index}],fileList{file});
+%         this_file = fileList{file};
         thick{file,1} = xlsread(this_file,'User','B6');
         res{file,1} = xlsread(this_file,'User','C6');
         oc{file,1} = xlsread(this_file,'User','E6');
         temp{file,1} = 25;
-        meas_res{file,1} = xlsread(this_file,'Summary','M2');%'Q2');
-        calib{file,1} = xlsread(this_file,'Summary','S2');%'T2');
+        meas_res{file,1} = xlsread(this_file,'Summary','N2');%'Q2');
+        calib{file,1} = xlsread(this_file,'Summary','T2');%'T2');
         doping{file,1} = xlsread(this_file,'Summary','E2');
     end
-    info = struct('filename',fileListShort,'thickness',thick,'resistivity',res,'measured_resistivity',meas_res,'optical_constant',oc,'calibration_factor',calib,'temperature',temp,'doping',doping);
+%     info = struct('filename',fileListShort,'thickness',thick,'resistivity',res,'measured_resistivity',meas_res,'optical_constant',oc,'calibration_factor',calib,'temperature',temp,'doping',doping);
+    info = struct('filename',fileList,'thickness',thick,'resistivity',res,'measured_resistivity',meas_res,'optical_constant',oc,'calibration_factor',calib,'temperature',temp,'doping',doping);
     save([dirname '\' samples{index} '\meas_info.mat'],'info');
-    clear filelist thick res meas_res oc calib temp doping fileListShort
+%     clear filelist thick res meas_res oc calib temp doping fileListShort
+    clear filelist thick res meas_res oc calib temp doping
 end
 
 %% Now analyze the data
 clear all; close all; clc;
 %Process data after HF passivation
 
-dirname = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\September 7 2017\7000s'; 
+dirname = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\September 26 2017'; 
 samples = {'Ti-h-5','Ni-h-5','Mo-h-5','V-h-5','C-h-5','Ti-L-5','Ni-L-5','Mo-L-5','V-L-5','C-L-5','17-7-27-1','17-7-27-2'};
 lifetime_store = zeros(length(samples),1); 
 
