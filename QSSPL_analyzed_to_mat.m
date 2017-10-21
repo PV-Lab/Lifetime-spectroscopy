@@ -32,15 +32,15 @@ clear all; close all; clc;
 sample = '29-10-4'; 
 %Where the files are stored, after this directory there should be folders
 %for each temperature
-dirname = 'C:\Users\Mallory Jensen\Dropbox (MIT)\TIDLS data - UROP\Data\sorted by sample\29 10 4\analyzed data'; 
+dirname = 'C:\Users\Mallory Jensen\Dropbox (MIT)\TIDLS data - UROP\Data\sorted by sample\29 10 4\analyzed data\PC'; 
 %Temperatures we're looking at
-T = [25]; %C
+T = [-75 25 100]; %C
 %Which data do we want, PC or PL
-PCorPL = 'PL'; 
+PCorPL = 'PC'; 
 
 %Now the actual sample values
 %Actual sample temperatures, used for analysis and in units of Kelvin
-sampleT = [298]; 
+sampleT = [198 298 367]; 
 thick = .0179; %thickness, microns
 res = 1.45; %resistivity, ohm-cm
 opt = 0.85; %This is the 1 minus the reflectivity value used for flash measurements
