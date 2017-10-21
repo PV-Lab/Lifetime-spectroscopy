@@ -30,7 +30,7 @@ SOFTWARE.
 clear all; close all; clc; 
 %Change these values
 %-----------------------------
-bora = 'compE'; %'set-b' or 'set-a' or 'compE'
+bora = 'set-b'; %'set-b' or 'set-a' or 'compE'
 %Most recent directory that we want to analyze now. 
 dirname = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\October 19 2017';
 %where we want to save any new, non-sample-specific data
@@ -334,7 +334,14 @@ for i = 1:length(samples)
             end
         end
         FZ_corr{i} = [raw_now(:,1) tau_rev]; 
-        FZ_corr_norm{i} = [raw_now(:,1) tau_rev./tau_rev(1)];
+        if isnan(tau_rev(1,1))==1
+            FZ_corr_norm{i} = [raw_now(:,1) tau_rev./tau_rev(1,2)];
+        elseif isnan(tau_rev(1,2))==1
+            FZ_corr_norm{i} = [raw_now(:,1) tau_rev./tau_rev(1,1)];
+        else
+            %both were measured?
+            FZ_corr_norm{i} = [raw_now(:,1) tau_rev./tau_rev(1,:)];
+        end
     end
 end
 
@@ -527,4 +534,9 @@ for i = 1:length(plotting_group)
     print(lifetime_mcSi_ratio_norm,'-dpng','-r0',[savedirname '\' plotting_names{i} '_mcSi_ratio_norm' savename '.png']);
 end
 
+%Let's save all of the processed data as a .mat file for easy use later
+save([savedirname '\' bora '_all_data' savename '.mat'],'lifetime_all',...
+    'norm_lifetime_all','FZ_corr','FZ_corr_norm','mcSi_harm',...
+    'mcSi_harm_norm','mcSi_ratio','mcSi_ratio_norm','doping_all',...
+    'thickness_all','samples','SRV_FZ','surface_control');
 
