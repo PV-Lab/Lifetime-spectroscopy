@@ -23,7 +23,7 @@ SOFTWARE.
 %}
 %% First process the raw data
 clear all; close all; clc; 
-dirname = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\September 26 2017'; 
+dirname = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\October 20 2017\120000s'; 
 samples = {'Ti-h-5','Ni-h-5','Mo-h-5','V-h-5','C-h-5','Ti-L-5','Ni-L-5','Mo-L-5','V-L-5','C-L-5','17-7-27-1','17-7-27-2'};
 % samples = {'Ni-L-5','Mo-L-5','V-L-5','C-L-5','17-7-27-1','17-7-27-2'};
 for index = 1:length(samples)
@@ -58,7 +58,7 @@ end
 clear all; close all; clc;
 %Process data after HF passivation
 
-dirname = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\September 26 2017'; 
+dirname = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\October 20 2017\120000s'; 
 samples = {'Ti-h-5','Ni-h-5','Mo-h-5','V-h-5','C-h-5','Ti-L-5','Ni-L-5','Mo-L-5','V-L-5','C-L-5','17-7-27-1','17-7-27-2'};
 lifetime_store = zeros(length(samples),1); 
 
@@ -106,7 +106,7 @@ end
 
 %% Analyze different states together
 clear all; close all; clc;
-savedirname = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\Summary\7000s';
+savedirname = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\Summary\120000s';
 dirname1 = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\August 16 2017';
 dirname2 = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\August 17 2017\250s';
 dirname3 = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\August 17 2017\500s';
@@ -120,13 +120,36 @@ dirname10 = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samp
 dirname11 = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\September 5 2017\5000s';
 dirname12 = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\September 6 2017\6000s';
 dirname13 = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\September 7 2017\7000s';
+dirname14 = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\September 11 2017\8000s'; 
+dirname15 = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\September 14 2017\8000s'; 
+dirname16 = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\September 14 2017\9000s'; 
+dirname17 = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\September 22 2017\9000s'; 
+dirname18 = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\September 22 2017\10000s'; 
+dirname19 = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\September 26 2017'; 
+dirname20 = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\September 28 2017'; 
+dirname21 = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\October 3 2017\20000s'; 
+dirname22 = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\October 3 2017\30000s'; 
+dirname23 = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\October 4 2017\40000s';
+dirname24 = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\October 11 2017\40000s'; 
+dirname25 = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\October 12 2017\47000s'; 
+dirname26 = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\October 13 2017\60000s';
+dirname27 = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\October 16 2017\70000s'; 
+dirname28 = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\October 16 2017\80000s';
+dirname29 = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\October 17 2017\90000s';
+dirname30 = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\October 18 2017\100000s'; 
+dirname31 = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\October 20 2017\120000s'; 
 dirnames = {dirname2 dirname3 dirname4 dirname5 dirname6 dirname7 dirname8 ...
-    dirname10 dirname11 dirname12 dirname13}; 
+    dirname10 dirname11 dirname12 dirname13 dirname14 dirname15 ...
+    dirname16 dirname17 dirname18 dirname19 dirname20 dirname21 ...
+    dirname22 dirname23 dirname24 dirname25 dirname26 dirname27 ...
+    dirname28 dirname29 dirname30 dirname31}; 
 labels = {'initial','250s','500s','501s','750s','1000s','2000s',...
-    '3000s','4000s','4001s','5000s','6000s','7000s'};
+    '3000s','4000s','4001s','5000s','6000s','7000s','8000s','9000s',...
+    '9001s','10000s','17300s','20000s','20001s','30000s','40030s','40031s',...
+    '47471s','60221s','70031s','80031s','90031s','100361s','127061s'};
 cm = colormap(hsv(length(dirnames))); 
 samples = {'Ti-h-5','Ni-h-5','Mo-h-5','V-h-5','C-h-5','Ti-L-5','Ni-L-5','Mo-L-5','V-L-5','C-L-5','17-7-27-1','17-7-27-2'};
-savename = '_7000s_lifetime summary';
+savename = '_127061s_lifetime summary';
 for i = 1:length(samples)
     h=figure('units','normalized','outerposition',[0 0 1 1]);
     curves = [];
@@ -176,9 +199,9 @@ end
 
 %% Make the degradation curves
 clear all; close all; clc; 
-savedirname = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\Summary\7000s';
-savename = '_7000s_degradation';
-max_time = 7000; 
+savedirname = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\Summary\120000s';
+savename = '_120000s_degradation';
+max_time = 120000; 
 meas_details = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\measurement_details.xlsx'; 
 deltan_target = 8e14; %target injection level for the measurements, changed to 6e14 on 2/13/17 from 5e14
 %Get the measurement details
@@ -242,12 +265,15 @@ labels = {};
 for i = 1:samp
     index = find(strcmp(control{1,i},samples)==1);
     raw_now = lifetime_all{index}; 
+    if raw_now(1,1)==0
+        raw_now(1,1) = 1; 
+    end
     norm_now = norm_lifetime_all{index}; 
     figure(lifetime_raw); 
-    plot(raw_now(:,1),raw_now(:,2),'-o','LineWidth',3,'MarkerSize',10); 
+    loglog(raw_now(:,1),raw_now(:,2),'-o','LineWidth',3,'MarkerSize',10); 
     hold all; 
     figure(lifetime_norm); 
-    plot(norm_now(:,1),norm_now(:,2),'-o','LineWidth',3,'MarkerSize',10);
+    semilogx(norm_now(:,1),norm_now(:,2),'-o','LineWidth',3,'MarkerSize',10);
     hold all;  
     labels{i,1} = control{2,i};
     %Calculate Nt_star
@@ -256,7 +282,7 @@ for i = 1:samp
         Nt_star_now(j) = (1/raw_now(j,2))-(1/raw_now(1,2));  
     end
     figure(Nt_star); 
-    plot(raw_now(:,1),Nt_star_now,'-o','LineWidth',3,'MarkerSize',10); 
+    loglog(raw_now(:,1),Nt_star_now,'-o','LineWidth',3,'MarkerSize',10); 
     hold all; 
 end
 figure(lifetime_raw); 
@@ -279,7 +305,7 @@ print(lifetime_norm,'-dpng','-r0',[savedirname '\highH_norm' savename '.png']);
 figure(Nt_star); 
 xlabel('time [s]','FontSize',25); 
 ylabel('N_t*','FontSize',25); 
-legend(labels); 
+legend(labels,'Location','northwest'); 
 title('high hydrogen','FontSize',25); 
 set(0,'defaultAxesFontSize', 20)
 hgsave(Nt_star,[savedirname '\highH_Ntstar' savename]);
@@ -297,12 +323,15 @@ labels = {};
 for i = 1:samp
     index = find(strcmp(control{1,i},samples)==1);
     raw_now = lifetime_all{index}; 
+    if raw_now(1,1)==0
+        raw_now(1,1) = 1; 
+    end
     norm_now = norm_lifetime_all{index}; 
     figure(lifetime_raw); 
-    plot(raw_now(:,1),raw_now(:,2),'-o','LineWidth',3,'MarkerSize',10); 
+    loglog(raw_now(:,1),raw_now(:,2),'-o','LineWidth',3,'MarkerSize',10); 
     hold all; 
     figure(lifetime_norm); 
-    plot(norm_now(:,1),norm_now(:,2),'-o','LineWidth',3,'MarkerSize',10);
+    semilogx(norm_now(:,1),norm_now(:,2),'-o','LineWidth',3,'MarkerSize',10);
     hold all;  
     labels{i,1} = control{2,i};
     %Calculate Nt_star
@@ -311,7 +340,7 @@ for i = 1:samp
         Nt_star_now(j) = (1/raw_now(j,2))-(1/raw_now(1,2));  
     end
     figure(Nt_star); 
-    plot(raw_now(:,1),Nt_star_now,'-o','LineWidth',3,'MarkerSize',10); 
+    loglog(raw_now(:,1),Nt_star_now,'-o','LineWidth',3,'MarkerSize',10); 
     hold all; 
 end
 figure(lifetime_raw); 
@@ -334,7 +363,7 @@ print(lifetime_norm,'-dpng','-r0',[savedirname '\lowH_norm' savename '.png']);
 figure(Nt_star); 
 xlabel('time [s]','FontSize',25); 
 ylabel('N_t*','FontSize',25); 
-legend(labels); 
+legend(labels,'Location','northwest'); 
 title('low hydrogen','FontSize',25); 
 set(0,'defaultAxesFontSize', 20)
 hgsave(Nt_star,[savedirname '\lowH_Ntstar' savename]);
