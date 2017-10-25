@@ -80,20 +80,22 @@ if strcmp(bora,'set-a')==1
     dirname40 = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\August 14 2017';
     dirname41 = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\October 18 2017';
     dirname42 = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\October 19 2017';
+    dirname43 = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\October 24 2017';
     dirnames = {dirname2 dirname3 dirname4 dirname5 dirname6 dirname7 dirname8 ...
         dirname10 dirname11 dirname12 dirname13 dirname14 dirname15 dirname16 ...
         dirname17 dirname18 dirname19 dirname20 dirname21 dirname22 dirname23 ...
         dirname24 dirname25 dirname26 dirname27 dirname28 dirname29 dirname30 ...
         dirname31 dirname32 dirname33 dirname34,dirname35,dirname36 dirname37 ...
-        dirname38 dirname39 dirname40 dirname41 dirname42}; 
+        dirname38 dirname39 dirname40 dirname41  dirname43}; 
     labels = {'initial','1000s','2000s','3000s','4000s','5000s','10000s',...
         '20000s','30000s','40000s','50000s','60000s','70000s','80000s','90000s',...
         '100000s','154495','206005','258325','300025','349990','402730s',...
         '454750s','508360s' '601540s', '702100s','801610s','902260s',...
         '1004410s','1167760s','1408600s','1579630s','1804090s','2024170s',...
-        '2509510s','2536210s','2561230s','3140860s' '3140861s','3196270s'};
-    savename = '_seta_3196270s';
-    surface_control = {'FZ','FZ-new'};; 
+        '2509510s','2536210s','2561230s','3140860s' '3140861s','3196270s',...
+        '3252190s'};
+    savename = '_seta_3252190s';
+    surface_control = {'FZ','FZ-new'};
     control = {'H-1','H-2','FZ','FZ-12','68-2','66-2','FZ-new';...
     'Unfired Cz (120 min H)','Fired Cz (120 min H)','FZ passivation',...
     'FZ degradation','mc-Si 950C fired undegraded',...
@@ -104,7 +106,7 @@ if strcmp(bora,'set-a')==1
         '0 min','10 min','30 min','120 min','30 min no H','LeTID control'};
     plotting_groups = {control, fired, unfired}; 
     plotting_names = {'controls','fired','unfired'}; 
-    max_time = 3196270; 
+    max_time = 3252190; 
 elseif strcmp(bora,'set-b')==1
     meas_details = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\measurement_details_setb.xlsx'; 
     samples = {'44b','45b','49b','50b','52b','53b','54b','55b','56b','60b','61b','C-1','C-2','66-2','FZ-new','FZ','FZ-12'};
@@ -120,11 +122,12 @@ elseif strcmp(bora,'set-b')==1
     dirname10 = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\September 28 2017';
     dirname11 = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\October 12 2017';
     dirname12 = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\October 19 2017';
+    dirname13 = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\October 24 2017'; 
     dirnames = {dirname1 dirname2 dirname3 dirname4 dirname5 dirname6 dirname7 ...
-        dirname8 dirname9 dirname10 dirname11 dirname12}; 
+        dirname8 dirname9 dirname10 dirname11 dirname12 dirname13}; 
     labels = {'initial' '50s' '100s' '250s' '500s' '501s' '750s' '1000s' '1500s' ...
-        '2000s' '2500s' '3000s'};
-    savename = '_setb_3000s';
+        '2000s' '2500s' '3000s' '3500s'};
+    savename = '_setb_3500s';
     surface_control = {'FZ','FZ-new'}; 
     control = {'C-1','C-2','FZ','66-2','FZ-12','FZ-new';...
     'Unfired Cz (no H)','Fired Cz (no H)','FZ passivation','mc-Si 750C fired undegraded','FZ degradation','FZ passivation #2'};
@@ -134,7 +137,7 @@ elseif strcmp(bora,'set-b')==1
         '0 min','10 min','30 min','120 min','30 min no H','LeTID control'};
     plotting_groups = {control, fired, unfired}; 
     plotting_names = {'controls','fired','unfired'}; 
-    max_time = 3000; 
+    max_time = 3500; 
 elseif strcmp(bora,'compE')==1
     meas_details = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\measurement_details_compE.xlsx'; 
     samples = {'66-2','FZ-new','68-2','68-4','FZ-12','FZ'};
@@ -160,22 +163,23 @@ elseif strcmp(bora,'compE')==1
     dirname20 = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\September 28 2017';
     dirname21 = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\October 12 2017';
     dirname22 = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\October 19 2017';
+    dirname23 = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\October 24 2017';
     dirnames = {dirname1 dirname2 dirname3 dirname4 dirname5 dirname6 dirname7 ...
         dirname8 dirname9 dirname10 dirname11 dirname12 dirname13 dirname14 ...
         dirname15 dirname16 dirname17 dirname18 dirname19 dirname20 dirname21 ...
-        dirname22};
+        dirname22 dirname23};
     labels = {'initial','81330s','103800s','129780s','151350s','187140s',...
         '219330s','247410s','273060s','299760s','324780s','376890s',...
         '434940s','485940s','543570s','599160s','661830s','724170s',...
-        '781890s','839070s','897840s','953250s'};
+        '781890s','839070s','897840s','953250s','1009170s'};
     plotting_groups = {{'FZ-new','FZ-12','FZ';...
         'FZ passivation new','FZ degradation','FZ passivation'},...
         {'66-2','68-2','68-4';'mc-Si 750C undegraded',...
         'mc-Si 950C bare','mc-Si 950C passivated'}}; 
     plotting_names = {'controls','compE'}; 
     surface_control = {'FZ-new','FZ'};
-    savename = '_compE_953250s';
-    max_time = 953250; 
+    savename = '_compE_1009170s';
+    max_time = 1009170; 
 else
     disp('There was an error assinging the sample set'); 
 end
