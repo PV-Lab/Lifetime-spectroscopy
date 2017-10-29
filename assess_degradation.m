@@ -140,12 +140,14 @@ axis([1e1 1e6 3 1e2])
 
 %Normalized degradation
 figure; 
+times = zeros(117,4); 
 for i = 1:length(samples); 
     %Get the number of files
     times_str = filename_details{i,1}; 
     times_str = times_str(:,2); 
     times_num = filename_details{i,2}; 
     times_num = times_num(:,4); 
+    times(1:length(times_num),i) = times_num; 
 %     lifetime_deg_norm(i,:) = lifetime_deg(i,:)./max(lifetime_deg(i,:)); 
     lifetime_deg_norm(i,:) = lifetime_deg(i,:)./lifetime_deg(i,1);
     semilogx(times_num,lifetime_deg_norm(i,1:length(times_num)),'o','MarkerSize',12,'LineWidth',2); 
@@ -156,7 +158,7 @@ ylabel('Normalized lifetime [-]','FontSize',30);
 legend(samples); 
 
 %Save the data 
-save([directory '\processed_data_5e14_20171020.mat'],'dataSave','lifetime_deg_norm','lifetime_deg','filename_details','samples','times_num');
+save([directory '\processed_data_5e14_20171029.mat'],'dataSave','lifetime_deg_norm','lifetime_deg','filename_details','samples','times_num');
 %% Plot literature degradation curves on top of an open figure
 dirname = 'C:\Users\Mallory\Documents\PERC mc-Si degradation\Literature figures';
 %Load Bredemeier published data
