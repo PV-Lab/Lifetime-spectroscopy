@@ -30,9 +30,9 @@ SOFTWARE.
 clear all; close all; clc; 
 %Change these values
 %-----------------------------
-bora = 'compE'; %'set-b' or 'set-a' or 'compE'
+bora = 'set-b'; %'set-b' or 'set-a' or 'compE'
 %Most recent directory that we want to analyze now. 
-dirname = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\October 24 2017';
+dirname = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\October 26 2017';
 %where we want to save any new, non-sample-specific data
 savedirname = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation'; 
 %Spreadsheet specification for the actual measurements
