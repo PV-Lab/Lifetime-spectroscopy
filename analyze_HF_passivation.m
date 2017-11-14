@@ -212,7 +212,7 @@ end
 
 %% Make the degradation curves
 clear all; close all; clc; 
-savedirname = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\Summary\157871s';
+savedirname = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\Summary\331001s';
 savename = '_331001s_degradation';
 max_time = 331001; 
 meas_details = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\measurement_details.xlsx'; 
@@ -381,3 +381,68 @@ title('low hydrogen','FontSize',25);
 set(0,'defaultAxesFontSize', 20)
 hgsave(Nt_star,[savedirname '\lowH_Ntstar' savename]);
 print(Nt_star,'-dpng','-r0',[savedirname '\lowH_Ntstar' savename '.png']);
+
+%Make plots to compare each element low vs. high
+to_plots = {{'Ti-L-5','Ti-h-5';'Ti low H','Ti high H'},...
+    {'Ni-L-5','Ni-h-5';'Ni low H','Ni high H'},...
+    {'Mo-L-5','Mo-h-5';'Mo low H','Mo high H'},...
+    {'V-L-5','V-h-5';'V low H','V high H'},...
+    {'C-L-5','C-h-5';'C low H','C high H'}};
+savepre = {'Ti','Ni','Mo','V','C'};
+
+for k = 1:length(to_plots)
+    control = to_plots{k}; 
+    lifetime_raw=figure('units','normalized','outerposition',[0 0 1 1]);
+    lifetime_norm=figure('units','normalized','outerposition',[0 0 1 1]);
+    Nt_star=figure('units','normalized','outerposition',[0 0 1 1]);
+    [nothing,samp] = size(control); 
+    labels = {}; 
+    for i = 1:samp
+        index = find(strcmp(control{1,i},samples)==1);
+        raw_now = lifetime_all{index}; 
+        if raw_now(1,1)==0
+            raw_now(1,1) = 1; 
+        end
+        norm_now = norm_lifetime_all{index}; 
+        figure(lifetime_raw); 
+        loglog(raw_now(:,1),raw_now(:,2),'-o','LineWidth',3,'MarkerSize',10); 
+        hold all; 
+        figure(lifetime_norm); 
+        semilogx(norm_now(:,1),norm_now(:,2),'-o','LineWidth',3,'MarkerSize',10);
+        hold all;  
+        labels{i,1} = control{2,i};
+        %Calculate Nt_star
+        Nt_star_now = zeros(length(raw_now),1); 
+        for j = 1:length(raw_now)
+            Nt_star_now(j) = (1/raw_now(j,2))-(1/raw_now(1,2));  
+        end
+        figure(Nt_star); 
+        loglog(raw_now(:,1),Nt_star_now,'-o','LineWidth',3,'MarkerSize',10); 
+        hold all; 
+    end
+    figure(lifetime_raw); 
+    xlabel('time [s]','FontSize',25); 
+    ylabel('lifetime [s]','FontSize',25); 
+    legend(labels); 
+    title('low v. high hydrogen','FontSize',25); 
+    set(0,'defaultAxesFontSize', 20)
+    hgsave(lifetime_raw,[savedirname '\lowvhigh_' savepre{k} savename]);
+    print(lifetime_raw,'-dpng','-r0',[savedirname '\lowvhigh_' savepre{k} savename '.png']);
+    figure(lifetime_norm); 
+    xlabel('time [s]','FontSize',25); 
+    ylabel('norm. lifetime [-]','FontSize',25); 
+    legend(labels); 
+    axis([0 max_time 0 2]);
+    title('low hydrogen','FontSize',25); 
+    set(0,'defaultAxesFontSize', 20)
+    hgsave(lifetime_norm,[savedirname '\lowvhigh_norm_' savepre{k} savename]);
+    print(lifetime_norm,'-dpng','-r0',[savedirname '\lowvhigh_norm_' savepre{k} savename '.png']);
+    figure(Nt_star); 
+    xlabel('time [s]','FontSize',25); 
+    ylabel('N_t*','FontSize',25); 
+    legend(labels,'Location','northwest'); 
+    title('low hydrogen','FontSize',25); 
+    set(0,'defaultAxesFontSize', 20)
+    hgsave(Nt_star,[savedirname '\lowvhigh_Ntstar_' savepre{k} savename]);
+    print(Nt_star,'-dpng','-r0',[savedirname '\lowvhigh_Ntstar_' savepre{k} savename '.png']);
+end
