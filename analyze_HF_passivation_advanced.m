@@ -30,9 +30,9 @@ SOFTWARE.
 clear all; close all; clc; 
 %Change these values
 %-----------------------------
-bora = 'set-b'; %'set-b' or 'set-a' or 'compE'
+bora = 'compare'; %'set-b' or 'set-a' or 'compE' or 'compare' if you want to compare sets a and b directly
 %Most recent directory that we want to analyze now. 
-dirname = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\October 26 2017';
+dirname = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\November 9 2017';
 %where we want to save any new, non-sample-specific data
 savedirname = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation'; 
 %Spreadsheet specification for the actual measurements
@@ -44,7 +44,8 @@ deltan_target = 6e14; %cm^-3
 %-----------------------------
 %which sample set, b or a? 
 [samples,dirnames,labels,savename,surface_control,...
-    plotting_group,plotting_names,meas_details,max_time]=HFbora(bora);
+    plotting_group,plotting_names,meas_details,max_time,...
+    latesta,latestb]=HFbora(bora);
 
 %% First process the raw data
 for index = 1:length(samples)
@@ -304,7 +305,7 @@ count = 1;
 for i = 1:length(samples)
     if strcmp(samples{i},'FZ')==0 && strcmp(samples{i},'FZ-new')==0 && ...
             strcmp(samples{i},'68-4')==0 && strcmp(samples{i},'60a')==0 && ...
-            strcmp(samples{i},'56b')==0
+            strcmp(samples{i},'56b')==0 && strcmp(samples{i},'FZ-new2')==0
         raw_now = lifetime_all{i};
         doping_now = doping_all{i}; 
         thickness_now = thickness_all{i}; 
@@ -360,7 +361,7 @@ for i = 1:length(samples)
             strcmp(samples{i},'68-4')==0 && strcmp(samples{i},'60a')==0 && ...
             strcmp(samples{i},'56b')==0 && strcmp(samples{i},'C-1')==0 && ...
             strcmp(samples{i},'H-1')==0 && strcmp(samples{i},'C-2')==0 && ...
-            strcmp(samples{i},'H-2')==0
+            strcmp(samples{i},'H-2')==0 && strcmp(samples{i},'FZ-new2')==0
         raw_now = lifetime_all{i};
         [num_meas,columns] = size(raw_now); 
         mcSi_harm_now = zeros(num_meas,1); 
@@ -417,7 +418,7 @@ for i = 1:length(plotting_group)
         labels_raw{end+1} = group_now{2,j};  
         if strcmp(group_now{1,j},'FZ')==0 && strcmp(group_now{1,j},'FZ-new')==0 && ...
             strcmp(group_now{1,j},'68-4')==0 && strcmp(group_now{1,j},'60a')==0 && ...
-            strcmp(group_now{1,j},'56b')==0
+            strcmp(group_now{1,j},'56b')==0 && strcmp(group_now{1,j},'FZ-new2')==0
             for k = 1:length(index_FZ)
                 figure(lifetime_FZcorr); 
                 if k == 1
@@ -441,7 +442,7 @@ for i = 1:length(plotting_group)
             strcmp(group_now{1,j},'68-4')==0 && strcmp(group_now{1,j},'60a')==0 && ...
             strcmp(group_now{1,j},'56b')==0 && strcmp(group_now{1,j},'C-1')==0 && ...
             strcmp(group_now{1,j},'C-2')==0 && strcmp(group_now{1,j},'H-1')==0 && ...
-            strcmp(group_now{1,j},'H-2')==0
+            strcmp(group_now{1,j},'H-2')==0 && strcmp(group_now{1,j},'FZ-new2')==0
             figure(lifetime_mcSi_harm); 
             plot(mcSi_harm_now(:,1),mcSi_harm_now(:,2),'-o','LineWidth',3,'MarkerSize',10); 
             hold all; 
@@ -539,4 +540,171 @@ save([savedirname '\' bora '_all_data' savename '.mat'],'lifetime_all',...
     'norm_lifetime_all','FZ_corr','FZ_corr_norm','mcSi_harm',...
     'mcSi_harm_norm','mcSi_ratio','mcSi_ratio_norm','doping_all',...
     'thickness_all','samples','SRV_FZ','surface_control');
+
+%% Make the degradation curves comparing data already processed - compare sets a and b
+close all; clc; 
+
+for i = 1:length(plotting_group)
+    group_now = plotting_group{i}; 
+    [rows,samp] = size(group_now); 
+    lifetime_raw=figure('units','normalized','outerposition',[0 0 1 1]);
+    lifetime_norm=figure('units','normalized','outerposition',[0 0 1 1]);
+    lifetime_FZcorr=figure('units','normalized','outerposition',[0 0 1 1]);
+    lifetime_FZcorr_norm=figure('units','normalized','outerposition',[0 0 1 1]);
+    lifetime_mcSi_harm=figure('units','normalized','outerposition',[0 0 1 1]);
+    lifetime_mcSi_harm_norm=figure('units','normalized','outerposition',[0 0 1 1]);
+    lifetime_mcSi_ratio=figure('units','normalized','outerposition',[0 0 1 1]);
+    lifetime_mcSi_ratio_norm=figure('units','normalized','outerposition',[0 0 1 1]);
+    labels_raw = {}; labels_FZcorr = {}; labels_mcSi = {}; 
+    hFZ = []; hFZnorm = [];
+    cm = colormap(hsv(samp));
+    for j = 1:samp
+        %load the right data
+        if strcmp(group_now{2,j},'a')==1
+            load(latesta); 
+        elseif strcmp(group_now{2,j},'b')==1
+            load(latestb); 
+        else
+            disp('error loading data'); 
+        end
+        index = find(strcmp(group_now{1,j},samples)==1);
+        raw_now = lifetime_all{index}; 
+        norm_now = norm_lifetime_all{index};
+        FZ_corr_now = FZ_corr{index}; 
+        FZ_corr_norm_now = FZ_corr_norm{index}; 
+        mcSi_harm_now = mcSi_harm{index}; 
+        mcSi_harm_norm_now = mcSi_harm_norm{index}; 
+        mcSi_ratio_now = mcSi_ratio{index}; 
+        mcSi_ratio_norm_now = mcSi_ratio_norm{index}; 
+        figure(lifetime_raw); 
+        plot(raw_now(:,1),raw_now(:,2),'-o','LineWidth',3,'MarkerSize',10); 
+        hold all; 
+        figure(lifetime_norm); 
+        plot(norm_now(:,1),norm_now(:,2),'-o','LineWidth',3,'MarkerSize',10);
+        hold all;  
+        labels_raw{end+1} = group_now{2,j};  
+        if strcmp(group_now{1,j},'FZ')==0 && strcmp(group_now{1,j},'FZ-new')==0 && ...
+            strcmp(group_now{1,j},'68-4')==0 && strcmp(group_now{1,j},'60a')==0 && ...
+            strcmp(group_now{1,j},'56b')==0 && strcmp(group_now{1,j},'FZ-new2')==0
+            [num_meas,index_FZ] = size(FZ_corr_now); 
+            index_FZ = index_FZ-1; %the first column is the time
+            for k = 1:index_FZ
+                figure(lifetime_FZcorr); 
+                if k == 1
+                    hFZ(end+1)=plot(FZ_corr_now(:,1),FZ_corr_now(:,k+1),'-o','LineWidth',3,'MarkerSize',10,'color',cm(j,:)); 
+                    hold on; 
+                    figure(lifetime_FZcorr_norm); 
+                    hFZnorm(end+1)=plot(FZ_corr_norm_now(:,1),FZ_corr_norm_now(:,k+1),'-o','LineWidth',3,'MarkerSize',10,'color',cm(j,:));
+                    hold on;  
+                else
+                    plot(FZ_corr_now(:,1),FZ_corr_now(:,k+1),'-o','LineWidth',3,'MarkerSize',10,'color',cm(j,:)); 
+                    hold on; 
+                    figure(lifetime_FZcorr_norm); 
+                    plot(FZ_corr_norm_now(:,1),FZ_corr_norm_now(:,k+1),'-o','LineWidth',3,'MarkerSize',10,'color',cm(j,:));
+                    hold on;  
+                end
+            end
+            labels_FZcorr{end+1} = group_now{2,j}; 
+        end
+        if strcmp(group_now{1,j},'FZ')==0 && strcmp(group_now{1,j},'FZ-new')==0 && ...
+            strcmp(group_now{1,j},'FZ-12')==0 && strcmp(group_now{1,j},'66-2')==0 && ...
+            strcmp(group_now{1,j},'68-4')==0 && strcmp(group_now{1,j},'60a')==0 && ...
+            strcmp(group_now{1,j},'56b')==0 && strcmp(group_now{1,j},'C-1')==0 && ...
+            strcmp(group_now{1,j},'C-2')==0 && strcmp(group_now{1,j},'H-1')==0 && ...
+            strcmp(group_now{1,j},'H-2')==0 && strcmp(group_now{1,j},'FZ-new2')==0
+            figure(lifetime_mcSi_harm); 
+            plot(mcSi_harm_now(:,1),mcSi_harm_now(:,2),'-o','LineWidth',3,'MarkerSize',10); 
+            hold all; 
+            figure(lifetime_mcSi_harm_norm); 
+            plot(mcSi_harm_norm_now(:,1),mcSi_harm_norm_now(:,2),'-o','LineWidth',3,'MarkerSize',10);
+            hold all;
+            figure(lifetime_mcSi_ratio); 
+            plot(mcSi_ratio_now(:,1),mcSi_ratio_now(:,2),'-o','LineWidth',3,'MarkerSize',10); 
+            hold all; 
+            figure(lifetime_mcSi_ratio_norm); 
+            plot(mcSi_ratio_norm_now(:,1),mcSi_ratio_norm_now(:,2),'-o','LineWidth',3,'MarkerSize',10);
+            hold all;
+            labels_mcSi{end+1} = group_now{2,j}; 
+        end
+    end
+    figure(lifetime_raw); 
+    xlabel('time [s]','FontSize',25); 
+    ylabel('lifetime [s]','FontSize',25); 
+    xlim([0 max_time]);
+    legend(labels_raw); 
+    title(plotting_names{i},'FontSize',25); 
+    set(0,'defaultAxesFontSize', 20)
+    hgsave(lifetime_raw,[savedirname '\' plotting_names{i} '_raw' savename]);
+    print(lifetime_raw,'-dpng','-r0',[savedirname '\' plotting_names{i} '_raw' savename '.png']);
+    
+    figure(lifetime_norm); 
+    xlabel('time [s]','FontSize',25); 
+    ylabel('normalized lifetime [-]','FontSize',25); 
+    axis([0 max_time 0 2]);
+    legend(labels_raw); 
+    title(plotting_names{i},'FontSize',25); 
+    set(0,'defaultAxesFontSize', 20)
+    hgsave(lifetime_norm,[savedirname '\' plotting_names{i} '_norm' savename]);
+    print(lifetime_norm,'-dpng','-r0',[savedirname '\' plotting_names{i} '_norm' savename '.png']);
+    
+    figure(lifetime_FZcorr); 
+    xlabel('time [s]','FontSize',25); 
+    ylabel('lifetime [s]','FontSize',25); 
+    xlim([0 max_time]);
+    legend(hFZ,labels_FZcorr); 
+    title([plotting_names{i} ' corrected by FZ SRV'],'FontSize',25); 
+    set(0,'defaultAxesFontSize', 20)
+    hgsave(lifetime_FZcorr,[savedirname '\' plotting_names{i} '_FZcorr' savename]);
+    print(lifetime_FZcorr,'-dpng','-r0',[savedirname '\' plotting_names{i} '_FZcorr' savename '.png']);
+    
+    figure(lifetime_FZcorr_norm); 
+    xlabel('time [s]','FontSize',25); 
+    ylabel('normalized lifetime [-]','FontSize',25); 
+    axis([0 max_time 0 2]);
+    legend(hFZnorm,labels_FZcorr); 
+    title([plotting_names{i} ' corrected by FZ SRV'],'FontSize',25); 
+    set(0,'defaultAxesFontSize', 20)
+    hgsave(lifetime_FZcorr_norm,[savedirname '\' plotting_names{i} '_FZcorr_norm' savename]);
+    print(lifetime_FZcorr_norm,'-dpng','-r0',[savedirname '\' plotting_names{i} '_FZcorr_norm' savename '.png']);
+    
+    figure(lifetime_mcSi_harm); 
+    xlabel('time [s]','FontSize',25); 
+    ylabel('lifetime [s]','FontSize',25); 
+    xlim([0 max_time]);
+    legend(labels_mcSi); 
+    title([plotting_names{i} ' corrected by mcSi control harmonic sum'],'FontSize',25); 
+    set(0,'defaultAxesFontSize', 20)
+    hgsave(lifetime_mcSi_harm,[savedirname '\' plotting_names{i} '_mcSi_harm' savename]);
+    print(lifetime_mcSi_harm,'-dpng','-r0',[savedirname '\' plotting_names{i} '_mcSi_harm' savename '.png']);
+    
+    figure(lifetime_mcSi_harm_norm); 
+    xlabel('time [s]','FontSize',25); 
+    ylabel('normalized lifetime [-]','FontSize',25); 
+    axis([0 max_time 0 2]);
+    legend(labels_mcSi); 
+    title([plotting_names{i} ' corrected by mcSi control harmonic sum'],'FontSize',25); 
+    set(0,'defaultAxesFontSize', 20)
+    hgsave(lifetime_mcSi_harm_norm,[savedirname '\' plotting_names{i} '_mcSi_harm_norm' savename]);
+    print(lifetime_mcSi_harm_norm,'-dpng','-r0',[savedirname '\' plotting_names{i} '_mcSi_harm_norm' savename '.png']);
+    
+    figure(lifetime_mcSi_ratio); 
+    xlabel('time [s]','FontSize',25); 
+    ylabel('lifetime [s]','FontSize',25); 
+    xlim([0 max_time]);
+    legend(labels_mcSi); 
+    title([plotting_names{i} ' corrected by mcSi control ratio'],'FontSize',25); 
+    set(0,'defaultAxesFontSize', 20)
+    hgsave(lifetime_mcSi_ratio,[savedirname '\' plotting_names{i} '_mcSi_ratio' savename]);
+    print(lifetime_mcSi_ratio,'-dpng','-r0',[savedirname '\' plotting_names{i} '_mcSi_ratio' savename '.png']);
+    
+    figure(lifetime_mcSi_ratio_norm); 
+    xlabel('time [s]','FontSize',25); 
+    ylabel('normalized lifetime [-]','FontSize',25); 
+    axis([0 max_time 0 2]);
+    legend(labels_mcSi); 
+    title([plotting_names{i} ' corrected by mcSi control ratio'],'FontSize',25); 
+    set(0,'defaultAxesFontSize', 20)
+    hgsave(lifetime_mcSi_ratio_norm,[savedirname '\' plotting_names{i} '_mcSi_ratio_norm' savename]);
+    print(lifetime_mcSi_ratio_norm,'-dpng','-r0',[savedirname '\' plotting_names{i} '_mcSi_ratio_norm' savename '.png']);
+end
 
