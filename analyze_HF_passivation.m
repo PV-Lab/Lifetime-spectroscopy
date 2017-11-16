@@ -106,60 +106,84 @@ end
 
 %% Analyze different states together
 clear all; close all; clc;
-savedirname = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\Summary\120000s';
+savedirname = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\Summary\331001s';
+% dirname1 = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\August 16 2017';
+% dirname2 = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\August 17 2017\250s';
+% dirname3 = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\August 17 2017\500s';
+% dirname4 = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\August 29 2017\500s';
+% dirname5 = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\August 29 2017\750s';
+% dirname6 = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\August 30 2017\1000s';
+% dirname7 = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\August 31 2017\2000s';
+% dirname8 = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\September 1 2017\3000s';
+% dirname9 = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\September 1 2017\4000s';
+% dirname10 = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\September 5 2017\4000s';
+% dirname11 = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\September 5 2017\5000s';
+% dirname12 = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\September 6 2017\6000s';
+% dirname13 = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\September 7 2017\7000s';
+% dirname14 = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\September 11 2017\8000s'; 
+% dirname15 = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\September 14 2017\8000s'; 
+% dirname16 = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\September 14 2017\9000s'; 
+% dirname17 = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\September 22 2017\9000s'; 
+% dirname18 = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\September 22 2017\10000s'; 
+% dirname19 = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\September 26 2017'; 
+% dirname20 = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\September 28 2017'; 
+% dirname21 = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\October 3 2017\20000s'; 
+% dirname22 = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\October 3 2017\30000s'; 
+% dirname23 = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\October 4 2017\40000s';
+% dirname24 = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\October 11 2017\40000s'; 
+% dirname25 = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\October 12 2017\47000s'; 
+% dirname26 = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\October 13 2017\60000s';
+% dirname27 = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\October 16 2017\70000s'; 
+% dirname28 = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\October 16 2017\80000s';
+% dirname29 = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\October 17 2017\90000s';
+% dirname30 = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\October 18 2017\100000s'; 
+% dirname31 = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\October 20 2017\120000s'; 
+% dirname32 = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\October 23 2017\135000s'; 
+% dirname33 = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\October 25 2017\150000s';
+% dirname34 = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\October 27 2017\155000s'; 
+% dirname35 = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\October 30 2017\170000s'; 
+% dirname36 = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\November 2 2017\200000s';
+% dirname37 = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\November 6 2017\220000s';
+% dirname38 = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\November 8 2017\240000s';
+% dirname39 = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\November 9 2017\260000s';
+% dirname40 = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\November 10 2017\280000s';
+% dirnames = {dirname2 dirname3 dirname4 dirname5 dirname6 dirname7 dirname8 dirname9 ...
+%     dirname10 dirname11 dirname12 dirname13 dirname14 dirname15 ...
+%     dirname16 dirname17 dirname18 dirname19 dirname20 dirname21 ...
+%     dirname22 dirname23 dirname24 dirname25 dirname26 dirname27 ...
+%     dirname28 dirname29 dirname30 dirname31 dirname32 dirname33 ...
+%     dirname34 dirname35 dirname36 dirname37 dirname38 dirname39 ...
+%     dirname40}; 
+% labels = {'initial','250s','500s','501s','750s','1000s','2000s',...
+%     '3000s','4000s','4001s','5000s','6000s','7000s','8000s','9000s',...
+%     '9001s','10000s','17300s','20000s','20001s','30000s','40030s','40031s',...
+%     '47471s','60221s','70031s','80031s','90031s','100361s','127061s',...
+%     '157871s','178661s','190511s','209681s','228941s','255581s',...
+%     '285011s','307541s','331001s'};
 dirname1 = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\August 16 2017';
-dirname2 = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\August 17 2017\250s';
-dirname3 = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\August 17 2017\500s';
-dirname4 = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\August 29 2017\500s';
-dirname5 = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\August 29 2017\750s';
-dirname6 = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\August 30 2017\1000s';
-dirname7 = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\August 31 2017\2000s';
-dirname8 = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\September 1 2017\3000s';
-dirname9 = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\September 1 2017\4000s';
-dirname10 = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\September 5 2017\4000s';
-dirname11 = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\September 5 2017\5000s';
-dirname12 = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\September 6 2017\6000s';
-dirname13 = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\September 7 2017\7000s';
-dirname14 = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\September 11 2017\8000s'; 
-dirname15 = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\September 14 2017\8000s'; 
-dirname16 = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\September 14 2017\9000s'; 
-dirname17 = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\September 22 2017\9000s'; 
-dirname18 = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\September 22 2017\10000s'; 
-dirname19 = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\September 26 2017'; 
-dirname20 = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\September 28 2017'; 
-dirname21 = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\October 3 2017\20000s'; 
-dirname22 = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\October 3 2017\30000s'; 
-dirname23 = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\October 4 2017\40000s';
-dirname24 = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\October 11 2017\40000s'; 
-dirname25 = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\October 12 2017\47000s'; 
-dirname26 = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\October 13 2017\60000s';
-dirname27 = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\October 16 2017\70000s'; 
-dirname28 = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\October 16 2017\80000s';
-dirname29 = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\October 17 2017\90000s';
-dirname30 = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\October 18 2017\100000s'; 
-dirname31 = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\October 20 2017\120000s'; 
-dirname32 = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\October 23 2017\135000s'; 
-dirname33 = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\October 25 2017\150000s';
-dirname34 = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\October 27 2017\155000s'; 
-dirname35 = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\October 30 2017\170000s'; 
-dirname36 = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\November 2 2017\200000s';
-dirname37 = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\November 6 2017\220000s';
-dirname38 = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\November 8 2017\240000s';
-dirname39 = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\November 9 2017\260000s';
-dirname40 = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\November 10 2017\280000s';
-dirnames = {dirname2 dirname3 dirname4 dirname5 dirname6 dirname7 dirname8 ...
-    dirname10 dirname11 dirname12 dirname13 dirname14 dirname15 ...
-    dirname16 dirname17 dirname18 dirname19 dirname20 dirname21 ...
-    dirname22 dirname23 dirname24 dirname25 dirname26 dirname27 ...
-    dirname28 dirname29 dirname30 dirname31 dirname32 dirname33 ...
-    dirname34 dirname35 dirname36 dirname37 dirname38 dirname39 ...
-    dirname40}; 
-labels = {'initial','250s','500s','501s','750s','1000s','2000s',...
-    '3000s','4000s','4001s','5000s','6000s','7000s','8000s','9000s',...
-    '9001s','10000s','17300s','20000s','20001s','30000s','40030s','40031s',...
-    '47471s','60221s','70031s','80031s','90031s','100361s','127061s',...
-    '157871s','178661s','190511s','209681s','228941s','255581s',...
-    '285011s','307541s','331001s'};
+dirname2 = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\August 30 2017\1000s';
+dirname3 = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\September 22 2017\10000s';
+dirname4 = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\September 28 2017';
+dirname5 = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\October 3 2017\30000s';
+dirname6 = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\October 4 2017\40000s';
+dirname7 = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\October 12 2017\47000s';
+dirname8 = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\October 13 2017\60000s';
+dirname9 = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\October 16 2017\70000s';
+dirname10 = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\October 16 2017\80000s';
+dirname11 = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\October 17 2017\90000s';
+dirname12 = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\October 18 2017\100000s';
+dirname13 = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\October 23 2017\135000s';
+dirname14 = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\October 30 2017\170000s';
+dirname15 = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\November 6 2017\220000s';
+dirname16 = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\November 9 2017\260000s';
+dirname17 = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\November 10 2017\280000s';
+dirnames = {dirname1 dirname2 dirname3 dirname4 dirname5 dirname6 dirname7 ...
+    dirname8 dirname9 dirname10 dirname11 dirname12 dirname13 dirname14 ...
+    dirname15 dirname16 dirname17}; 
+labels = {'initial','1000s','10000s','20000s','30000s','40030s',...
+    '47471s','60221s','70031s','80031s','90031s','100361s',...
+    '157871s','209681s','255581s',...
+    '307541s','331001s'};
 cm = colormap(hsv(length(dirnames))); 
 samples = {'Ti-h-5','Ni-h-5','Mo-h-5','V-h-5','C-h-5','Ti-L-5','Ni-L-5','Mo-L-5','V-L-5','C-L-5','17-7-27-1','17-7-27-2'};
 savename = '_331001s_lifetime summary';
