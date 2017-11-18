@@ -24,15 +24,15 @@ SOFTWARE.
 
 %This script analyzes TIDLS measurements taken with WCT-120TS. 
 clear all; close all; 
-directory = 'C:\Users\Mallory Jensen\Documents\LeTID\PERC LeTID Advanced System\Files after measurement\50C'; 
+directory = 'C:\Users\Mallory Jensen\Dropbox (MIT)\TIDLS data - UROP\Data\sorted by sample\16 6 28 N 1\calibrated to aperture\analyzed data\PL'; 
 before_directory = 'C:\Users\Mallory\Dropbox (MIT)\TIDLS at UNSW\Advanced system measurements\20160727\for_processing\before';
 after_directory = 'C:\Users\Mallory\Dropbox (MIT)\TIDLS at UNSW\Advanced system measurements\20160727\for_processing\after';
-processing_directory = 'C:\Users\Mallory Jensen\Documents\LeTID\PERC LeTID Advanced System\Files after measurement\50C';
-SRV_directory = 'C:\Users\Malloryj\Dropbox (MIT)\TIDLS at UNSW\Advanced system measurements\By sample\16-6-28-P-2\Summary files';
+processing_directory = 'C:\Users\Mallory Jensen\Dropbox (MIT)\TIDLS data - UROP\Data\sorted by sample\16 6 28 N 1\calibrated to aperture\analyzed data\PL';
+SRV_directory = 'C:\Users\Mallory Jensen\Dropbox (MIT)\TIDLS data - UROP\Data\sorted by sample\16 6 28 N 1\calibrated to aperture\analyzed data\PL';
 deg_directory = 'C:\Users\Mallory Jensen\Documents\LeTID\PERC LeTID Advanced System\Files after measurement\50C\deg';
 undeg_directory = 'C:\Users\Mallory Jensen\Documents\LeTID\PERC LeTID Advanced System\Files after measurement\50C\undeg';
 %type - p or n
-type = 'p';
+type = 'n';
 %Fit range for Joe
 fit_range = 0.3; 
 %% Collect and process raw data - WCT-120TS files
@@ -243,142 +243,6 @@ ylabel('J_o_e [A/cm^2]','FontSize',20);
 figure(norm_temps_Joe);
 xlabel('Temperature [C]','FontSize',20);
 ylabel('J_o_e/qn_i^2','FontSize',20);
-save([processing_directory '\lifetime_breakdown.mat'],'lifetime_breakdown');
-%% Load the data that will be processed and calculate lifetime contributions - Joe set by an average
-%First load the data
-load([processing_directory '\Raw_data.mat']);
-load([processing_directory '\meas_info.mat']); 
-cutoff(1,1) = 1e14;
-cutoff(1,2) = 1e16;
-%fit parameters for Joe as function of T (ax^2+bx+c). T is fit in units of
-%C, Joe in units A/cm2. 
-a = -2.8082e-4;
-b = 1.6869e-1;
-c = -3.4422e1;
-%Now, for each temperature we will be doing the same operations. Loop
-%through. 
-for i = 1:length(dataSave);
-    dataNow = dataSave{i}; 
-    tau = dataNow(:,2);
-    deltan = dataNow(:,1);
-    %We first need to remove the high injection data
-    %Plot the data and ask the user where the cut off in high injection
-    figure;
-    loglog(deltan,tau,'.');
-%     disp('Select the region for cutting off the HIGH injection data');
-%     [cutoff,nothing]=ginput(1);
-%     [deltan_rev,tau_rev] = remove_highinj(deltan,tau,cutoff);
-    [deltan_rev,tau_rev] = remove_highinj(deltan,tau,cutoff(1,2));
-    %We might always want to remove some low injection data
-%     disp('Select the region for cutting off the LOW injection data');
-%     [cutoff,nothing]=ginput(1);
-%     [deltan_rev,tau_rev] = remove_lowinj(deltan_rev,tau_rev,cutoff);
-    [deltan_rev,tau_rev] = remove_lowinj(deltan_rev,tau_rev,cutoff(1,1));
-    hold all;
-    loglog(deltan_rev,tau_rev,'+');
-    legend('Before cutoff','After cutoff'); 
-    title(['Temperature = ' num2str(info(i).temperature)]);
-    %Now that we have the revised data, acquire the Joe from our fitted
-    %curve
-    ln_Joe = (a)*((info(i).temperature)^2)+((b)*info(i).temperature)+c;  
-    Joe{i,1} = exp(ln_Joe); 
-    %Now that we have the Joe, we can calculate the surface lifetime
-    [tau_surf] = calculate_tau_surf_Joe(Joe{i,1},type,info(i).doping,deltan_rev,info(i).thickness,info(i).temperature+273.15);
-    %We will also need the intrinsic lifetime
-    tau_intr = zeros(size(deltan_rev));
-    for j = 1:length(deltan_rev)
-        tau_intr(j,1) = Richter(info(i).temperature+273.15,deltan_rev(j),info(i).doping,type);
-    end
-    %Finally, we can calculate the SRH lifetime!
-    tau_SRH = ((1./tau_rev)-(1./tau_intr)-(1./tau_surf)).^(-1);
-    %We should plot all of the contributions together
-    h=figure('units','normalized','outerposition',[0 0 1 1]);
-    loglog(deltan_rev,tau_rev.*1e6);
-    hold all; 
-    loglog(deltan_rev,tau_surf.*1e6); 
-    hold all; 
-    loglog(deltan_rev,tau_intr.*1e6);
-    hold all;
-    loglog(deltan_rev,tau_SRH.*1e6);
-    xlabel('Excess carrier density (cm^-^3)','FontSize',20);
-    ylabel('Lifetime (\mus)','FontSize',20);   
-    legend('Measured','Surface','Intrinsic','SRH');
-    title(['Temperature = ' num2str(info(i).temperature)]);
-    hgsave(h,[processing_directory '\Lifetime breakdown ' num2str(round(info(i).temperature))]);
-    print(h,'-dpng','-r0',[processing_directory '\Lifetime breakdown ' num2str(round(info(i).temperature)) '.png']); 
-    %Let's store everything now
-    deltan_store{i,1} = deltan_rev;
-    tau_store{i,1} = tau_rev;
-    tau_surf_store{i,1} = tau_surf;
-    tau_SRH_store{i,1} = tau_SRH;
-    tau_intr_store{i,1} = tau_intr; 
-end
-lifetime_breakdown = struct('tau',tau_store,'deltan',deltan_store,'tau_surf',tau_surf_store,'tau_SRH',tau_SRH_store,'tau_intr',tau_intr_store,'Joe',Joe);
-save([processing_directory '\lifetime_breakdown.mat'],'lifetime_breakdown');
-%% Load the data that will be processed and calculate lifetime contributions - Joe and cutoffs pre-defined
-%First load the data
-load([processing_directory '\Raw_data.mat']);
-load([processing_directory '\meas_info.mat']); 
-% Joe{1,1} = 5.75e-14.*1;
-% % Joe{2,1} = 4.76e-14.*1; 
-% cutoff(1,1) = 1e12;
-% cutoff(1,2) = 1e18;
-% cutoff(2,1) = 1e12;
-% cutoff(2,2) = 1e18;
-Joe_in = 4.76e-14*0.7; 
-cutoff = ones(length(dataSave),2); 
-cutoff(:,1) = cutoff(:,1).*2e14; 
-cutoff(:,2) = cutoff(:,2).*1e16; 
-%Now, for each temperature we will be doing the same operations. Loop
-%through. 
-for i = 1:length(dataSave);
-    Joe{i,1} = Joe_in; 
-    dataNow = dataSave{i}; 
-    tau = dataNow(:,2);
-    deltan = dataNow(:,1);
-    %We first need to remove the high injection data
-    %Plot the data and ask the user where the cut off in high injection
-    figure;
-    loglog(deltan,tau,'.');
-    [deltan_rev,tau_rev] = remove_highinj(deltan,tau,cutoff(i,2));
-    %We might always want to remove some low injection data
-    [deltan_rev,tau_rev] = remove_lowinj(deltan_rev,tau_rev,cutoff(i,1));
-    hold all;
-    loglog(deltan_rev,tau_rev,'+');
-    legend('Before cutoff','After cutoff'); 
-    title(['Temperature = ' num2str(info(i).temperature)]);
-    %Now that we have the Joe, we can calculate the surface lifetime
-    [tau_surf] = calculate_tau_surf_Joe(Joe_in,type,info(i).doping,deltan_rev,info(i).thickness,info(i).temperature+273.15);
-    %We will also need the intrinsic lifetime
-    tau_intr = zeros(size(deltan_rev));
-    for j = 1:length(deltan_rev)
-        tau_intr(j,1) = Richter(info(i).temperature+273.15,deltan_rev(j),info(i).doping,type);
-    end
-    %Finally, we can calculate the SRH lifetime!
-    tau_SRH = ((1./tau_rev)-(1./tau_intr)-(1./tau_surf)).^(-1);
-    %We should plot all of the contributions together
-    h=figure('units','normalized','outerposition',[0 0 1 1]);
-    loglog(deltan_rev,tau_rev.*1e6);
-    hold all; 
-    loglog(deltan_rev,tau_surf.*1e6); 
-    hold all; 
-    loglog(deltan_rev,tau_intr.*1e6);
-    hold all;
-    loglog(deltan_rev,tau_SRH.*1e6);
-    xlabel('Excess carrier density (cm^-^3)','FontSize',20);
-    ylabel('Lifetime (\mus)','FontSize',20);   
-    legend('Measured','Surface','Intrinsic','SRH');
-    title(['Temperature = ' num2str(info(i).temperature)]);
-    hgsave(h,[processing_directory '\Lifetime breakdown ' num2str(round(info(i).temperature))]);
-    print(h,'-dpng','-r0',[processing_directory '\Lifetime breakdown ' num2str(round(info(i).temperature)) '.png']); 
-    %Let's store everything now
-    deltan_store{i,1} = deltan_rev;
-    tau_store{i,1} = tau_rev;
-    tau_surf_store{i,1} = tau_surf;
-    tau_SRH_store{i,1} = tau_SRH;
-    tau_intr_store{i,1} = tau_intr; 
-end
-lifetime_breakdown = struct('tau',tau_store,'deltan',deltan_store,'tau_surf',tau_surf_store,'tau_SRH',tau_SRH_store,'tau_intr',tau_intr_store,'Joe',Joe);
 save([processing_directory '\lifetime_breakdown.mat'],'lifetime_breakdown');
 
 %% Load the data that will be processed and lifetime contributions - no surface contribution
