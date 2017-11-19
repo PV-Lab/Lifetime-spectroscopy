@@ -29,22 +29,22 @@ SOFTWARE.
 clear all; close all; clc; 
 
 %Sample name
-sample = '22-25-8'; 
+sample = '22-26-8'; 
 %Where the files are stored, after this directory there should be folders
 %for each temperature
-dirname = 'C:\Users\Mallory Jensen\Dropbox (MIT)\TIDLS data - UROP\Data\sorted by sample\22 25 8\analyzed data\PL'; 
+dirname = 'C:\Users\Mallory Jensen\Dropbox (MIT)\TIDLS data - UROP\Data\sorted by sample\22 26 8\analyzed data\PC'; 
 %Temperatures we're looking at
 T = [-75 -25 25 100]; %C
 %Which data do we want, PC or PL
-PCorPL = 'PL'; 
+PCorPL = 'PC'; 
 
 %Now the actual sample values
 %Actual sample temperatures, used for analysis and in units of Kelvin
-sampleT = [198.15 -25+273.15 25+273.15 93.85+273.15]; 
-thick = .0173; %thickness, cm
-res = 1.3; %resistivity, ohm-cm
-opt = 0.875; %This is the 1 minus the reflectivity value used for flash measurements
-N_D = 3.7e15; %doping level, n-type, cm^-3
+sampleT = [198.15 248.15 298 367]; 
+thick = .0171; %thickness, cm
+res = 1.8; %resistivity, ohm-cm
+opt = 0.9; %This is the 1 minus the reflectivity value used for flash measurements
+N_D = 2.6e15; %doping level, n-type, cm^-3
 
 dataStore = cell(length(T),1); 
 figure; 
