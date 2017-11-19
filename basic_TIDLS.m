@@ -24,10 +24,10 @@ SOFTWARE.
 
 %This script analyzes TIDLS measurements taken with WCT-120TS. 
 clear all; close all; 
-directory = 'C:\Users\Mallory Jensen\Dropbox (MIT)\TIDLS data - UROP\Data\sorted by sample\16 6 28 N 1\calibrated to aperture\analyzed data\PL'; 
+directory = 'C:\Users\Mallory Jensen\Dropbox (MIT)\TIDLS data - UROP\Data\sorted by sample\22 25 8\analyzed data\PL'; 
 before_directory = 'C:\Users\Mallory\Dropbox (MIT)\TIDLS at UNSW\Advanced system measurements\20160727\for_processing\before';
 after_directory = 'C:\Users\Mallory\Dropbox (MIT)\TIDLS at UNSW\Advanced system measurements\20160727\for_processing\after';
-processing_directory = 'C:\Users\Mallory Jensen\Dropbox (MIT)\TIDLS data - UROP\Data\sorted by sample\16 6 28 N 1\calibrated to aperture\analyzed data\PL';
+processing_directory = 'C:\Users\Mallory Jensen\Dropbox (MIT)\TIDLS data - UROP\Data\sorted by sample\22 25 8\analyzed data\PL';
 SRV_directory = 'C:\Users\Mallory Jensen\Dropbox (MIT)\TIDLS data - UROP\Data\sorted by sample\16 6 28 N 1\calibrated to aperture\analyzed data\PL';
 deg_directory = 'C:\Users\Mallory Jensen\Documents\LeTID\PERC LeTID Advanced System\Files after measurement\50C\deg';
 undeg_directory = 'C:\Users\Mallory Jensen\Documents\LeTID\PERC LeTID Advanced System\Files after measurement\50C\undeg';
@@ -123,11 +123,17 @@ save([directory '\meas_info.mat'],'info');
 load([directory '\Raw_data.mat']);
 load([directory '\meas_info.mat']); 
 h=figure('units','normalized','outerposition',[0 0 1 1]);
+count = 1; 
 for i = 1:length(dataSave)
-    dataNow = dataSave{i}; 
-    curves(i)=loglog(dataNow(:,1),dataNow(:,2),'.'); 
-    hold all; 
-    label{i} = [info(i).filename ', T=' num2str(info(i).temperature)];
+    try
+        dataNow = dataSave{i}; 
+        curves(count)=loglog(dataNow(:,1),dataNow(:,2),'.'); 
+        hold all; 
+        label{count} = [info(i).filename ', T=' num2str(info(i).temperature)];
+        count = count+1;
+    catch
+        disp(['Could not load data for T = ' num2str(info(i).temperature) 'C']);
+    end
 end
 %% On the same plot as the previous section, plot other room temperature measurements at MIT before T ramp
 data= load([before_directory '\Raw_data.mat']); 
@@ -155,95 +161,6 @@ ylabel('Lifetime [s]','FontSize',20);
 legend(curves',label');
 hgsave(h,[directory '\Lifetime w T']);
 print(h,'-dpng','-r0',[directory '\Lifetime w T.png']); 
-%% Load the data that will be processed and calculate the Joe and lifetime contributions
-%First load the data
-load([processing_directory '\Raw_data.mat']);
-load([processing_directory '\meas_info.mat']); 
-temps_Joe = figure;
-norm_temps_Joe = figure; 
-%Now, for each temperature we will be doing the same operations. Loop
-%through. 
-for i = 1:length(dataSave);
-    dataNow = dataSave{i}; 
-    tau = dataNow(:,2);
-    deltan = dataNow(:,1);
-    %We first need to remove the high injection data
-    %Plot the data and ask the user where the cut off in high injection
-    figure;
-    loglog(deltan,tau,'.');
-    disp('Select the region for cutting off the HIGH injection data');
-    [cutoff,nothing]=ginput(1);
-    [deltan_rev,tau_rev] = remove_highinj(deltan,tau,cutoff);
-    %We might always want to remove some low injection data
-    disp('Select the region for cutting off the LOW injection data');
-    [cutoff,nothing]=ginput(1);
-    [deltan_rev,tau_rev] = remove_lowinj(deltan_rev,tau_rev,cutoff);
-    hold all;
-    loglog(deltan_rev,tau_rev,'+');
-    legend('Before cutoff','After cutoff'); 
-    title(['Temperature = ' num2str(info(i).temperature)]);
-    %Now that we have the revised data, fit the Joe
-    [Joe,Joe_select{i,1}] = fit_Joe_curve(deltan_rev,tau_rev,info(i).doping,info(i).temperature+273.15,type,fit_range,info(i).thickness); 
-    %Now that we have the Joe, we can calculate the surface lifetime
-    [tau_surf] = calculate_tau_surf_Joe(Joe_select{i,1},type,info(i).doping,deltan_rev,info(i).thickness,info(i).temperature+273.15);
-    %We will also need the intrinsic lifetime
-    tau_intr = zeros(size(deltan_rev));
-    for j = 1:length(deltan_rev)
-        tau_intr(j,1) = Richter(info(i).temperature+273.15,deltan_rev(j),info(i).doping,type);
-    end
-    %Finally, we can calculate the SRH lifetime!
-    tau_SRH = ((1./tau_rev)-(1./tau_intr)-(1./tau_surf)).^(-1);
-    %We should plot all of the contributions together
-    h=figure('units','normalized','outerposition',[0 0 1 1]);
-    loglog(deltan_rev,tau_rev.*1e6);
-    hold all; 
-    loglog(deltan_rev,tau_surf.*1e6); 
-    hold all; 
-    loglog(deltan_rev,tau_intr.*1e6);
-    hold all;
-    loglog(deltan_rev,tau_SRH.*1e6);
-    xlabel('Excess carrier density (cm^-^3)','FontSize',20);
-    ylabel('Lifetime (\mus)','FontSize',20);   
-    legend('Measured','Surface','Intrinsic','SRH');
-    title(['Temperature = ' num2str(info(i).temperature)]);
-    hgsave(h,[processing_directory '\Lifetime breakdown ' num2str(round(info(i).temperature))]);
-    print(h,'-dpng','-r0',[processing_directory '\Lifetime breakdown ' num2str(round(info(i).temperature)) '.png']); 
-    %Let's store everything now
-    deltan_store{i,1} = deltan_rev;
-    tau_store{i,1} = tau_rev;
-    tau_surf_store{i,1} = tau_surf;
-    tau_SRH_store{i,1} = tau_SRH;
-    tau_intr_store{i,1} = tau_intr; 
-    figure(temps_Joe); 
-    plot(info(i).temperature,Joe_select{i,1},'bo');
-    hold on; 
-    %I also want to plot the normalized quantity Joe/q*ni2 because this
-    %should be constant with T
-    if info(i).temperature+273.15 <= 303 & info(i).temperature+273.15 >= 297
-        Eg = 1.1242; %eV
-        [NC,NV] = DOS_std(info(i).temperature+273.15); %cm^-3  
-    else
-        [Eg] = Sze(info(i).temperature+273.15); %eV
-        %Density of states effective mass model for consistency
-        [NC,NV] = DOS_em(info(i).temperature+273.15); %cm^-3  
-    end
-    %Boltzmann constant
-    k_B = 8.61733238e-5; %eV/K  
-    ni2 = NC*NV*exp(-Eg/(k_B*(info(i).temperature+273.15))); %cm^-6
-    q = 1.602e-19; %C
-    norm_quant = Joe_select{i,1}/(q*ni2); 
-    figure(norm_temps_Joe)
-    plot(info(i).temperature,norm_quant,'ro');
-    hold on; 
-end
-lifetime_breakdown = struct('tau',tau_store,'deltan',deltan_store,'tau_surf',tau_surf_store,'tau_SRH',tau_SRH_store,'tau_intr',tau_intr_store,'Joe',Joe_select);
-figure(temps_Joe);
-xlabel('Temperature [C]','FontSize',20);
-ylabel('J_o_e [A/cm^2]','FontSize',20);
-figure(norm_temps_Joe);
-xlabel('Temperature [C]','FontSize',20);
-ylabel('J_o_e/qn_i^2','FontSize',20);
-save([processing_directory '\lifetime_breakdown.mat'],'lifetime_breakdown');
 
 %% Load the data that will be processed and lifetime contributions - no surface contribution
 %First load the data
@@ -381,68 +298,72 @@ load([SRV_directory '\SRV_data.mat']);
 %Now, for each temperature we will be doing the same operations. Loop
 %through. 
 for i = 1:length(dataSave);
-    dataNow = dataSave{i}; 
-    tau = dataNow(:,2);
-    deltan = dataNow(:,1);
-    %We first need to remove the high injection data
-    %Plot the data and ask the user where the cut off in high injection
-    figure;
-    loglog(deltan,tau,'.');
-    disp('Select the region for cutting off the HIGH injection data');
-    [cutoff,nothing]=ginput(1);
-    [deltan_rev,tau_rev] = remove_highinj(deltan,tau,cutoff);
-    %We might always want to remove some low injection data
-    disp('Select the region for cutting off the LOW injection data');
-    [cutoff,nothing]=ginput(1);
-    [deltan_rev,tau_rev] = remove_lowinj(deltan_rev,tau_rev,cutoff);
-    hold all;
-    loglog(deltan_rev,tau_rev,'+');
-    legend('Before cutoff','After cutoff'); 
-    title(['Temperature = ' num2str(info(i).temperature)]);
-    %We will also need the intrinsic lifetime
-    tau_intr = zeros(size(deltan_rev));
-    diffusivity_save = zeros(size(deltan)); 
-    for j = 1:length(deltan_rev)
-        %Get the intrinsic lifetime
-        tau_intr(j,1) = Richter(info(i).temperature+273.15,deltan_rev(j),info(i).doping,type);
-        %unfortunately the diffusivity is also temperature and injection
-        %dependent
-        [De,Dh] = diffusivity(info(i).temperature+273.15,type,info(i).doping,deltan_rev(j));
-        if type == 'n'
-            diffusivity_save(j,1) = Dh; %hole is minority carrier
-        elseif type == 'p'
-            diffusivity_save(j,1) = De; %electron is minority carrier
+    try
+        dataNow = dataSave{i}; 
+        tau = dataNow(:,2);
+        deltan = dataNow(:,1);
+        %We first need to remove the high injection data
+        %Plot the data and ask the user where the cut off in high injection
+        figure;
+        loglog(deltan,tau,'.');
+        disp('Select the region for cutting off the HIGH injection data');
+        [cutoff,nothing]=ginput(1);
+        [deltan_rev,tau_rev] = remove_highinj(deltan,tau,cutoff);
+        %We might always want to remove some low injection data
+        disp('Select the region for cutting off the LOW injection data');
+        [cutoff,nothing]=ginput(1);
+        [deltan_rev,tau_rev] = remove_lowinj(deltan_rev,tau_rev,cutoff);
+        hold all;
+        loglog(deltan_rev,tau_rev,'+');
+        legend('Before cutoff','After cutoff'); 
+        title(['Temperature = ' num2str(info(i).temperature)]);
+        %We will also need the intrinsic lifetime
+        tau_intr = zeros(size(deltan_rev));
+        diffusivity_save = zeros(size(deltan)); 
+        for j = 1:length(deltan_rev)
+            %Get the intrinsic lifetime
+            tau_intr(j,1) = Richter(info(i).temperature+273.15,deltan_rev(j),info(i).doping,type);
+            %unfortunately the diffusivity is also temperature and injection
+            %dependent
+            [De,Dh] = diffusivity(info(i).temperature+273.15,type,info(i).doping,deltan_rev(j));
+            if type == 'n'
+                diffusivity_save(j,1) = Dh; %hole is minority carrier
+            elseif type == 'p'
+                diffusivity_save(j,1) = De; %electron is minority carrier
+            end
         end
+        %We need the surface contribution which comes from a reference wafer
+    %     SRV_now = SRVtoSave{SRVindex(i)}; 
+        SRV_now = SRVtoSave{i};
+        %Interpolate the SRV so that it matches the measured lifetime
+        SRVq = interp1(SRV_now(:,1),SRV_now(:,2),deltan_rev); 
+        tau_surf =(info(i).thickness./(2.*SRVq))+((1./diffusivity_save(i)).*((info(i).thickness/pi)^2)); %cm/s
+        %Finally, we can calculate the SRH lifetime
+        tau_SRH = ((1./tau_rev)-(1./tau_intr)-(1./tau_surf)).^(-1);
+        %We should plot all of the contributions together
+        h=figure('units','normalized','outerposition',[0 0 1 1]);
+        loglog(deltan_rev,tau_rev.*1e6,'LineWidth',2);
+        hold all; 
+        loglog(deltan_rev,tau_intr.*1e6,'LineWidth',2);
+        hold all;
+        loglog(deltan_rev,tau_surf.*1e6,'LineWidth',2); 
+        hold all; 
+        loglog(deltan_rev,tau_SRH.*1e6,'LineWidth',2);
+        xlabel('Excess carrier density (cm^-^3)','FontSize',20);
+        ylabel('Lifetime (\mus)','FontSize',20);   
+        legend('Measured','Intrinsic','Surface','SRH');
+        title(['Temperature = ' num2str(info(i).temperature)]);
+        hgsave(h,[processing_directory '\Lifetime breakdown ' num2str(round(info(i).temperature))]);
+        print(h,'-dpng','-r0',[processing_directory '\Lifetime breakdown ' num2str(round(info(i).temperature)) '.png']); 
+        %Let's store everything now
+        deltan_store{i,1} = deltan_rev;
+        tau_store{i,1} = tau_rev;
+        tau_SRH_store{i,1} = tau_SRH;
+        tau_intr_store{i,1} = tau_intr; 
+        tau_surf_store{i,1} = tau_surf; 
+    catch
+        disp(['Could not load data for T = ' num2str(info(i).temperature) 'C']);
     end
-    %We need the surface contribution which comes from a reference wafer
-%     SRV_now = SRVtoSave{SRVindex(i)}; 
-    SRV_now = SRVtoSave{i};
-    %Interpolate the SRV so that it matches the measured lifetime
-    SRVq = interp1(SRV_now(:,1),SRV_now(:,2),deltan_rev); 
-    tau_surf =(info(i).thickness./(2.*SRVq))+((1./diffusivity_save(i)).*((info(i).thickness/pi)^2)); %cm/s
-    %Finally, we can calculate the SRH lifetime
-    tau_SRH = ((1./tau_rev)-(1./tau_intr)-(1./tau_surf)).^(-1);
-    %We should plot all of the contributions together
-    h=figure('units','normalized','outerposition',[0 0 1 1]);
-    loglog(deltan_rev,tau_rev.*1e6,'LineWidth',2);
-    hold all; 
-    loglog(deltan_rev,tau_intr.*1e6,'LineWidth',2);
-    hold all;
-    loglog(deltan_rev,tau_surf.*1e6,'LineWidth',2); 
-    hold all; 
-    loglog(deltan_rev,tau_SRH.*1e6,'LineWidth',2);
-    xlabel('Excess carrier density (cm^-^3)','FontSize',20);
-    ylabel('Lifetime (\mus)','FontSize',20);   
-    legend('Measured','Intrinsic','Surface','SRH');
-    title(['Temperature = ' num2str(info(i).temperature)]);
-    hgsave(h,[processing_directory '\Lifetime breakdown ' num2str(round(info(i).temperature))]);
-    print(h,'-dpng','-r0',[processing_directory '\Lifetime breakdown ' num2str(round(info(i).temperature)) '.png']); 
-    %Let's store everything now
-    deltan_store{i,1} = deltan_rev;
-    tau_store{i,1} = tau_rev;
-    tau_SRH_store{i,1} = tau_SRH;
-    tau_intr_store{i,1} = tau_intr; 
-    tau_surf_store{i,1} = tau_surf; 
 end
 lifetime_breakdown = struct('tau',tau_store,'deltan',deltan_store,'tau_SRH',tau_SRH_store,'tau_intr',tau_intr_store,'tau_surf',tau_surf_store);
 save([processing_directory '\lifetime_breakdown.mat'],'lifetime_breakdown');
@@ -451,43 +372,47 @@ save([processing_directory '\lifetime_breakdown.mat'],'lifetime_breakdown');
 %Load the data for processing
 load([processing_directory '\lifetime_breakdown.mat']);
 for i = 1:length(dataSave);
-    deltan_rev = lifetime_breakdown(i).deltan; 
-    tau_rev = lifetime_breakdown(i).tau; 
-    tau_SRH = lifetime_breakdown(i).tau_SRH; 
-    tau_intr = lifetime_breakdown(i).tau_intr;
-    tau_surf = lifetime_breakdown(i).tau_surf;
-    figure;
-    h=figure('units','normalized','outerposition',[0 0 1 1]);
-    loglog(deltan_rev,tau_rev.*1e6,'LineWidth',2);
-    hold all; 
-    loglog(deltan_rev,tau_intr.*1e6,'LineWidth',2);
-    hold all;
-    loglog(deltan_rev,tau_surf.*1e6,'LineWidth',2); 
-    hold all; 
-    loglog(deltan_rev,tau_SRH.*1e6,'LineWidth',2);
-    xlabel('Excess carrier density (cm^-^3)','FontSize',20);
-    ylabel('Lifetime (\mus)','FontSize',20);   
-    legend('Measured','Intrinsic','Surface','SRH');
-    title(['Temperature = ' num2str(info(i).temperature)]);
-    disp('Select the region for cutting off the HIGH injection data');
-    [cutoff,nothing]=ginput(1);
-    [deltan_rev,tau_SRH_rev] = remove_highinj(deltan_rev,tau_SRH,cutoff);
-    [deltan_rev,tau_rev_rev] = remove_highinj(deltan_rev,tau_rev,cutoff);
-    [deltan_rev,tau_surf_rev] = remove_highinj(deltan_rev,tau_surf,cutoff);
-    [deltan_rev,tau_intr_rev] = remove_highinj(deltan_rev,tau_intr,cutoff);
-    %We might always want to remove some low injection data
-    disp('Select the region for cutting off the LOW injection data');
-    [cutoff,nothing]=ginput(1);
-    [deltan_rev,tau_SRH_rev] = remove_lowinj(deltan_rev,tau_SRH_rev,cutoff);
-    [deltan_rev,tau_rev_rev] = remove_lowinj(deltan_rev,tau_rev_rev,cutoff);
-    [deltan_rev,tau_surf_rev] = remove_lowinj(deltan_rev,tau_surf_rev,cutoff);
-    [deltan_rev,tau_intr_rev] = remove_lowinj(deltan_rev,tau_intr_rev,cutoff);
-     %Let's store everything now
-    deltan_store{i,1} = deltan_rev;
-    tau_store{i,1} = tau_rev_rev;
-    tau_SRH_store{i,1} = tau_SRH_rev;
-    tau_intr_store{i,1} = tau_intr_rev; 
-    tau_surf_store{i,1} = tau_surf_rev;
+    try
+        deltan_rev = lifetime_breakdown(i).deltan; 
+        tau_rev = lifetime_breakdown(i).tau; 
+        tau_SRH = lifetime_breakdown(i).tau_SRH; 
+        tau_intr = lifetime_breakdown(i).tau_intr;
+        tau_surf = lifetime_breakdown(i).tau_surf;
+        figure;
+        h=figure('units','normalized','outerposition',[0 0 1 1]);
+        loglog(deltan_rev,tau_rev.*1e6,'LineWidth',2);
+        hold all; 
+        loglog(deltan_rev,tau_intr.*1e6,'LineWidth',2);
+        hold all;
+        loglog(deltan_rev,tau_surf.*1e6,'LineWidth',2); 
+        hold all; 
+        loglog(deltan_rev,tau_SRH.*1e6,'LineWidth',2);
+        xlabel('Excess carrier density (cm^-^3)','FontSize',20);
+        ylabel('Lifetime (\mus)','FontSize',20);   
+        legend('Measured','Intrinsic','Surface','SRH');
+        title(['Temperature = ' num2str(info(i).temperature)]);
+        disp('Select the region for cutting off the HIGH injection data');
+        [cutoff,nothing]=ginput(1);
+        [deltan_rev,tau_SRH_rev] = remove_highinj(deltan_rev,tau_SRH,cutoff);
+        [deltan_rev,tau_rev_rev] = remove_highinj(deltan_rev,tau_rev,cutoff);
+        [deltan_rev,tau_surf_rev] = remove_highinj(deltan_rev,tau_surf,cutoff);
+        [deltan_rev,tau_intr_rev] = remove_highinj(deltan_rev,tau_intr,cutoff);
+        %We might always want to remove some low injection data
+        disp('Select the region for cutting off the LOW injection data');
+        [cutoff,nothing]=ginput(1);
+        [deltan_rev,tau_SRH_rev] = remove_lowinj(deltan_rev,tau_SRH_rev,cutoff);
+        [deltan_rev,tau_rev_rev] = remove_lowinj(deltan_rev,tau_rev_rev,cutoff);
+        [deltan_rev,tau_surf_rev] = remove_lowinj(deltan_rev,tau_surf_rev,cutoff);
+        [deltan_rev,tau_intr_rev] = remove_lowinj(deltan_rev,tau_intr_rev,cutoff);
+         %Let's store everything now
+        deltan_store{i,1} = deltan_rev;
+        tau_store{i,1} = tau_rev_rev;
+        tau_SRH_store{i,1} = tau_SRH_rev;
+        tau_intr_store{i,1} = tau_intr_rev; 
+        tau_surf_store{i,1} = tau_surf_rev;
+    catch
+        disp(['Could not load data for T = ' num2str(info(i).temperature) 'C']);
+    end
 end
 lifetime_breakdown = struct('tau',tau_store,'deltan',deltan_store,'tau_SRH',tau_SRH_store,'tau_intr',tau_intr_store,'tau_surf',tau_surf_store);
 save([processing_directory '\lifetime_breakdown.mat'],'lifetime_breakdown');
@@ -498,38 +423,42 @@ load([processing_directory '\meas_info.mat']);
 fit_tries = 1e5; 
 %This loop may be slow due to fitting
 for i = 1:length(lifetime_breakdown)
-    %Given the SRH lifetime, we just need to linearize the injection level
-    %Plot the Murphy linearization for n-type
-    %Get sample parameters at specified temperature
-    [Efi,Efv,p0,n0,Eiv] = adv_Model_gen(info(i).temperature+273.15,info(i).doping,type); 
-    %Normalized carrier density
-    if type == 'p'
-        X = (n0+lifetime_breakdown(i).deltan)./(p0+lifetime_breakdown(i).deltan);
-    elseif type == 'n'
-        X = (p0+lifetime_breakdown(i).deltan)./(n0+lifetime_breakdown(i).deltan);
+    try
+        %Given the SRH lifetime, we just need to linearize the injection level
+        %Plot the Murphy linearization for n-type
+        %Get sample parameters at specified temperature
+        [Efi,Efv,p0,n0,Eiv] = adv_Model_gen(info(i).temperature+273.15,info(i).doping,type); 
+        %Normalized carrier density
+        if type == 'p'
+            X = (n0+lifetime_breakdown(i).deltan)./(p0+lifetime_breakdown(i).deltan);
+        elseif type == 'n'
+            X = (p0+lifetime_breakdown(i).deltan)./(n0+lifetime_breakdown(i).deltan);
+        end
+        tau_SRH_now = lifetime_breakdown(i).tau_SRH; 
+        indices = find(tau_SRH_now<0 | isnan(tau_SRH_now)==1); 
+        tau_SRH_now(indices) = [];
+        X(indices) = [];
+        X_store{i} = X; 
+        tau_SRH_store{i} = tau_SRH_now;
+        %Write the data to an XLS file for easy copying
+
+        xlswrite([processing_directory '\Linearized_data.xlsx'],[X,tau_SRH_now],['Sheet' num2str(i)]); 
+        %Now we fit. Fit in microseconds since I'm familiar with good MSE for
+        %those units
+        [one_defect{i,1},MSE_one{i,1},two_defects{i,1},MSE_two{i,1},three_defects{i,1},MSE_three{i,1},all_parameters_store{i,1},all_MSE_store{i,1}] = fit_murphy_master(X,tau_SRH_now.*1e6,info(i).temperature,processing_directory,fit_tries);
+        to_write = zeros(6,3); 
+        to_write(1:2,1) = one_defect{i,1}';
+        twodef = two_defects{i,1}; 
+        to_write(1:2,2) = twodef(1,:)';
+        to_write(3:4,2) = twodef(2,:)';
+        threedef = three_defects{i,1}; 
+        to_write(1:2,3) = threedef(1,:)';
+        to_write(3:4,3) =threedef(2,:)';
+        to_write(5:6,3) = threedef(3,:)';
+        xlswrite([processing_directory '\Linearized_data.xlsx'],to_write,['Sheet' num2str(i)],'C1:E6'); 
+    catch
+        disp(['Could not load data for T = ' num2str(info(i).temperature) 'C']);
     end
-    tau_SRH_now = lifetime_breakdown(i).tau_SRH; 
-    indices = find(tau_SRH_now<0 | isnan(tau_SRH_now)==1); 
-    tau_SRH_now(indices) = [];
-    X(indices) = [];
-    X_store{i} = X; 
-    tau_SRH_store{i} = tau_SRH_now;
-    %Write the data to an XLS file for easy copying
-    
-    xlswrite([processing_directory '\Linearized_data.xlsx'],[X,tau_SRH_now],['Sheet' num2str(i)]); 
-    %Now we fit. Fit in microseconds since I'm familiar with good MSE for
-    %those units
-    [one_defect{i,1},MSE_one{i,1},two_defects{i,1},MSE_two{i,1},three_defects{i,1},MSE_three{i,1},all_parameters_store{i,1},all_MSE_store{i,1}] = fit_murphy_master(X,tau_SRH_now.*1e6,info(i).temperature,processing_directory,fit_tries);
-    to_write = zeros(6,3); 
-    to_write(1:2,1) = one_defect{i,1}';
-    twodef = two_defects{i,1}; 
-    to_write(1:2,2) = twodef(1,:)';
-    to_write(3:4,2) = twodef(2,:)';
-    threedef = three_defects{i,1}; 
-    to_write(1:2,3) = threedef(1,:)';
-    to_write(3:4,3) =threedef(2,:)';
-    to_write(5:6,3) = threedef(3,:)';
-    xlswrite([processing_directory '\Linearized_data.xlsx'],to_write,['Sheet' num2str(i)],'C1:E6'); 
 end
 best_fits = struct('one_defect',one_defect,'MSE_one',MSE_one,'two_defects',two_defects,'MSE_two',MSE_two,'three_defects',three_defects,'MSE_three',MSE_three,'all_fits',all_parameters_store,'all_MSE',all_MSE_store);
 save([processing_directory '\best_fits.mat'],'best_fits');
@@ -811,7 +740,7 @@ end
 for i = 1:length(lifetime_breakdown)
     index = for_iteration(i);
     deltan = lifetime_breakdown(index).deltan;
-    tau = lifetime_breakdown(index).tau; 
+    tau = lifetime_breakdown(index).tau_SRH; 
     curves(i)=loglog(deltan,tau.*1e6,'.','MarkerSize',15,'Color',co{i}); 
     hold all; 
     label(i) = round(info(index).temperature);
@@ -1023,7 +952,7 @@ save([processing_directory '\lifetime_breakdown.mat'],'lifetime_breakdown');
 %Load the data for processing
 load([processing_directory '\lifetime_breakdown.mat']);
 load([processing_directory '\meas_info.mat']);
-for i = 1:length(lifetime_breakdown);
+for i = 1:length(lifetime_breakdown)
     deltan_rev = lifetime_breakdown(i).deltan; 
     tau_SRH = lifetime_breakdown(i).tau_SRH; 
     figure;

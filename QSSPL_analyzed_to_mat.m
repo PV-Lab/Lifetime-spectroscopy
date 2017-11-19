@@ -29,10 +29,10 @@ SOFTWARE.
 clear all; close all; clc; 
 
 %Sample name
-sample = '16-6-28-N-1'; 
+sample = '22-25-8'; 
 %Where the files are stored, after this directory there should be folders
 %for each temperature
-dirname = 'C:\Users\Mallory Jensen\Dropbox (MIT)\TIDLS data - UROP\Data\sorted by sample\16 6 28 N 1\calibrated to aperture\analyzed data\PL'; 
+dirname = 'C:\Users\Mallory Jensen\Dropbox (MIT)\TIDLS data - UROP\Data\sorted by sample\22 25 8\analyzed data\PL'; 
 %Temperatures we're looking at
 T = [-75 -25 25 100]; %C
 %Which data do we want, PC or PL
@@ -40,30 +40,34 @@ PCorPL = 'PL';
 
 %Now the actual sample values
 %Actual sample temperatures, used for analysis and in units of Kelvin
-sampleT = [198.15 248.15 298 373.15]; 
-thick = .0280; %thickness, cm
-res = 3.2; %resistivity, ohm-cm
-opt = 0.85; %This is the 1 minus the reflectivity value used for flash measurements
-N_D = 1.5e15; %doping level, n-type, cm^-3
+sampleT = [198.15 -25+273.15 25+273.15 93.85+273.15]; 
+thick = .0173; %thickness, cm
+res = 1.3; %resistivity, ohm-cm
+opt = 0.875; %This is the 1 minus the reflectivity value used for flash measurements
+N_D = 3.7e15; %doping level, n-type, cm^-3
 
 dataStore = cell(length(T),1); 
 figure; 
 for i = 1:length(T)
-    filename = [dirname '\' num2str(T(i)) 'C\' sample '_' num2str(T(i)) 'C.txt']; 
-    format_for_TIDLS(filename,[dirname '\' num2str(T(i)) 'C'],PCorPL);
-    load([dirname '\' num2str(T(i)) 'C\Raw_data.mat']); 
-    data_now = dataSave; 
-    for j = 1:length(data_now)
-        if j == 1
-            together = data_now{j}; 
-        else
-            together = [together;data_now{j}];
+    try
+        filename = [dirname '\' num2str(T(i)) 'C\' sample '_' num2str(T(i)) 'C.txt']; 
+        format_for_TIDLS(filename,[dirname '\' num2str(T(i)) 'C'],PCorPL);
+        load([dirname '\' num2str(T(i)) 'C\Raw_data.mat']); 
+        data_now = dataSave; 
+        for j = 1:length(data_now)
+            if j == 1
+                together = data_now{j}; 
+            else
+                together = [together;data_now{j}];
+            end
         end
+        together = sortrows(together,1); 
+        loglog(together(:,1),together(:,2),'k-','LineWidth',2); 
+        hold all; 
+        dataStore{i} = together; 
+    catch
+        disp(['Could not load data for T = ' num2str(T(i)) 'C']);
     end
-    together = sortrows(together,1); 
-    loglog(together(:,1),together(:,2),'k-','LineWidth',2); 
-    hold all; 
-    dataStore{i} = together; 
 end
 
 for i = 1:length(sampleT)
