@@ -29,14 +29,14 @@ clear all; close all; clc;
 %Check the filename structure in average_QSSPL first
 
 %This is the directory where our measurements are stored
-dirname = 'C:\Users\Mallory Jensen\Dropbox (MIT)\TIDLS data - UROP\Data\sorted by sample\94 20 8\-75C\8-31-16';
+dirname = 'C:\Users\Mallory Jensen\Dropbox (MIT)\TIDLS data - UROP\Data\sorted by sample\16-4-28-N\25C';
 
 %This is the sample name in the filename, dirname\sample name
-sample = '94-20-8'; 
+sample = '16-4-28-N'; 
 
 %This is the part that comes between the temperature value (if applicable)
 %and the rest of the filename
-Ctonum = 'C_IRap_1-64_';
+Ctonum = 'C_glassup_1-1_';
 
 %This is the time measured before the flash arrives, used to "zero" the
 %data
@@ -44,11 +44,11 @@ time_before = .001; %s
 
 %These are the temperatures at which the measurements are taken. All
 %measurements must be in the same directory for this to work. 
-T = [-75]; 
+T = [25]; 
 
 %This is the number of measurements taken under that condition. The size of
 %this vector should match T - loop over both of these together. 
-num_repeats = [5]; 
+num_repeats = [10]; 
 
 %With the above inputs, call the function that zeros and averages the data
 [dataSave] = average_QSSPL(dirname,sample,T,num_repeats,time_before,Ctonum);

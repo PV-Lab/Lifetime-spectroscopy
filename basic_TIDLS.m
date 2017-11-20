@@ -24,10 +24,10 @@ SOFTWARE.
 
 %This script analyzes TIDLS measurements taken with WCT-120TS. 
 clear all; close all; 
-directory = 'C:\Users\Mallory Jensen\Dropbox (MIT)\TIDLS data - UROP\Data\sorted by sample\22 26 8\analyzed data\PL'; 
+directory = 'C:\Users\Mallory Jensen\Dropbox (MIT)\TIDLS data - UROP\Data\sorted by sample\22 102 8\analyzed data\PL'; 
 before_directory = 'C:\Users\Mallory\Dropbox (MIT)\TIDLS at UNSW\Advanced system measurements\20160727\for_processing\before';
 after_directory = 'C:\Users\Mallory\Dropbox (MIT)\TIDLS at UNSW\Advanced system measurements\20160727\for_processing\after';
-processing_directory = 'C:\Users\Mallory Jensen\Dropbox (MIT)\TIDLS data - UROP\Data\sorted by sample\22 26 8\analyzed data\PL';
+processing_directory = 'C:\Users\Mallory Jensen\Dropbox (MIT)\TIDLS data - UROP\Data\sorted by sample\22 102 8\analyzed data\PL';
 SRV_directory = 'C:\Users\Mallory Jensen\Dropbox (MIT)\TIDLS data - UROP\Data\sorted by sample\16 6 28 N 1\calibrated to aperture\analyzed data\PL';
 deg_directory = 'C:\Users\Mallory Jensen\Documents\LeTID\PERC LeTID Advanced System\Files after measurement\50C\deg';
 undeg_directory = 'C:\Users\Mallory Jensen\Documents\LeTID\PERC LeTID Advanced System\Files after measurement\50C\undeg';
