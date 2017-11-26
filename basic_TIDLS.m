@@ -24,10 +24,10 @@ SOFTWARE.
 
 %This script analyzes TIDLS measurements taken with WCT-120TS. 
 clear all; close all; 
-directory = 'C:\Users\Mallory Jensen\Dropbox (MIT)\TIDLS data - UROP\Data\sorted by sample\22 102 8\analyzed data\PL'; 
+directory = 'C:\Users\Mallory Jensen\Dropbox (MIT)\TIDLS data - UROP\Data\analysis by ingot\22\22-25-8\FZ SRV'; 
 before_directory = 'C:\Users\Mallory\Dropbox (MIT)\TIDLS at UNSW\Advanced system measurements\20160727\for_processing\before';
 after_directory = 'C:\Users\Mallory\Dropbox (MIT)\TIDLS at UNSW\Advanced system measurements\20160727\for_processing\after';
-processing_directory = 'C:\Users\Mallory Jensen\Dropbox (MIT)\TIDLS data - UROP\Data\sorted by sample\22 102 8\analyzed data\PL';
+processing_directory = 'C:\Users\Mallory Jensen\Dropbox (MIT)\TIDLS data - UROP\Data\analysis by ingot\22\22-25-8\FZ SRV';
 SRV_directory = 'C:\Users\Mallory Jensen\Dropbox (MIT)\TIDLS data - UROP\Data\sorted by sample\16 6 28 N 1\calibrated to aperture\analyzed data\PL';
 deg_directory = 'C:\Users\Mallory Jensen\Documents\LeTID\PERC LeTID Advanced System\Files after measurement\50C\deg';
 undeg_directory = 'C:\Users\Mallory Jensen\Documents\LeTID\PERC LeTID Advanced System\Files after measurement\50C\undeg';
@@ -35,6 +35,8 @@ undeg_directory = 'C:\Users\Mallory Jensen\Documents\LeTID\PERC LeTID Advanced S
 type = 'n';
 %Fit range for Joe
 fit_range = 0.3; 
+cutoff = {[1e13 2e15],[1e13 2e15],[1e13 3e15],[3e13 3e15]};
+    
 %% Collect and process raw data - WCT-120TS files
 %Find all of the files in the directory
 [fileList,fileListShort] = getAllFiles(directory); 
@@ -546,24 +548,32 @@ xlabel('E_t-E_i [eV]','FontSize',20);
 ylabel('k [-]','FontSize',20);
 legend(h1,num2str(label));
 title('Defect 1','FontSize',30); 
+hgsave(defect1,[processing_directory '\Et-k_defect1']);
+print(defect1,'-dpng','-r0',[processing_directory '\Et-k_defect1.png']); 
 figure(defect2); 
 % xlabel('E_t-E_v [eV]','FontSize',20); 
 xlabel('E_t-E_i [eV]','FontSize',20); 
 ylabel('k [-]','FontSize',20);
 legend(h2,num2str(label));
 title('Defect 2','FontSize',30); 
+hgsave(defect2,[processing_directory '\Et-k_defect2']);
+print(defect2,'-dpng','-r0',[processing_directory '\Et-k_defect2.png']);
 figure(tau_defect1); 
 % xlabel('E_t-E_v [eV]','FontSize',20); 
 xlabel('E_t-E_i [eV]','FontSize',20); 
 ylabel('\tau_{n0} [s]','FontSize',20);
 legend(h3,num2str(label));
 title('Defect 1','FontSize',30);
+hgsave(tau_defect1,[processing_directory '\Et-tau_defect1']);
+print(tau_defect1,'-dpng','-r0',[processing_directory '\Et-tau_defect1.png']);
 figure(tau_defect2); 
 % xlabel('E_t-E_v [eV]','FontSize',20); 
 xlabel('E_t-E_i [eV]','FontSize',20); 
 ylabel('\tau_{n0} [s]','FontSize',20);
 legend(h4,num2str(label));
 title('Defect 2','FontSize',30);
+hgsave(tau_defect2,[processing_directory '\Et-tau_defect2']);
+print(tau_defect2,'-dpng','-r0',[processing_directory '\Et-tau_defect2.png']);
 % figure(defect3); 
 % xlabel('E_t-E_v [eV]','FontSize',20); 
 % ylabel('k [-]','FontSize',20);
@@ -574,11 +584,18 @@ plot(Et_vector,std_dev(:,1),'LineWidth',3);
 xlabel('E_t-E_v [eV]','FontSize',20);
 ylabel('Standard deviation in k','FontSize',20); 
 title('Defect 1','FontSize',30); 
+h = gcf;
+hgsave(h,[processing_directory '\Et-k_stdev_defect1']);
+print(h,'-dpng','-r0',[processing_directory '\Et-k_stdev_defect1.png']);
 figure; 
 plot(Et_vector,std_dev(:,2),'LineWidth',3); 
 xlabel('E_t-E_v [eV]','FontSize',20);
 ylabel('Standard deviation in k','FontSize',20); 
 title('Defect 2','FontSize',30); 
+h = gcf;
+hgsave(h,[processing_directory '\Et-k_stdev_defect2']);
+print(h,'-dpng','-r0',[processing_directory '\Et-k_stdev_defect2.png']);
+save([processing_directory '\E-k.mat'],'Et','k','alphanN','Et_vector','std_dev','average');
 %% Plot all the E-k curves on the same plot because we don't know which defect belongs where
 %We need to load our data first
 load([processing_directory '\meas_info.mat']); 
@@ -975,4 +992,29 @@ end
 lifetime_breakdown = struct('deltan',deltan_store,'tau_SRH',tau_SRH_store);
 save([processing_directory '\lifetime_breakdown.mat'],'lifetime_breakdown');
  
+%% %% Load the data and ask for where to crop the SRH data based on the contributions - hardcoded
+%Load the data for processing
+load([processing_directory '\lifetime_breakdown.mat']);
+load([processing_directory '\meas_info.mat']);
+for i = 1:length(lifetime_breakdown)
+    cutoff_now = cutoff{i};
+    deltan_rev = lifetime_breakdown(i).deltan; 
+    tau_SRH = lifetime_breakdown(i).tau_SRH; 
+    figure;
+    h=figure('units','normalized','outerposition',[0 0 1 1]);
+    loglog(deltan_rev,tau_SRH.*1e6,'LineWidth',2);
+    xlabel('Excess carrier density (cm^-^3)','FontSize',20);
+    ylabel('Lifetime (\mus)','FontSize',20);   
+    title(['Temperature = ' num2str(info(i).temperature)]);
+    [deltan_rev,tau_SRH_rev] = remove_highinj(deltan_rev,tau_SRH,cutoff_now(2));
+    %We might always want to remove some low injection data
+    [deltan_rev,tau_SRH_rev] = remove_lowinj(deltan_rev,tau_SRH_rev,cutoff_now(1));
+     %Let's store everything now
+    deltan_store{i,1} = deltan_rev;
+    tau_SRH_store{i,1} = tau_SRH_rev;
+    hold all;
+    loglog(deltan_rev,tau_SRH_rev.*1e6,'rx'); 
+end
+lifetime_breakdown = struct('deltan',deltan_store,'tau_SRH',tau_SRH_store);
+save([processing_directory '\lifetime_breakdown.mat'],'lifetime_breakdown');
     
