@@ -24,18 +24,18 @@ SOFTWARE.
 
 %This script analyzes TIDLS measurements taken with WCT-120TS. 
 clear all; close all; 
-directory = 'C:\Users\Mallory Jensen\Dropbox (MIT)\TIDLS data - UROP\Data\analysis by ingot\22\22-25-8\FZ SRV'; 
-before_directory = 'C:\Users\Mallory\Dropbox (MIT)\TIDLS at UNSW\Advanced system measurements\20160727\for_processing\before';
-after_directory = 'C:\Users\Mallory\Dropbox (MIT)\TIDLS at UNSW\Advanced system measurements\20160727\for_processing\after';
-processing_directory = 'C:\Users\Mallory Jensen\Dropbox (MIT)\TIDLS data - UROP\Data\analysis by ingot\22\22-25-8\FZ SRV';
+directory = 'C:\Users\Mallory Jensen\Dropbox (MIT)\TIDLS data - UROP\Data\analysis by ingot\94\94 bottom analysis'; 
+before_directory = 'C:\Users\Mallory Jensen\Dropbox (MIT)\TIDLS data - UROP\Data\analysis by ingot\22\22-101-8';
+after_directory = 'C:\Users\Mallory Jensen\Dropbox (MIT)\TIDLS data - UROP\Data\analysis by ingot\22\22-102-8';
+processing_directory = 'C:\Users\Mallory Jensen\Dropbox (MIT)\TIDLS data - UROP\Data\analysis by ingot\94\94 bottom analysis';
 SRV_directory = 'C:\Users\Mallory Jensen\Dropbox (MIT)\TIDLS data - UROP\Data\sorted by sample\16 6 28 N 1\calibrated to aperture\analyzed data\PL';
-deg_directory = 'C:\Users\Mallory Jensen\Documents\LeTID\PERC LeTID Advanced System\Files after measurement\50C\deg';
-undeg_directory = 'C:\Users\Mallory Jensen\Documents\LeTID\PERC LeTID Advanced System\Files after measurement\50C\undeg';
+deg_directory = 'C:\Users\Mallory Jensen\Dropbox (MIT)\TIDLS data - UROP\Data\analysis by ingot\22\22-101-8';
+undeg_directory = 'C:\Users\Mallory Jensen\Dropbox (MIT)\TIDLS data - UROP\Data\analysis by ingot\22\22-102-8';
 %type - p or n
 type = 'n';
 %Fit range for Joe
 fit_range = 0.3; 
-cutoff = {[1e13 2e15],[1e13 2e15],[1e13 3e15],[3e13 3e15]};
+cutoff = {[1e13 3e14],[1e12 1e15],[3e12 1e15],[5e12 1e15]};
     
 %% Collect and process raw data - WCT-120TS files
 %Find all of the files in the directory
@@ -499,17 +499,17 @@ for i = 1:length(info)
         [Et{index,j},k{index,j},alphanN{index,j}]=generate_Ek(best_fit(j,:),info(index).temperature+273.15,info(index).doping,type);
     end
     figure(defect1); 
-    h1(i)=plot(Et{index,1},k{index,1},'-','LineWidth',2,'Color',co{i}); 
+    h1(i)=plot(Et{index,1},k{index,1},'-','LineWidth',2);%,'Color',co{i}); 
     label(i,1) = info(index).temperature; 
     hold all; 
     figure(tau_defect1); 
-    h3(i)=plot(Et{index,1},1./alphanN{index,1},'-','LineWidth',2,'Color',co{i}); 
+    h3(i)=plot(Et{index,1},1./alphanN{index,1},'-','LineWidth',2);%,'Color',co{i}); 
     hold all;
     figure(defect2);
-    h2(i)=plot(Et{index,2},k{index,2},'-','LineWidth',2,'Color',co{i});
+    h2(i)=plot(Et{index,2},k{index,2},'-','LineWidth',2);%,'Color',co{i});
     hold all;
     figure(tau_defect2); 
-    h4(i)=plot(Et{index,2},1./alphanN{index,2},'-','LineWidth',2,'Color',co{i}); 
+    h4(i)=plot(Et{index,2},1./alphanN{index,2},'-','LineWidth',2);%,'Color',co{i}); 
     hold all; 
 %     figure(defect3);
 %     h3(i)=plot(Et{index,3},k{index,3},'-','LineWidth',2,'Color',co{i});
@@ -726,7 +726,7 @@ ylabel('Lifetime in low-level injection (\mus)','FontSize',20);
 %% Make best fits from Excel 
 filename = [processing_directory '\IDLS two and three curve fitting.xlsm'];
 load([processing_directory '\meas_info.mat']); 
-fits = xlsread(filename,'Summary','B3:E11'); %Note - they should be sorted in increasing temperature
+fits = xlsread(filename,'Summary','B3:E15'); %Note - they should be sorted in increasing temperature
 [m,n] = size(fits); 
 load([processing_directory '\best_fits.mat']); %We will load this and then replace two defects fits
 % for i = 1:length(info)
@@ -738,7 +738,11 @@ for i = 1:m
 %     index = for_iteration(i);
     index = i;
     defect_1 = fits(i,1:2); 
-    defect_2 = fits(i,3:4); 
+    if m<n 
+        defect_2 = zeros(size(defect_1));
+    else
+        defect_2 = fits(i,3:4); 
+    end
     best_fits(index).two_defects = [defect_1;defect_2];
 %     two_defects{i,1} = [defect_1;defect_2];
 end
@@ -960,6 +964,7 @@ end
 xlabel('Excess carrier density [cm^-^3]','FontSize',30); 
 ylabel('Lifetime [s]','FontSize',30);
 legend(curves',labels);
+h = gcf;
 hgsave(h,[directory '\SRH lifetimes']);
 print(h,'-dpng','-r0',[directory '\SRH lifetimes.png']); 
 lifetime_breakdown = struct('deltan',deltan_store,'tau_SRH',tau_SRH_store);
@@ -1018,3 +1023,70 @@ end
 lifetime_breakdown = struct('deltan',deltan_store,'tau_SRH',tau_SRH_store);
 save([processing_directory '\lifetime_breakdown.mat'],'lifetime_breakdown');
     
+%% Prepare the sensitivity analysis for this sample at each temperature
+%load the data
+load([directory '\lifetime_breakdown.mat']);
+load([directory '\meas_info.mat']);
+deltan_store = cell(length(lifetime_breakdown)*4,1); 
+tau_store = cell(length(lifetime_breakdown)*4,1); 
+thick = cell(length(lifetime_breakdown)*4,1);
+temp = cell(length(lifetime_breakdown)*4,1);
+doping = cell(length(lifetime_breakdown)*4,1);
+fileListShort = cell(length(lifetime_breakdown)*4,1);
+count = 1; 
+%Loop over all of the measurements
+for i = 1:length(lifetime_breakdown)
+    %what are original values
+    deltan_orig = lifetime_breakdown(i).deltan;
+    tau_orig = lifetime_breakdown(i).tau_SRH;
+    %shift deltan +/- 10%
+    deltan_plus = deltan_orig.*1.1; 
+    deltan_minus = deltan_orig.*0.9; 
+    %shift lifetime +/- 10%
+    tau_plus = tau_orig.*1.1; 
+    tau_minus = tau_orig.*0.9; 
+    %Plot the results just to give a visual
+    h=figure;
+    loglog(deltan_orig,tau_orig.*1e6,'k','LineWidth',2); 
+    hold all; 
+    loglog(deltan_plus,tau_orig.*1e6,'r--','LineWidth',2); 
+    hold all;
+    loglog(deltan_minus,tau_orig.*1e6,'b--','LineWidth',2); 
+    hold all;
+    loglog(deltan_orig,tau_plus.*1e6,'g--','LineWidth',2); 
+    hold all;
+    loglog(deltan_orig,tau_minus.*1e6,'c--','LineWidth',2);
+    xlabel('Excess carrier density (cm^-^3)','FontSize',20);
+    ylabel('Lifetime (\mus)','FontSize',20);   
+    title(['Temperature = ' num2str(info(i).temperature)]);
+    legend('original','\Deltan+10%','\Deltan-10%','\tau+10%','\tau-10%'); 
+    hgsave(h,[processing_directory '\sensitivity_lifetimes_' num2str(round(info(i).temperature)) 'C']);
+    print(h,'-dpng','-r0',[processing_directory '\sensitivity_lifetimes_' num2str(round(info(i).temperature)) 'C.png']); 
+    %save the data for lifetime fitting (need info and lifetime breakdown)
+    deltan_store{count,1} = deltan_plus; tau_SRH_store{count,1} = tau_orig; 
+    thick{count} = info(i).thickness; 
+    doping{count} = info(i).doping;
+    temp{count} = info(i).temperature;
+    fileListShort{count} = info(i).filename;
+    count = count+1; 
+    deltan_store{count,1} = deltan_minus; tau_SRH_store{count,1} = tau_orig;
+    thick{count} = info(i).thickness; 
+    doping{count} = info(i).doping;
+    temp{count} = info(i).temperature;
+    count = count+1; 
+    deltan_store{count,1} = deltan_orig; tau_SRH_store{count,1} = tau_plus;
+    thick{count} = info(i).thickness; 
+    doping{count} = info(i).doping;
+    temp{count} = info(i).temperature;
+    count = count+1; 
+    deltan_store{count,1} = deltan_orig; tau_SRH_store{count,1} = tau_minus;
+    thick{count} = info(i).thickness; 
+    doping{count} = info(i).doping;
+    temp{count} = info(i).temperature;
+    count = count+1; 
+end
+clear lifetime_breakdown info;   
+lifetime_breakdown = struct('deltan',deltan_store,'tau_SRH',tau_SRH_store);
+info = struct('filename',fileListShort,'thickness',thick,'temperature',temp,'doping',doping);
+save([processing_directory '\meas_info.mat'],'info'); 
+save([processing_directory '\lifetime_breakdown.mat'],'lifetime_breakdown');

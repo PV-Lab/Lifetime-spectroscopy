@@ -249,11 +249,12 @@ plot([1.124-Ect 1.124-Ect],[-100 100],'k--','LineWidth',2);
 xlabel('E_t-E_v [eV]','FontSize',20); 
 ylabel('\tau_{n0} [s]','FontSize',20);
 %% Change in spectroscopy results with k value - ntype
-directory = 'C:\Users\Mallory\Documents\Lifetime spectroscopy\IDLS investigations';
+clear all; close all; 
+directory = 'C:\Users\Mallory Jensen\Documents\Lifetime spectroscopy\IDLS investigations';
 Ect = 0.4;
 Etv = 0; 
 Nt = [1e12];
-sigma_n = [6e-17 6e-16 1.6e-14 1.2e-13];
+sigma_n = [6e-20 6e-19 6e-18 6e-10];
 sigma_p = 6e-16;
 type = 'n'; 
 N_dop = 1e16; 
@@ -406,5 +407,86 @@ for i = 1:length(indices);
     legend(num2str((T-273.15)'));
     title(['k = ' num2str(k_values(indices(i))) ', E_t-E_v = ' num2str(Et(indices(i)))],'FontSize',30);
 end
+%% n-type variations with temperature
+clear all; close all; clc;
+directory = 'C:\Users\Mallory Jensen\Dropbox (MIT)\TIDLS data - UROP\Data\analysis by ingot\test trends'; 
+type = 'n';
+N_dop = 2e15; 
+Nt = 1e12; 
+T = [-75 -25 25]; T = T+273.15; 
+Etv = [0.1 0.2 0.4 0.55 0.7 0.9 1.0];
+k = [1e-4 1e-2 10]; 
+sigma_p = 1e-15; 
+sigma_n = k.*sigma_p; 
+deltan = logspace(12,18,500); 
+deltan = deltan';
+Ect = 0;
 
+for i = 1:length(Etv)
+    for m = 1:length(sigma_n)
+        lifetime = figure; 
+        for k = 1:length(T)
+            for j = 1:length(deltan)
+                [tau_SRH,n1,p1] = SRH_full_adv(Nt,sigma_n(m),sigma_p,Ect,Etv(i),T(k),deltan(j),N_dop,type);
+                tau_SRH_store(j,k) = tau_SRH;
+            end 
+            loglog(deltan,tau_SRH_store(:,k),'-','LineWidth',3); 
+            hold all; 
+        end
+        xlabel('Excess carrier density (cm^-^3)','FontSize',30);
+        ylabel('Lifetime (\mus)','FontSize',30);  
+        legend(num2str((T-273.15)'));
+        title(['k = ' num2str(sigma_n(m)/sigma_p) ', E_t-E_v = ' num2str(Etv(i))],'FontSize',30);
+        tau_SRH_all{i,m} = tau_SRH_store; 
+        h = gcf;
+        hgsave(h,[directory '\tauSRH_k = ' num2str(sigma_n(m)/sigma_p) ', E_t-E_v = ' num2str(Etv(i)) '.fig']);
+        print(h,'-dpng','-r0',[directory '\tauSRH_k = ' num2str(sigma_n(m)/sigma_p) ', E_t-E_v = ' num2str(Etv(i)) '.png']);
+    end
+end
 
+%Fit the "data"
+fit_tries = 1e3; 
+
+for i = 1:length(Etv)
+    for m = 1:length(sigma_n)
+        tau_SRH_now = tau_SRH_all{i,m};
+        defect_k = figure;
+        defect_tau = figure;
+        for k = 1:length(T)
+            %Get sample parameters at specified temperature
+            [Efi,Efv,p0,n0,Eiv] = adv_Model_gen(T(k),N_dop,type); 
+            if type == 'p'
+                X = (n0+deltan)./(p0+deltan);
+            elseif type == 'n'
+                X = (p0+deltan)./(n0+deltan);
+            end 
+            [one_defect,MSE_one,two_defects,MSE_two,three_defects,MSE_three,...
+                all_parameters_store,all_MSE_store] ...
+                = fit_murphy_master(X,tau_SRH_now(:,k),T(k),directory,fit_tries);
+
+            %Now make the E-k curves for each set of "data"
+            best_fit = one_defect;
+            [Et,kval,alphanN]=generate_Ek(best_fit(1,:),T(k),N_dop,type);
+            figure(defect_k); 
+            semilogy(Et,kval,'-','LineWidth',2); 
+            hold all; 
+            figure(defect_tau);
+            semilogy(Et,1./alphanN,'LineWidth',2); 
+            hold all; 
+        end
+        figure(defect_k);
+        xlabel('E_t-E_v [eV]','FontSize',20); 
+        ylabel('k [-]','FontSize',20); 
+        title(['k = ' num2str(sigma_n(m)/sigma_p) ', E_t-E_v = ' num2str(Etv(i))],'FontSize',30);
+        legend(num2str(T'-273.15));
+        hgsave(defect_k,[directory '\Ek_k = ' num2str(sigma_n(m)/sigma_p) ', E_t-E_v = ' num2str(Etv(i)) '.fig']);
+        print(defect_k,'-dpng','-r0',[directory '\Ek_k = ' num2str(sigma_n(m)/sigma_p) ', E_t-E_v = ' num2str(Etv(i)) '.png']);
+        figure(defect_tau);
+        xlabel('E_t-E_v [eV]','FontSize',20); 
+        ylabel('\tau_{n0} [s]','FontSize',20);
+        title(['k = ' num2str(sigma_n(m)/sigma_p) ', E_t-E_v = ' num2str(Etv(i))],'FontSize',30);
+        legend(num2str(T'-273.15));
+        hgsave(defect_tau,[directory '\Etau_k = ' num2str(sigma_n(m)/sigma_p) ', E_t-E_v = ' num2str(Etv(i)) '.fig']);
+        print(defect_tau,'-dpng','-r0',[directory '\Etau_k = ' num2str(sigma_n(m)/sigma_p) ', E_t-E_v = ' num2str(Etv(i)) '.png']);
+    end
+end
