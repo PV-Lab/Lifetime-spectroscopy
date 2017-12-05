@@ -23,9 +23,8 @@ SOFTWARE.
 %}
 %% First process the raw data
 clear all; close all; clc; 
-dirname = 'C:\Users\Mallory Jensen\Documents\LeTID\PDG\as-received lifetimes'; 
-samples = {'1-4','2-2','2-4','3-1','3-2','3-4','4-1','4-2','4-4','5-1','5-2',...
-    '5-4','6-1','6-2','6-4','7-1','7-4','8-1','8-4','FZ-1','FZ-2'};
+dirname = 'C:\Users\Mallory Jensen\Documents\LeTID\PDG\round 2 data\from SERIS\Lifetime data\December 5 2017'; 
+samples = {'1-6','2-6','3-6','4-6','5-6','6-6','7-6','8-6','P-1'};
 for index = 1:length(samples)
     [fileList,fileListShort] = getAllFiles([dirname '\' samples{index}]); 
     savename = [dirname '\' samples{index} '\Raw_data.mat']';
@@ -58,9 +57,8 @@ end
 clear all; close all; clc;
 %Process data after HF passivation
 
-dirname = 'C:\Users\Mallory Jensen\Documents\LeTID\PDG\as-received lifetimes'; 
-samples = {'1-4','2-2','2-4','3-1','3-2','3-4','4-1','4-2','4-4','5-1','5-2',...
-    '5-4','6-1','6-2','6-4','7-1','7-4','8-1','8-4','FZ-1','FZ-2'};
+dirname = 'C:\Users\Mallory Jensen\Documents\LeTID\PDG\round 2 data\from SERIS\Lifetime data\December 5 2017'; 
+samples = {'1-6','2-6','3-6','4-6','5-6','6-6','7-6','8-6','P-1'};
 lifetime_store = zeros(length(samples),1); 
 
 for i = 1:length(samples)
@@ -107,59 +105,15 @@ end
 
 %% Analyze different states together
 clear all; close all; clc;
-savedirname = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation';
-dirname1 = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\January 9 2017';
-dirname2 = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\January 13 2017'; 
-dirname3 = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\January 17 2017'; 
-dirname4 = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\January 19 2017';
-dirname5 = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\January 23 2017';
-dirname6 = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\January 25 2017';
-dirname7 = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\January 27 2017';
-dirname8 = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\January 31 2017';
-dirname9 = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\February 2 2017';
-dirname10 = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\February 6 2017';
-dirname11 = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\February 8 2017';
-dirname12 = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\February 13 2017';
-dirname13 = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\February 15 2017';
-dirname14 = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\February 17 2017';
-% dirname15 = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\March 1 2017'; 
-dirname15 = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\March 1 2017\revised calibration';
-dirname16 = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\March 8 2017';
-dirname17 = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\March 11 2017';
-dirname18 = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\March 15 2017';
-% dirname19 = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\March 17 2017';
-dirname19 = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\March 21 2017';
-dirname20 = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\March 23 2017';
-dirname21 = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\March 30 2017';
-dirname22 = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\April 3 2017';
-dirname23 = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\April 11 2017';
-dirname24 = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\April 13 2017';
-dirname25 = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\April 20 2017';
-dirname26 = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\April 21 2017';
-dirname27 = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\April 27 2017';
-dirname28 = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\May 3 2017';
-dirname29 = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\May 5 2017';
-dirname30 = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\May 9 2017';
-dirname31 = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\May 12 2017';
-dirname32 = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\May 19 2017';
-dirname33 = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\May 25 2017';
-dirname34 = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\June 1 2017';
-dirname35 = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\June 7 2017';
-% dirnames = {dirname1 dirname2 dirname3 dirname4 dirname5 dirname6 dirname7 dirname8 dirname9 dirname10 dirname11 dirname12}; 
-dirnames = {dirname2 dirname3 dirname4 dirname5 dirname6 dirname7 dirname8 ...
-    dirname10 dirname11 dirname12 dirname13 dirname14 dirname15 dirname16 ...
-    dirname17 dirname18 dirname19 dirname20 dirname21 dirname22 dirname23 ...
-    dirname24 dirname25 dirname26 dirname27 dirname28 dirname29 dirname30 ...
-    dirname31 dirname32 dirname33 dirname34,dirname35}; 
-labels = {'initial','1000s','2000s','3000s','4000s','5000s','10000s',...
-    '20000s','30000s','40000s','50000s','60000s','70000s','80000s','90000s',...
-    '100000s','154495','206005','258325','300025','349990','402730s',...
-    '454750s','508360s' '601540s', '702100s','801610s','902260s',...
-    '1004410s','1167760s','1408600s','1579630s','1804090s'};
+savedirname = 'C:\Users\Mallory Jensen\Documents\LeTID\PDG\round 2 data\from SERIS\Lifetime data\summary\initial';
+dirname1 = 'C:\Users\Mallory Jensen\Documents\LeTID\PDG\round 2 data\from SERIS\Lifetime data\November 16 2017';
+dirname2 = 'C:\Users\Mallory Jensen\Documents\LeTID\PDG\round 2 data\from SERIS\Lifetime data\November 17 2017';
+dirname3 = 'C:\Users\Mallory Jensen\Documents\LeTID\PDG\round 2 data\from SERIS\Lifetime data\December 5 2017';
+dirnames = {dirname1 dirname2 dirname3}; 
+labels = {'initial','after PL','after 1 week'};
 cm = colormap(hsv(length(dirnames))); 
-% samples = {'44a','45a','49a','50a','52a','53a','54a','55a','56a','60a','61a','C-1','C-2','H-1','H-2','FZ'};
-samples = {'44a','45a','49a','50a','52a','53a','54a','55a','56a','60a','61a','H-1','H-2','FZ','FZ-12','68-2','66-2','68-4'};
-savename = '_1804090s_lifetime summary';
+samples = {'1-6','2-6','3-6','4-6','5-6','6-6','7-6','8-6','P-1'};
+savename = '_beforedeg_lifetime summary';
 for i = 1:length(samples)
     h=figure('units','normalized','outerposition',[0 0 1 1]);
     curves = [];
@@ -179,7 +133,11 @@ for i = 1:length(samples)
         if flag == 1
 %             for j = 1:length(dataSave)
             if length(dataSave)>1
-                t = 2; 
+                if length(dataSave) == 3
+                    t = 2; 
+                else
+                    t = 1;
+                end
             else
                 t = 1;
             end
