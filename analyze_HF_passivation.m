@@ -165,6 +165,55 @@ for i = 1:length(samples)
     print(h,'-dpng','-r0',[savedirname '\' samples{i} savename '.png']);
 end
 
+%% Plot lifetime as function of LTA temperature
+clear all; close all; clc; 
+savedirname = 'C:\Users\Mallory Jensen\Documents\LeTID\PDG\round 2 data\from SERIS\Lifetime data\summary\initial';
+dirname = 'C:\Users\Mallory Jensen\Documents\LeTID\PDG\round 2 data\from SERIS\Lifetime data\December 5 2017';
+samples = {'1-6','2-6','3-6','4-6','5-6','6-6','7-6','8-6'};
+LTA = [0 600 550 500 450 700 750 650];
+deltan_target = 1e15; 
+lifetime_store = zeros(size(LTA)); 
+
+for i = 1:length(samples)
+    load([dirname '\' samples{i} '\Raw_data.mat']); 
+    load([dirname '\' samples{i} '\meas_info.mat']); 
+    if length(dataSave)>1
+        if length(dataSave) == 3
+            t = 2; 
+        else
+            t = 1;
+        end
+    else
+        t = 1;
+    end
+    datanow = dataSave{t}; 
+    [deltan,tau] = remove_duplicates(datanow(:,1),datanow(:,2));
+    %There's a little bug in this program, for now just do this... 
+    try
+        lifetime_store(i) = interp1(deltan,tau,deltan_target); 
+    catch
+        [deltan,tau] = remove_duplicates(deltan,tau);
+        try
+            lifetime_store(i) = interp1(deltan,tau,deltan_target);
+        catch
+            [deltan,tau] = remove_duplicates(deltan,tau);
+            lifetime_store(i) = interp1(deltan,tau,deltan_target);
+        end
+    end
+    if isnan(lifetime_store(i))==1
+        disp(['Lifetime at ' num2str(deltan_target) ' was NaN for sample ' samples{i}]);
+    end
+end
+
+h=figure;
+plot(LTA,lifetime_store.*1e6,'o','MarkerSize',15,'LineWidth',2); 
+xlabel('low temperature anneal [C]','FontSize',20); 
+ylabel(['lifetime at \Deltan = ' num2str(deltan_target,'%1.0e') ' cm^{-3}'],'FontSize',20);
+title('before degradation','FontSize',20); 
+set(0,'defaultAxesFontSize', 20)
+hgsave(h,[savedirname '\initial lifetime summary with LTA']);
+print(h,'-dpng','-r0',[savedirname '\initial lifetime summary with LTA.png']);    
+
 %% Make the degradation curves
 clear all; close all; clc; 
 savedirname = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation';
