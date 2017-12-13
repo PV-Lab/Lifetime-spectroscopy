@@ -23,12 +23,13 @@ SOFTWARE.
 %}
 %% First process the raw data
 clear all; close all; clc; 
-dirname = 'C:\Users\Mallory Jensen\Documents\LeTID\PDG\round 2 data\HF passivation\HF passivation'; 
+dirname = 'C:\Users\Mallory Jensen\Documents\LeTID\PDG\round 2 data\Degradation\December 13 2017'; 
 % samples = {'1-7','2-7','3-7','4-7','5-7','6-7','7-7','8-7','66-2','FZ-new',...
 %     '17-7-26-STD-1','17-8-7-600-1','17-8-15-550-1','17-8-17-500-1','17-8-31-600-1',...
 %     '17-9-1-700-1','17-9-5-450-2','17-9-7-750-1','17-9-11-STD-1'};
-samples = {'17-8-31-650-1',...
-    '17-9-1-700-1','17-9-5-450-2','17-9-7-750-1','17-9-11-STD-1'};
+% samples = {'17-8-31-650-1',...
+%     '17-9-1-700-1','17-9-5-450-2','17-9-7-750-1','17-9-11-STD-1'};
+samples = {'1-6','2-6','3-6','4-6','5-6','6-6','7-6','8-6','P-1'}; 
 for index = 1:length(samples)
     [fileList,fileListShort] = getAllFiles([dirname '\' samples{index}]); 
     savename = [dirname '\' samples{index} '\Raw_data.mat']';
@@ -61,10 +62,11 @@ end
 clear all; close all; clc;
 %Process data after HF passivation
 
-dirname = 'C:\Users\Mallory Jensen\Documents\LeTID\PDG\round 2 data\HF passivation\HF passivation'; 
-samples = {'1-7','2-7','3-7','4-7','5-7','6-7','7-7','8-7','66-2','FZ-new',...
-    '17-7-26-STD-1','17-8-7-600-1','17-8-15-550-1','17-8-17-500-1','17-8-31-600-1',...
-    '17-9-1-700-1','17-9-5-450-2','17-9-7-750-1','17-9-11-STD-1'};
+dirname = 'C:\Users\Mallory Jensen\Documents\LeTID\PDG\round 2 data\Degradation\December 13 2017'; 
+% samples = {'1-7','2-7','3-7','4-7','5-7','6-7','7-7','8-7','66-2','FZ-new',...
+%     '17-7-26-STD-1','17-8-7-600-1','17-8-15-550-1','17-8-17-500-1','17-8-31-600-1',...
+%     '17-9-1-700-1','17-9-5-450-2','17-9-7-750-1','17-9-11-STD-1'};
+samples = {'1-6','2-6','3-6','4-6','5-6','6-6','7-6','8-6','P-1'}; 
 lifetime_store = zeros(length(samples),1); 
 
 for i = 1:length(samples)
@@ -111,20 +113,26 @@ end
 
 %% Analyze different states together
 clear all; close all; clc;
-savedirname = 'C:\Users\Mallory Jensen\Documents\LeTID\PDG\round 2 data\HF passivation\HF passivation'; 
-dirname1 = 'C:\Users\Mallory Jensen\Documents\LeTID\PDG\round 2 data\HF passivation\HF passivation'; 
-dirnames = {dirname1}; 
-samples = {'FZ-new',...
-    '17-7-26-STD-1','17-8-7-600-1','17-8-15-550-1','17-8-17-500-1','17-8-31-650-1',...
-    '17-9-1-700-1','17-9-5-450-2','17-9-7-750-1','17-9-11-STD-1'};
-% samples = {'1-7','2-7','3-7','4-7','5-7','6-7','7-7','8-7','66-2'};
-savename = '_monoSibeforeShip_lifetime summary';
-% savename = '_mcSibeforeShip_lifetime summary';
-h=figure('units','normalized','outerposition',[0 0 1 1]);
+savedirname = 'C:\Users\Mallory Jensen\Documents\LeTID\PDG\round 2 data\Degradation\Summary\2000s'; 
+dirname1 = 'C:\Users\Mallory Jensen\Documents\LeTID\PDG\round 2 data\Degradation\December 6 2017'; 
+dirname2 = 'C:\Users\Mallory Jensen\Documents\LeTID\PDG\round 2 data\Degradation\December 7 2017'; 
+dirname3 = 'C:\Users\Mallory Jensen\Documents\LeTID\PDG\round 2 data\Degradation\December 8 2017\before';
+dirname4 = 'C:\Users\Mallory Jensen\Documents\LeTID\PDG\round 2 data\Degradation\December 13 2017';
+dirnames = {dirname1 dirname2 dirname3 dirname4}; 
+% samples = {'FZ-new',...
+%     '17-7-26-STD-1','17-8-7-600-1','17-8-15-550-1','17-8-17-500-1','17-8-31-650-1',...
+%     '17-9-1-700-1','17-9-5-450-2','17-9-7-750-1','17-9-11-STD-1'};
+% % samples = {'1-7','2-7','3-7','4-7','5-7','6-7','7-7','8-7','66-2'};
+samples = {'1-6','2-6','3-6','4-6','5-6','6-6','7-6','8-6','P-1'}; 
+times = {'0s','500s','1000s','2000'};
+savename = '_2000s_lifetime summary';
+
 curves = [];
 label = {};
 count = 1;
 for i = 1:length(samples)
+    h=figure('units','normalized','outerposition',[0 0 1 1]);
+    count = 1; 
     for k = 1:length(dirnames)
         try 
             load([dirnames{k} '\' samples{i} '\Raw_data.mat']); 
@@ -137,41 +145,39 @@ for i = 1:length(samples)
             flag = 0; 
         end
         if flag == 1
-%             for j = 1:length(dataSave)
             if length(dataSave)>1
                 t = 2; 
             else
                 t = 1;
             end
-            for j  = t %just the second measurement in each set
-                datanow = dataSave{j}; 
-                curves(count)=loglog(datanow(:,1),datanow(:,2),'LineWidth',2); 
-                hold all; 
-%                 label{count} = ['Set ' num2str(k) ', #' num2str(j)];
-                xlim([5e13 1e17])
-            end
+            datanow = dataSave{t}; 
+            curves(count)=loglog(datanow(:,1),datanow(:,2),'LineWidth',2); 
+            hold all; 
+            label{count} = times{k};
+            count = count+1; 
+            xlim([5e13 1e17])
         end
     end
-    label{count} = samples{i};
-    count = count+1; 
 
-end
+
 xlabel('excess carrier density [cm^-^3]','FontSize',30); 
 ylabel('lifetime [s]','FontSize',30);
-title('mono-Si before shipping','FontSize',30);
+title(samples{i},'FontSize',30);
 legend(curves',label');
 set(0,'defaultAxesFontSize', 20)
 hgsave(h,[savedirname '\' samples{i} savename]);
 print(h,'-dpng','-r0',[savedirname '\' samples{i} savename '.png']);
+end
 
 %% Make the degradation curves
 clear all; close all; clc; 
-savedirname = 'C:\Users\Mallory Jensen\Documents\LeTID\PDG\round 2 data\HF passivation\HF passivation'; 
-savename = '_beforeShip_lifetime summary';
-deltan_target = 1e15; %target injection level for the measurements, changed to 6e14 on 2/13/17 from 5e14
-samples = {'1-7','2-7','3-7','4-7','5-7','6-7','7-7','8-7','66-2','FZ-new',...
-    '17-7-26-STD-1','17-8-7-600-1','17-8-15-550-1','17-8-17-500-1','17-8-31-650-1',...
-    '17-9-1-700-1','17-9-5-450-2','17-9-7-750-1','17-9-11-STD-1'};
+savedirname = 'C:\Users\Mallory Jensen\Documents\LeTID\PDG\round 2 data\Degradation\Summary\2000s'; 
+savename = '_2000s_lifetime summary';
+deltan_target = 8e14; %target injection level for the measurements, changed to 6e14 on 2/13/17 from 5e14
+% samples = {'1-7','2-7','3-7','4-7','5-7','6-7','7-7','8-7','66-2','FZ-new',...
+%     '17-7-26-STD-1','17-8-7-600-1','17-8-15-550-1','17-8-17-500-1','17-8-31-650-1',...
+%     '17-9-1-700-1','17-9-5-450-2','17-9-7-750-1','17-9-11-STD-1'};
+samples = {'1-6','2-6','3-6','4-6','5-6','6-6','7-6','8-6','P-1'}; 
 lifetime_all = zeros(size(samples)); 
 
 for i = 1:length(samples)
