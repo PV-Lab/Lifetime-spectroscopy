@@ -23,7 +23,7 @@ SOFTWARE.
 %}
 %% First process the raw data
 clear all; close all; clc; 
-dirname = 'C:\Users\Mallory Jensen\Documents\LeTID\PDG\round 2 data\from SERIS\Lifetime data\December 5 2017'; 
+dirname = 'C:\Users\Mallory Jensen\Documents\LeTID\PDG\round 2 data\Degradation\January 03 2018'; 
 samples = {'1-6','2-6','3-6','4-6','5-6','6-6','7-6','8-6','P-1'};
 for index = 1:length(samples)
     [fileList,fileListShort] = getAllFiles([dirname '\' samples{index}]); 
@@ -57,7 +57,7 @@ end
 clear all; close all; clc;
 %Process data after HF passivation
 
-dirname = 'C:\Users\Mallory Jensen\Documents\LeTID\PDG\round 2 data\from SERIS\Lifetime data\December 5 2017'; 
+dirname = 'C:\Users\Mallory Jensen\Documents\LeTID\PDG\round 2 data\Degradation\January 03 2018'; 
 samples = {'1-6','2-6','3-6','4-6','5-6','6-6','7-6','8-6','P-1'};
 lifetime_store = zeros(length(samples),1); 
 
@@ -105,15 +105,17 @@ end
 
 %% Analyze different states together
 clear all; close all; clc;
-savedirname = 'C:\Users\Mallory Jensen\Documents\LeTID\PDG\round 2 data\from SERIS\Lifetime data\summary\initial';
-dirname1 = 'C:\Users\Mallory Jensen\Documents\LeTID\PDG\round 2 data\from SERIS\Lifetime data\November 16 2017';
-dirname2 = 'C:\Users\Mallory Jensen\Documents\LeTID\PDG\round 2 data\from SERIS\Lifetime data\November 17 2017';
-dirname3 = 'C:\Users\Mallory Jensen\Documents\LeTID\PDG\round 2 data\from SERIS\Lifetime data\December 5 2017';
-dirnames = {dirname1 dirname2 dirname3}; 
-labels = {'initial','after PL','after 1 week'};
+savedirname = 'C:\Users\Mallory Jensen\Documents\LeTID\PDG\round 2 data\Degradation\Summary\50000s';
+dirname1 = 'C:\Users\Mallory Jensen\Documents\LeTID\PDG\round 2 data\Degradation\December 6 2017';
+dirname2 = 'C:\Users\Mallory Jensen\Documents\LeTID\PDG\round 2 data\Degradation\December 8 2017\before';
+dirname3 = 'C:\Users\Mallory Jensen\Documents\LeTID\PDG\round 2 data\Degradation\December 18 2017';
+dirname4 = 'C:\Users\Mallory Jensen\Documents\LeTID\PDG\round 2 data\Degradation\December 19 2017';
+dirname5 = 'C:\Users\Mallory Jensen\Documents\LeTID\PDG\round 2 data\Degradation\January 03 2018';
+dirnames = {dirname1 dirname2 dirname3 dirname4 dirname5}; 
+labels = {'initial','1000s','5000s','10000s','50000s'};
 cm = colormap(hsv(length(dirnames))); 
 samples = {'1-6','2-6','3-6','4-6','5-6','6-6','7-6','8-6','P-1'};
-savename = '_beforedeg_lifetime summary';
+savename = '_50000s_lifetime summary';
 for i = 1:length(samples)
     h=figure('units','normalized','outerposition',[0 0 1 1]);
     curves = [];
