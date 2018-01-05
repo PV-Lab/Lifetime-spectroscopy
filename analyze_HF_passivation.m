@@ -240,14 +240,9 @@ for i = 1:length(samples)
         if isnan(meas_thissample(j))==0
             %now create the proper filename
             findex = find(meas_thissample(j)==times);  
-%             if meas_thissample(j)==0 && length(find(meas_thissample==0))==1
-%                 findex=2; %the second round of initial measurements
-%             elseif length(find(meas_thissample==0))>1 && meas_thissample(j)==0
-%                 findex=findex(j);
-%             end
             filename = [filenames{findex} '\' samples{i} '\Raw_data.mat'];
             load(filename);
-            if length(dataSave)>1
+            if length(dataSave)==3
                 t = 2; 
             else
                 t = 1;
@@ -278,188 +273,59 @@ for i = 1:length(samples)
 end
 
 %Now, which samples do we want to plot together?
-control = {'H-1','H-2','FZ','FZ-12','68-2','66-2';...
-    'Unfired Cz (120 min H)','Fired Cz (120 min H)','FZ passivation','FZ degradation','mc-Si 950C fired undegraded','mc-Si 750C fired undegraded'};
-control_param = [5e15 5e15 5e15 5e15 9e15 9e15; .025 .025 .025 .02 .017 0.017]; %first row doping, second row thickness 
-fired = {'49a','53a','56a','52a','55a','60a';...
-    '0 min','10 min','30 min','120 min','30 min no H','LeTID control'};
-fired_param = []; %first row doping, second row thickness
-unfired = {'61a','54a','50a','45a','44a','60a';...
-    '0 min','10 min','30 min','120 min','30 min no H','LeTID control'};
-unfired_param = []; %first row doping, second row thickness
-compE = {'68-2','68-4','66-2';...
-    'mc-Si 950C firing no layers','mc-Si 950C firing w/ layers','mc-Si 750C firing undegraded'};
-compE_param = []; 
+control = {'1-6','5-6','4-6','3-6','2-6','8-6','6-6','7-6','P-1';...
+    'STD','450C','500C','550C','600C','650C','700C','750C','FZ'};
 
 lifetime_raw=figure('units','normalized','outerposition',[0 0 1 1]);
 lifetime_norm=figure('units','normalized','outerposition',[0 0 1 1]);
-lifetime_norm_corr=figure('units','normalized','outerposition',[0 0 1 1]);
+Nt_star=figure('units','normalized','outerposition',[0 0 1 1]);
 [nothing,samp] = size(control); 
 labels = {}; 
 for i = 1:samp
     index = find(strcmp(control{1,i},samples)==1);
     raw_now = lifetime_all{index}; 
+    if raw_now(1,1)==0
+        raw_now(1,1) = 1; 
+    end
     norm_now = norm_lifetime_all{index}; 
     figure(lifetime_raw); 
-    plot(raw_now(:,1),raw_now(:,2),'-o','LineWidth',3,'MarkerSize',10); 
+    loglog(raw_now(:,1),raw_now(:,2),'-o','LineWidth',3,'MarkerSize',10); 
     hold all; 
     figure(lifetime_norm); 
-    plot(norm_now(:,1),norm_now(:,2),'-o','LineWidth',3,'MarkerSize',10);
+    semilogx(norm_now(:,1),norm_now(:,2),'-o','LineWidth',3,'MarkerSize',10);
     hold all;  
-    %Get the lifetime, accounting for surface
-    doping_now = control_param(1,i); 
-    W_now = control_param(2,i); 
-    [D_now,Dh] = diffusivity(300,'p',doping_now,deltan_target);
-    tau_rev = zeros(length(raw_now),1); 
-    [num_meas,columns] = size(raw_now); 
-    for j = 1:num_meas
-        try
-            t_index = find(SRV_t==raw_now(j,1)); 
-            tau = raw_now(j,2); 
-            tau_surf = (W_now./(2.*SRV(t_index)))+((1/D_now).*((W_now/pi)^2)); %cm/s
-            tau_rev(j) = ((1./tau)-(1./tau_surf))^(-1); 
-        catch
-            disp(['There was an error calculating the surface lifetime for ' control{1,i} ', time ' num2str(raw_now(j,1)) 's']);
-        end
-    end
-    figure(lifetime_norm_corr); 
-    plot(norm_now(:,1),tau_rev./tau_rev(1),'-o','LineWidth',3,'MarkerSize',10);
-    hold all; 
     labels{i,1} = control{2,i};
-end
-figure(lifetime_raw); 
-xlabel('time [s]','FontSize',25); 
-ylabel('lifetime [s]','FontSize',25); 
-legend(labels); 
-title('control samples','FontSize',25); 
-set(0,'defaultAxesFontSize', 20)
-hgsave(lifetime_raw,[savedirname '\controls' savename]);
-print(lifetime_raw,'-dpng','-r0',[savedirname '\controls' savename '.png']);
-figure(lifetime_norm); 
-xlabel('time [s]','FontSize',25); 
-ylabel('norm. lifetime [-]','FontSize',25); 
-legend(labels); 
-axis([0 max_time 0 2]);
-title('control samples','FontSize',25); 
-set(0,'defaultAxesFontSize', 20)
-hgsave(lifetime_norm,[savedirname '\controls_norm' savename]);
-print(lifetime_norm,'-dpng','-r0',[savedirname '\controls_norm' savename '.png']);
-figure(lifetime_norm_corr); 
-xlabel('time [s]','FontSize',25); 
-ylabel('norm. lifetime (no surface) [-]','FontSize',25); 
-legend(labels); 
-axis([0 max_time 0 2]);
-title('control samples (surface removed)','FontSize',25); 
-set(0,'defaultAxesFontSize', 20)
-hgsave(lifetime_norm_corr,[savedirname '\controls_norm_nosurf' savename]);
-print(lifetime_norm_corr,'-dpng','-r0',[savedirname '\controls_norm_nosurf' savename '.png']);
-    
-lifetime_raw=figure('units','normalized','outerposition',[0 0 1 1]);
-lifetime_norm=figure('units','normalized','outerposition',[0 0 1 1]);
-[nothing,samp] = size(unfired); 
-labels = {};
-for i = 1:samp
-    index = find(strcmp(unfired{1,i},samples)==1);
-    raw_now = lifetime_all{index}; 
-    norm_now = norm_lifetime_all{index}; 
-    figure(lifetime_raw); 
-    plot(raw_now(:,1),raw_now(:,2),'-o','LineWidth',3,'MarkerSize',10); 
-    hold all; 
-    figure(lifetime_norm); 
-    plot(norm_now(:,1),norm_now(:,2),'-o','LineWidth',3,'MarkerSize',10);
-    hold all; 
-    labels{i,1} = unfired{2,i}; 
-end
-figure(lifetime_raw); 
-xlabel('time [s]','FontSize',25); 
-ylabel('lifetime [s]','FontSize',25); 
-legend(labels); 
-title('unfired samples','FontSize',25); 
-set(0,'defaultAxesFontSize', 20)
-hgsave(lifetime_raw,[savedirname '\unfired' savename]);
-print(lifetime_raw,'-dpng','-r0',[savedirname '\unfired' savename '.png']);
-figure(lifetime_norm); 
-xlabel('time [s]','FontSize',25); 
-ylabel('norm. lifetime [-]','FontSize',25); 
-legend(labels); 
-axis([0 max_time 0 2]);
-title('unfired samples','FontSize',25); 
-set(0,'defaultAxesFontSize', 20)
-hgsave(lifetime_norm,[savedirname '\unfired_norm' savename]);
-print(lifetime_norm,'-dpng','-r0',[savedirname '\unfired_norm' savename '.png']);
-
-lifetime_raw=figure('units','normalized','outerposition',[0 0 1 1]);
-lifetime_norm=figure('units','normalized','outerposition',[0 0 1 1]);
-[nothing,samp] = size(fired); 
-labels = {};
-for i = 1:samp
-    index = find(strcmp(fired{1,i},samples)==1);
-    raw_now = lifetime_all{index}; 
-    norm_now = norm_lifetime_all{index}; 
-    figure(lifetime_raw); 
-    plot(raw_now(:,1),raw_now(:,2),'-o','LineWidth',3,'MarkerSize',10); 
-    hold all; 
-    figure(lifetime_norm); 
-    plot(norm_now(:,1),norm_now(:,2),'-o','LineWidth',3,'MarkerSize',10);
-    hold all; 
-    labels{i,1} = fired{2,i}; 
-end
-figure(lifetime_raw); 
-xlabel('time [s]','FontSize',25); 
-ylabel('lifetime [s]','FontSize',25); 
-legend(labels); 
-title('fired samples','FontSize',25); 
-set(0,'defaultAxesFontSize', 20)
-hgsave(lifetime_raw,[savedirname '\fired' savename]);
-print(lifetime_raw,'-dpng','-r0',[savedirname '\fired' savename '.png']);
-figure(lifetime_norm); 
-axis([0 max_time 0 2]);
-xlabel('time [s]','FontSize',25); 
-ylabel('norm. lifetime [-]','FontSize',25); 
-legend(labels); 
-title('fired samples','FontSize',25); 
-set(0,'defaultAxesFontSize', 20)
-hgsave(lifetime_norm,[savedirname '\fired_norm' savename]);
-print(lifetime_norm,'-dpng','-r0',[savedirname '\fired_norm' savename '.png']);
-
-lifetime_raw=figure('units','normalized','outerposition',[0 0 1 1]);
-lifetime_norm=figure('units','normalized','outerposition',[0 0 1 1]);
-[nothing,samp] = size(compE); 
-labels = {};
-for i = 1:samp
-    index = find(strcmp(compE{1,i},samples)==1);
-    raw_now = lifetime_all{index}; 
-    norm_now = norm_lifetime_all{index};
-    if strcmp(compE{1,i},'68-2')==1 
-        remove = find(raw_now(:,1)<time_shift_E); 
-        raw_now(remove,:) = []; 
-        remove = find(norm_now(:,1)<time_shift_E); 
-        norm_now(remove,:) = []; 
+    %Calculate Nt_star
+    Nt_star_now = zeros(length(raw_now),1); 
+    for j = 1:length(raw_now)
+        Nt_star_now(j) = (1/raw_now(j,2))-(1/raw_now(1,2));  
     end
-    raw_now(:,1) = raw_now(:,1)-time_shift_E; 
-    norm_now(:,1) = norm_now(:,1)-time_shift_E; 
-    figure(lifetime_raw); 
-    plot(raw_now(:,1),raw_now(:,2),'-o','LineWidth',3,'MarkerSize',10); 
+    figure(Nt_star); 
+    loglog(raw_now(:,1),Nt_star_now,'-o','LineWidth',3,'MarkerSize',10); 
     hold all; 
-    figure(lifetime_norm); 
-    plot(norm_now(:,1),norm_now(:,2),'-o','LineWidth',3,'MarkerSize',10);
-    hold all; 
-    labels{i,1} = compE{2,i}; 
 end
 figure(lifetime_raw); 
 xlabel('time [s]','FontSize',25); 
 ylabel('lifetime [s]','FontSize',25); 
 legend(labels); 
-title('Company E samples','FontSize',25); 
+title('high hydrogen','FontSize',25); 
 set(0,'defaultAxesFontSize', 20)
-hgsave(lifetime_raw,[savedirname '\compE' savename]);
-print(lifetime_raw,'-dpng','-r0',[savedirname '\compE' savename '.png']);
+hgsave(lifetime_raw,[savedirname '\highH' savename]);
+print(lifetime_raw,'-dpng','-r0',[savedirname '\highH' savename '.png']);
 figure(lifetime_norm); 
-axis([0 max_time 0 2]);
 xlabel('time [s]','FontSize',25); 
 ylabel('norm. lifetime [-]','FontSize',25); 
 legend(labels); 
-title('Company E samples','FontSize',25); 
+axis([0 max_time 0 2]);
+title('high hydrogen','FontSize',25); 
 set(0,'defaultAxesFontSize', 20)
-hgsave(lifetime_norm,[savedirname '\compE_norm' savename]);
-print(lifetime_norm,'-dpng','-r0',[savedirname '\compE_norm' savename '.png']);
+hgsave(lifetime_norm,[savedirname '\highH_norm' savename]);
+print(lifetime_norm,'-dpng','-r0',[savedirname '\highH_norm' savename '.png']);
+figure(Nt_star); 
+xlabel('time [s]','FontSize',25); 
+ylabel('N_t*','FontSize',25); 
+legend(labels,'Location','northwest'); 
+title('high hydrogen','FontSize',25); 
+set(0,'defaultAxesFontSize', 20)
+hgsave(Nt_star,[savedirname '\highH_Ntstar' savename]);
+print(Nt_star,'-dpng','-r0',[savedirname '\highH_Ntstar' savename '.png']);
