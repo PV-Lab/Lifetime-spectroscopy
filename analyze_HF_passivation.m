@@ -218,11 +218,10 @@ print(h,'-dpng','-r0',[savedirname '\initial lifetime summary with LTA.png']);
 
 %% Make the degradation curves
 clear all; close all; clc; 
-savedirname = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation';
-savename = '_1804090s_degradation';
-max_time = 1804090; 
-time_shift_E = 801610; %amount of time to shift company E measurements over for comparison after switch
-meas_details = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\measurement_details_removingInitial.xlsx'; 
+savedirname = 'C:\Users\Mallory Jensen\Documents\LeTID\PDG\round 2 data\Degradation\Summary\50000s';
+savename = '_50000s_degradation';
+max_time = 50000; 
+meas_details = 'C:\Users\Mallory Jensen\Documents\LeTID\PDG\round 2 data\Degradation\measurement_details.xlsx'; 
 deltan_target = 6e14; %target injection level for the measurements, changed to 6e14 on 2/13/17 from 5e14
 %Get the measurement details
 [meas,samples] = xlsread(meas_details,'measurements');
@@ -277,27 +276,6 @@ for i = 1:length(samples)
     lifetime_all{i} = [meas_thissample' lifetime_store]; 
     norm_lifetime_all{i} = [meas_thissample' lifetime_store./lifetime_store(1)];
 end
-
-%Now try to get the degradation curve, removing the surface component
-SRV_control = 'FZ';
-FZ_dop = 5.7e15;
-[De,Dh] = diffusivity(300,'p',FZ_dop,deltan_target); 
-D_FZ  = De; 
-W_FZ = .027; 
-index = find(strcmp(SRV_control,samples)==1);
-raw_now = lifetime_all{index};
-SRV = zeros(length(raw_now),1); 
-for i = 1:length(SRV)
-    tau_intr = Richter(300,deltan_target,FZ_dop,'p');
-    tau_surf = ((1./raw_now(i,2))-(1./tau_intr)).^(-1);
-    SRV(i) = W_FZ./((tau_surf-((1/D_FZ)*((W_FZ/pi)^2))).*2);
-end
-figure;
-plot(raw_now(:,1),SRV); 
-axis([0 max_time 0 10]);
-xlabel('time [s]','FontSize',25); 
-ylabel('SRV [cm/s]','FontSize',25); 
-SRV_t = raw_now(:,1); 
 
 %Now, which samples do we want to plot together?
 control = {'H-1','H-2','FZ','FZ-12','68-2','66-2';...
@@ -485,129 +463,3 @@ title('Company E samples','FontSize',25);
 set(0,'defaultAxesFontSize', 20)
 hgsave(lifetime_norm,[savedirname '\compE_norm' savename]);
 print(lifetime_norm,'-dpng','-r0',[savedirname '\compE_norm' savename '.png']);
-
-%% A few helpful plots for analysis
-% First plot: initial lifetimes versus MIRHP time
-% Second plot: Histogram of measured control lifetimes for mc-Si sample,
-% with mean and standard deviation
-% Third plot: Histogram of measured control lifetimes for FZ passivation 
-% sample with mean and standard deviation
-% Fourth plot: Histogram of measured control lifetimes for FZ degradation
-% sample with mean and standard deviation
-savedirname = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation';
-unfired_names = {'61a','54a','50a','45a'};
-unfired_H = [0 10 30 120]; 
-fired_names = {'49a','53a','56a','52a'};
-fired_H = [0 10 30 120]; 
-mcSi_controls = {'44a','55a','60a'}; 
-mcSi_controls_H = [30 30 0]; 
-mcSi_controls_color = {'r','b','k'}; 
-Cz_controls = {'H-1','H-2'}; 
-Cz_controls_H = [120 120]; 
-Cz_controls_color = {'r','b'}; 
-
-start_tau = figure('units','normalized','outerposition',[0 0 1 1]);; 
-for i = 1:length(unfired_names)
-    index = find(strcmp(unfired_names{1,i},samples)==1);
-    raw_now = lifetime_all{index}; 
-    figure(start_tau); 
-    h(1)=plot(unfired_H(i),raw_now(1,2).*1e6,'ro','MarkerSize',10,'LineWidth',2); 
-    hold all; 
-end
-for i = 1:length(fired_names)
-    index = find(strcmp(fired_names{1,i},samples)==1);
-    raw_now = lifetime_all{index}; 
-    figure(start_tau); 
-    h(2)=plot(fired_H(i),raw_now(1,2).*1e6,'bs','MarkerSize',10,'LineWidth',2); 
-    hold all; 
-end
-for i = 1:length(mcSi_controls)
-    index = find(strcmp(mcSi_controls{1,i},samples)==1);
-    raw_now = lifetime_all{index}; 
-    figure(start_tau); 
-    if i == 3
-        marker = [mcSi_controls_color{i} 'd'];
-        h(4)=plot(mcSi_controls_H(i),raw_now(1,2).*1e6,marker,'MarkerSize',10,'LineWidth',2);
-    else
-        marker = [mcSi_controls_color{i} '+'];
-        h(3)=plot(mcSi_controls_H(i),raw_now(1,2).*1e6,marker,'MarkerSize',10,'LineWidth',2); 
-    end
-    hold all; 
-end
-% for i = 1:length(Cz_controls)
-%     index = find(strcmp(Cz_controls{1,i},samples)==1);
-%     raw_now = lifetime_all{index}; 
-%     figure(start_tau); 
-%     marker = [Cz_controls_color{i} 'd'];
-%     h(5)=plot(Cz_controls_H(i),raw_now(1,2).*1e6,marker,'MarkerSize',10,'LineWidth',2);
-% end
-figure(start_tau); 
-xlabel('MIRHP time [min]','FontSize',25); 
-ylabel('initial lifetime [\mus]','FontSize',25); 
-% legend(h,'unfired mc-Si','fired mc-Si','mc-Si no H, T only','mc-Si with SiN_x','Cz');
-axis([-10 130 80 160]); 
-legend(h,'unfired mc-Si','fired mc-Si','mc-Si no H, T only','mc-Si with SiN_x');
-title('lifetimes as-received, before degradation','FontSize',25); 
-set(0,'defaultAxesFontSize', 20)
-hgsave(start_tau,[savedirname '\initial_lifetimes']);
-print(start_tau,'-dpng','-r0',[savedirname '\initial_lifetimes.png']);
-
-%Second plot
-mcSi_tau_controls = {'68-2','66-2'}; 
-end_times = [801610, max_time]; 
-mcSi_controls = figure('units','normalized','outerposition',[0 0 1 1]);; 
-for i = 1:length(mcSi_tau_controls)
-    index = find(strcmp(mcSi_tau_controls{1,i},samples)==1);
-    norm_now = norm_lifetime_all{index};
-    indices = find(norm_now(:,1)<= end_times(i)); 
-    h(i)=histogram(norm_now(indices,2),10); 
-    disp(['Mean for sample ' mcSi_tau_controls{i} ' is ' num2str(mean(norm_now(indices,2)))]); 
-    disp(['Standard deviation for sample ' mcSi_tau_controls{i} ' is ' num2str(std(norm_now(indices,2)))]); 
-    hold on; 
-end
-figure(mcSi_controls); 
-xlabel('normalized lifetime','FontSize',25); 
-ylabel('frequency','FontSize',25); 
-title('estimating measurement-to-measurement error','FontSize',25)
-legend(h,'68-2','66-2'); 
-set(0,'defaultAxesFontSize', 20)
-hgsave(mcSi_controls,[savedirname '\mcSi_histogram']);
-print(mcSi_controls,'-dpng','-r0',[savedirname '\mcSi_histogram.png']);
-
-%Third plot
-FZ_pass_control = {'FZ'}; 
-FZ_pass_control_fig = figure('units','normalized','outerposition',[0 0 1 1]);
-for i = 1:length(FZ_pass_control)
-    index = find(strcmp(FZ_pass_control{1,i},samples)==1);
-    norm_now = norm_lifetime_all{index};
-    h(i)=histogram(norm_now(:,2),10); 
-    disp(['Mean for sample ' FZ_pass_control{i} ' is ' num2str(mean(norm_now(:,2)))]); 
-    disp(['Standard deviation for sample ' FZ_pass_control{i} ' is ' num2str(std(norm_now(:,2)))]); 
-    hold on; 
-end
-figure(FZ_pass_control_fig); 
-xlabel('normalized lifetime','FontSize',25); 
-ylabel('frequency','FontSize',25); 
-title('estimating variation in surface passivation quality','FontSize',25)
-set(0,'defaultAxesFontSize', 20)
-hgsave(FZ_pass_control_fig,[savedirname '\FZ_histogram']);
-print(FZ_pass_control_fig,'-dpng','-r0',[savedirname '\FZ_histogram.png']);
-
-%Fourth plot
-FZ_deg_control = {'FZ-12'}; 
-FZ_deg_control_fig = figure('units','normalized','outerposition',[0 0 1 1]);
-for i = 1:length(FZ_deg_control)
-    index = find(strcmp(FZ_deg_control{1,i},samples)==1);
-    norm_now = norm_lifetime_all{index};
-    h(i)=histogram(norm_now(:,2),10); 
-    disp(['Mean for sample ' FZ_deg_control{i} ' is ' num2str(mean(norm_now(:,2)))]); 
-    disp(['Standard deviation for sample ' FZ_deg_control{i} ' is ' num2str(std(norm_now(:,2)))]); 
-    hold on; 
-end
-figure(FZ_deg_control_fig); 
-xlabel('normalized lifetime','FontSize',25); 
-ylabel('frequency','FontSize',25); 
-title('estimating influence of degradation setup on measurement','FontSize',25)
-set(0,'defaultAxesFontSize', 20)
-hgsave(FZ_deg_control_fig,[savedirname '\FZ-12_histogram']);
-print(FZ_deg_control_fig,'-dpng','-r0',[savedirname '\FZ-12_histogram.png']);
