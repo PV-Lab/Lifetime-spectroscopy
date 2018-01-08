@@ -481,3 +481,193 @@ for k = 1:length(to_plots)
     hgsave(Nt_star,[savedirname '\lowvhigh_Ntstar_' savepre{k} savename]);
     print(Nt_star,'-dpng','-r0',[savedirname '\lowvhigh_Ntstar_' savepre{k} savename '.png']);
 end
+
+%% Analyze lifetime throughout degradation
+%Things we want to do: 
+%1) Load injection dependent data for each sample
+%2) determine the SRV from the FZ samples (average?)
+%3) Apply SRV to each sample to get SRH lifetime
+%4) Fit SRH lifetime with 1 or 2 defects? Select the dominant defect
+%5) Plot the k value from midgap for each sample throughout degradation 
+%Key comparisons: directly after degradation, versus after a wait
+%Issues remaining: need to crop each measurement. Do we need to stitch for
+%the "C" samples? Need to figure out which is the dominant defect. 
+clear all; close all; clc; 
+savedirname = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\Summary\674200s';
+savename = '_674200s_degradation';
+max_time = 674200; 
+meas_details = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\measurement_details.xlsx'; 
+deltan_target = 8e14; %target injection level for the measurements, changed to 6e14 on 2/13/17 from 5e14
+%Get the measurement details
+[meas,samples] = xlsread(meas_details,'measurements');
+samples(1,:) = []; 
+[times,filenames] = xlsread(meas_details,'filenames'); 
+%Make these the same size
+filenames = filenames(2:end,2); 
+temp = 25; %degrees C
+type = 'p'; 
+
+%Which are the float-zone samples?
+floatzone = {'17-7-27-1','17-7-27-2'};
+
+all_data = cell(length(samples),3); 
+    
+for i = 1:length(samples)
+    meas_thissample = meas(i,:);
+    data_thissample = cell(length(meas_thissample),3); 
+    for j = 1:length(meas_thissample)
+        if isnan(meas_thissample(j))==0
+            %save the time for this sample
+            data_thissample{j,1} = meas_thissample(j); 
+            %now create the proper filename
+            findex = find(meas_thissample(j)==times);  
+            filename = [filenames{findex} '\' samples{i} '\Raw_data.mat'];
+            load(filename);
+            if length(dataSave)==3
+                t = 2; 
+            else
+                t = 1;
+            end
+            datanow = dataSave{t}; 
+            [deltan,tau] = remove_duplicates(datanow(:,1),datanow(:,2));
+            %save the injection-dependent data
+            data_thissample{j,2} = deltan; 
+            data_thissample{j,3} = tau; 
+            if j == 1
+                %grab the doping and the thickness
+                filename = [filenames{findex} '\' samples{i} '\meas_info.mat'];
+                load(filename);
+                all_data{i,2} = info(t).thickness;
+                all_data{i,3} = info(t).doping; 
+            end
+        end
+    end
+    all_data{i,1} = data_thissample; 
+end
+
+%Now we evaluate the SRV at each degradation point
+SRV_store = cell(size(floatzone)); 
+for i = 1:length(floatzone)
+    index = find(strcmp(samples,floatzone{i})==1);
+    all_data_now = all_data{index,1}; 
+    [num_meas,n] = size(all_data_now); 
+    SRV_thissample = cell(num_meas,3); 
+    for k = 1:num_meas
+        deltan = all_data_now{k,2}; 
+        tau = all_data_now{k,3}; 
+        tau_intr = zeros(size(deltan));
+        diffusivity_save = zeros(size(deltan)); 
+        for j = 1:length(deltan)
+            %Get the intrinsic lifetime
+            tau_intr(j,1) = Richter(temp+273.15,deltan(j),all_data{index,3},type);
+            %unfortunately the diffusivity is also temperature and injection
+            %dependent
+            [De,Dh] = diffusivity(temp+273.15,type,all_data{index,3},deltan(j));
+            if type == 'n'
+                diffusivity_save(j,1) = Dh; %hole is minority carrier
+            elseif type == 'p'
+                diffusivity_save(j,1) = De; %electron is minority carrier
+            end
+        end
+        %Calculate the surface-related lifetime assuming zero SRH contribution
+        tau_surf = ((1./tau)-(1./tau_intr)).^(-1);
+        %Calculate the SRV, including the injection-dependent diffusivity
+        SRV = all_data{index,2}./((tau_surf-((1./diffusivity_save).*((all_data{index,2}/pi)^2))).*2);
+        SRV_thissample{k,3} = SRV; 
+        SRV_thissample{k,2} = deltan; 
+        SRV_thissample{k,1} = all_data_now{k,1}; 
+    end
+    SRV_store{i} = SRV_thissample; 
+end
+
+%Go through and find an average for the surface contribution to lifetime
+baseFZ = SRV_store{1}; 
+SRV_avg = cell(size(baseFZ)); 
+[num_meas,n] = size(SRV_avg); 
+figure;
+label = {};
+for i = 1:num_meas
+    SRV_sum = baseFZ{i,3}; 
+    base_deltan = baseFZ{i,2}; 
+    count = 1;
+    for k = 2:length(floatzone)
+        thisFZ = SRV_store{k}; 
+        index = find(strcmp(baseFZ{i,1},thisFZ(:,1))==1); 
+        if isempty(index)==0
+            try
+                SRV_now = interp1(thisFZ{index,2},thisFZ{index,3},base_deltan); 
+            catch
+                [thisFZ{index,2},thisFZ{index,3}] = remove_duplicates(thisFZ{index,2},thisFZ{index,3});
+                try
+                    SRV_now = interp1(thisFZ{index,2},thisFZ{index,3},base_deltan); 
+                catch
+                    [thisFZ{index,2},thisFZ{index,3}] = remove_duplicates(thisFZ{index,2},thisFZ{index,3});
+                    SRV_now = interp1(thisFZ{index,2},thisFZ{index,3},base_deltan); 
+                end
+            end
+            SRV_sum = SRV_sum+SRV_now; 
+            count = count+1; 
+        end
+    end
+    SRV_avg{i,3} = SRV_sum/count; 
+    SRV_avg{i,1} = baseFZ{i,1}; 
+    SRV_avg{i,2} = baseFZ{i,2}; 
+    semilogx(base_deltan,SRV_avg{i,3},'LineWidth',2); 
+    label{i,1} = num2str(baseFZ{i,1}); 
+    hold all;
+end
+xlabel('excess carrier density [cm^-^3]','FontSize',20); 
+ylabel('SRV [cm/s]','FontSize',20); 
+legend(label); 
+
+%Now, for each sample, calculate and then fit the SRH lifetime
+for i = 1:length(samples)
+    %Check to make sure it's not a FZ sample
+    if strcmp(samples{i},floatzone(:))==0
+        linSRH = figure; 
+        label = {}; 
+        all_data_now = all_data{i,1}; 
+        [num_meas,n] = size(all_data_now); 
+        for j = 1:num_meas
+            SRV_index = find(all_data_now{j,1}==cell2mat(SRV_avg(:,1)));
+            SRV = SRV_avg{SRV_index,3};
+            deltanSRV = SRV_avg{SRV_index,2}; 
+            deltan = all_data_now{j,2}; 
+            tau = all_data_now{j,3}; 
+            tau_intr = zeros(size(deltan));
+            diffusivity_save = zeros(size(deltan)); 
+            for k = 1:length(deltan)
+                %Get the intrinsic lifetime
+                tau_intr(k,1) = Richter(temp+273.15,deltan(k),all_data{i,3},type);
+                %unfortunately the diffusivity is also temperature and injection
+                %dependent
+                [De,Dh] = diffusivity(temp+273.15,type,all_data{i,3},deltan(k));
+                if type == 'n'
+                    diffusivity_save(k,1) = Dh; %hole is minority carrier
+                elseif type == 'p'
+                    diffusivity_save(k,1) = De; %electron is minority carrier
+                end
+            end
+            SRVq = interp1(deltanSRV,SRV,deltan); 
+            tau_surf =(all_data{i,2}./(2.*SRVq))+((1./diffusivity_save(1)).*((all_data{i,2}/pi)^2)); %cm/s
+            %Finally, we can calculate the SRH lifetime
+            tau_SRH = ((1./tau)-(1./tau_intr)-(1./tau_surf)).^(-1);
+            %Now that we have this, linearize and fit
+            [Efi,Efv,p0,n0,Eiv] = adv_Model_gen(temp+273.15,all_data{i,3},type); 
+            %Normalized carrier density
+            if type == 'p'
+                X = (n0+deltan)./(p0+deltan);
+            elseif type == 'n'
+                X = (p0+deltan)./(n0+deltan);
+            end
+            figure(linSRH);
+            plot(X,tau_SRH,'LineWidth',2); 
+            hold all; 
+            label{j,1} = num2str(all_data_now{j,1}); 
+        end
+        xlabel('X [-]','FontSize',20); 
+        ylabel('tau_S_R_H [s]','FontSize',20);
+        legend(label); 
+        title(samples{i},'FontSize',20); 
+    end
+end
