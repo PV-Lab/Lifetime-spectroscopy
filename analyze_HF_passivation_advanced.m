@@ -30,7 +30,7 @@ SOFTWARE.
 clear all; close all; clc; 
 %Change these values
 %-----------------------------
-bora = 'set-b'; %'set-b' or 'set-a' or 'compE' or 'compare' if you want to compare sets a and b directly
+bora = 'set-a'; %'set-b' or 'set-a' or 'compE' or 'compare' if you want to compare sets a and b directly
 %Most recent directory that we want to analyze now. 
 dirname = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\November 9 2017';
 %where we want to save any new, non-sample-specific data
@@ -48,7 +48,7 @@ lifetime_error = 0.11;
 %which sample set, b or a? 
 [samples,dirnames,labels,savename,surface_control,...
     plotting_group,plotting_names,meas_details,max_time,...
-    latesta,latestb]=HFbora(bora);
+    latesta,latestb,lifetime_analysis]=HFbora(bora);
 
 %% First process the raw data
 for index = 1:length(samples)
@@ -738,4 +738,85 @@ for i = 1:length(plotting_group)
     hgsave(lifetime_mcSi_ratio_norm,[savedirname '\' plotting_names{i} '_mcSi_ratio_norm' savename]);
     print(lifetime_mcSi_ratio_norm,'-dpng','-r0',[savedirname '\' plotting_names{i} '_mcSi_ratio_norm' savename '.png']);
 end
+%% Lifetime spectroscopy analysis
+%Currently the inputs for this are only set for set-a
+close all; clc; 
 
+%loop over only the samples we want for lifetime analysis
+for i = 1:length(lifetime_analysis)
+    %Load the initial lifetime, which should be the first entry in the
+    %dirnames list
+    try 
+        initial_data=load([dirnames{1} '\' lifetime_analysis{i} '\Raw_data.mat']); 
+        load([dirnames{1} '\' lifetime_analysis{i} '\meas_info.mat']); 
+        initial_info = info; 
+    catch
+        %If that's not successful, just tell me that the sample doesn't
+        %exist for that dirname. There will be a script error. 
+        warning(['Error accessing data for directory ' num2str(1) ', sample ' lifetime_analysis{i}]);
+    end
+    if length(initial_info.dataSave)>1
+        if length(initial_info.dataSave)>2
+            t = 3; 
+        else
+            t = 2; 
+        end
+    else
+        t = 1; 
+    end
+    data = initial_info.dataSave{t}; 
+    deltan_initial=data(:,1);tau_initial=data(:,2);
+    %Now we have: initial_data.fileListShort, initial_data.dataSave
+    %initial_info.thickness,resistivity,doping,temperature
+    %Now we need to loop over each measured lifetime and calculate the SRH
+    %lifetime by the harmonic difference
+    for j = 2:length(dirnames)
+        %Load the data for this sample
+        try 
+            load([dirnames{j} '\' lifetime_analysis{i} '\Raw_data.mat']); 
+            load([dirnames{j} '\' lifetime_analysis{i} '\meas_info.mat']); 
+            flag = 1; 
+        catch
+            %If that's not successful, just tell me that the sample doesn't
+            %exist for that dirname. There will be a script error. 
+            warning(['Error accessing data for directory ' num2str(j) ', sample ' lifetime_analysis{i}]);
+            flag = 0; 
+        end
+        %If we've successfully loaded the data, we need to do some
+        %operations with it
+        if flag == 1
+            if length(dataSave)>1
+                if length(dataSave)>2
+                    t = 3; 
+                else
+                    t = 2; 
+                end
+            else
+                t = 1;
+            end
+            for k  = t %just the second measurement in each set
+                data = dataSave{k}; 
+                deltan = data(:,1); tau = data(:,2); 
+                %We need to interpolate this data set at the injection
+                %levels for our other sample
+                [deltan,tau] = interp1(deltan,tau,deltan_initial); 
+                %Now we calculate the harmonic difference, which represents
+                %the SRH lifetime
+                tauSRH = ((1./tau)-(1./tau_initial)).^(-1); %units of seconds
+                %Ask where the crop the SRH lifetime
+                %....
+                %Linearize the lifetime
+                %....
+                %Send the lifetime for fitting
+                %....
+                %Make sure the linearized lifetime and the fits are saved
+                %to an Excel file as in basic_TIDLS.m
+                %....
+            end
+        end
+    end
+end
+
+%Outside of this, need to modify the fit parameters in Excel, match
+%defects. Then need to bring these into MATLAB and calculate the E-k
+%values, extract midgap value, and then extract for plotting in Origin. 
