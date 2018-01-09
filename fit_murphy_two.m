@@ -48,8 +48,7 @@ function [two_defects,MSE_two,all_parameters_store,all_MSE_store] = fit_murphy_t
     %Find the best fit for two defects
     [new_parameters_two,MSE_two,new_parameters_store_two,MSE_store_two]=best_fit(X,tau_SRH,fit_start,fit_tries);
     %Plot the result
-    figure(all_fits)
-    subplot(1,3,2); 
+    all_fits=figure;
     h(1)=plot(X,tau_SRH,'b.'); 
     hold all; 
     %Plot the result
@@ -72,5 +71,6 @@ function [two_defects,MSE_two,all_parameters_store,all_MSE_store] = fit_murphy_t
     all_MSE_store = {MSE_store_two}; 
     
     %We want to save the figure to look at later
-    hgsave(all_fits,[directory '\Best fits_' num2str(round(T))]);
-    print(all_fits,'-dpng','-r0',[directory '\Best fits_' num2str(round(T)) '.png']); 
+    hgsave(all_fits,[directory '_best_fits']);
+    print(all_fits,'-dpng','-r0',[directory '_best_fits.png']); 
+    close(all_fits); 
