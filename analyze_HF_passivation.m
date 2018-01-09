@@ -490,8 +490,9 @@ end
 %4) Fit SRH lifetime with 1 or 2 defects? Select the dominant defect
 %5) Plot the k value from midgap for each sample throughout degradation 
 %Key comparisons: directly after degradation, versus after a wait
-%Issues remaining: need to crop each measurement. Do we need to stitch for
-%the "C" samples? Need to figure out which is the dominant defect. 
+%Issues remaining: Do we need to stitch for
+%the "C" samples? Need to figure out which is the dominant defect. --
+%should we choose just a limited number of measurements to analyze?
 clear all; close all; clc; 
 savedirname = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\Summary\674200s';
 savename = '_674200s_degradation';
@@ -620,14 +621,26 @@ xlabel('excess carrier density [cm^-^3]','FontSize',20);
 ylabel('SRV [cm/s]','FontSize',20); 
 legend(label); 
 
+lifetime_breakdown = figure; 
+defect_parameters = cell(length(samples)-length(floatzone),2); 
 %Now, for each sample, calculate and then fit the SRH lifetime
 for i = 1:length(samples)
     %Check to make sure it's not a FZ sample
-    if strcmp(samples{i},floatzone(:))==0
+    if strcmp(samples{i},floatzone(:))==0 
+        %set the low/high injection cutoffs
+        if strcmp(samples{i},'C-h-5')==1 || strcmp(samples{i},'C-L-5')==1
+            cutoff_low = 5e13;
+            cutoff_high = 5e15; 
+        else
+            cutoff_low = 5e13;
+            cutoff_high = 8e15; 
+        end
         linSRH = figure; 
         label = {}; 
         all_data_now = all_data{i,1}; 
         [num_meas,n] = size(all_data_now); 
+        def_param_thissample = cell(num_meas,5);
+        easy_summary = zeros(num_meas,3); 
         for j = 1:num_meas
             SRV_index = find(all_data_now{j,1}==cell2mat(SRV_avg(:,1)));
             SRV = SRV_avg{SRV_index,3};
@@ -652,6 +665,26 @@ for i = 1:length(samples)
             tau_surf =(all_data{i,2}./(2.*SRVq))+((1./diffusivity_save(1)).*((all_data{i,2}/pi)^2)); %cm/s
             %Finally, we can calculate the SRH lifetime
             tau_SRH = ((1./tau)-(1./tau_intr)-(1./tau_surf)).^(-1);
+            indices = find(tau_SRH<0 | isnan(tau_SRH)==1); 
+            tau_SRH(indices) = [];tau(indices) = []; tau_intr(indices) = [];
+            tau_surf(indices) = []; deltan(indices) = [];
+            %Plot the different mechanisms and ask to crop each one
+            figure(lifetime_breakdown); clf; 
+            loglog(deltan,tau); hold all; loglog(deltan,tau_surf); 
+            hold all; loglog(deltan,tau_intr); hold all; 
+            loglog(deltan,tau_SRH); 
+%             xlabel('excess carrier density [cm^-^3]'); 
+%             ylabel('lifetime [s]'); 
+%             legend('measured','surface','intrinsic','SRH'); 
+%             disp('Select the region for cutting off the HIGH injection data');
+%             [cutoff,nothing]=ginput(1);
+            [deltan,tau_SRH] = remove_highinj(deltan,tau_SRH,cutoff_high);
+%             disp('Select the region for cutting off the LOW injection data');
+%             [cutoff,nothing]=ginput(1);
+            [deltan,tau_SRH] = remove_lowinj(deltan,tau_SRH,cutoff_low);
+            hold all;
+            loglog(deltan,tau_SRH,'x'); 
+            hgsave(lifetime_breakdown,[savedirname '\' samples{i} '_' num2str(all_data_now{j,1}) 's_lifetimeBreakdown']);
             %Now that we have this, linearize and fit
             [Efi,Efv,p0,n0,Eiv] = adv_Model_gen(temp+273.15,all_data{i,3},type); 
             %Normalized carrier density
@@ -664,10 +697,55 @@ for i = 1:length(samples)
             plot(X,tau_SRH,'LineWidth',2); 
             hold all; 
             label{j,1} = num2str(all_data_now{j,1}); 
+            %We assume (based on some previous analysis) that we have two
+            %defects present at each measured point
+            savename = [savedirname '\' samples{i} '_' num2str(all_data_now{j,1}) 's_'];
+            [two_defects,MSE_two,all_parameters_store,all_MSE_store] = fit_murphy_two(X,tau_SRH,temp,savename,1e5);
+            def_param_thissample{j,1} = two_defects; 
+            def_param_thissample{j,2} = MSE_two; 
+            [m,n] = size(two_defects);
+            Et = cell(size(two_defects)); k = cell(size(two_defects)); 
+            alphanN = cell(size(two_defects)); 
+            for x = 1:m
+                [Et{x},k{x},alphanN{x}]=generate_Ek(two_defects(x,:),temp+273.15,all_data{i,3},type);
+            end
+            def_param_thissample{j,3} = Et; 
+            def_param_thissample{j,4} = k; 
+            def_param_thissample{j,5} = alphanN; 
+            %Pick the dominant defect in low injection (3e14 to be safe)
+            inj = find(abs(deltan-3e14)==min(abs(deltan-3e14))); 
+            actual = tau_SRH(inj); 
+            def1 = two_defects(1,1)*X(inj)+two_defects(2,2);
+            def2 = two_defects(2,1)*X(inj)+two_defects(2,2);
+%             Eg = Sze(temp+273.15); 
+            if abs(def1-actual)<abs(def2-actual)
+                Et_now = Et{1}; 
+                Et_index = find(abs(0-Et_now)==min(abs(0-Et_now))); 
+                k_now = k{1}; 
+                alphanN_now = alphanN{1}; 
+                %Defect 1 is dominant
+                easy_summary(j,:) = [all_data_now{j,1} k_now(Et_index) alphanN_now(Et_index)];
+            elseif abs(def2-actual)<abs(def1-actual)
+                Et_now = Et{2}; 
+                Et_index = find(abs(0-Et_now)==min(abs(0-Et_now))); 
+                k_now = k{2}; 
+                alphanN_now = alphanN{2}; 
+                %Defect 2 is dominant
+                easy_summary(j,:) = [all_data_now{j,1} k_now(Et_index) alphanN_now(Et_index)];
+           end
         end
+        defect_parameters{i,1} = def_param_thissample; 
+        defect_parameters{i,2} = easy_summary; 
+        figure(linSRH);
         xlabel('X [-]','FontSize',20); 
         ylabel('tau_S_R_H [s]','FontSize',20);
         legend(label); 
         title(samples{i},'FontSize',20); 
+        hgsave(linSRH,[savedirname '\' samples{i} '_linSRH']);
+        print(linSRH,'-dpng','-r0',[savedirname '\' samples{i} '_linSRH.png'])
     end
 end
+
+%Save all of the important data
+save([savedirname '\lifetime_spect_analysis'],'all_data','SRV_store',...
+    'SRV_avg','defect_parameters','type','temp','max_time'); 
