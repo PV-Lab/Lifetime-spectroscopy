@@ -30,16 +30,19 @@ SOFTWARE.
 clear all; close all; clc; 
 %Change these values
 %-----------------------------
-bora = 'compare'; %'set-b' or 'set-a' or 'compE' or 'compare' if you want to compare sets a and b directly
+bora = 'set-b'; %'set-b' or 'set-a' or 'compE' or 'compare' if you want to compare sets a and b directly
 %Most recent directory that we want to analyze now. 
 dirname = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\November 9 2017';
 %where we want to save any new, non-sample-specific data
-savedirname = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation'; 
+savedirname = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\PVSC abstract'; 
 %Spreadsheet specification for the actual measurements
 spreadsheet = 'new'; %old (before TS) or new (after TS)
 %target injection level for the measurements, used to make degradation
 %curves
 deltan_target = 6e14; %cm^-3
+%Error in lifetime measurement (approximate based on 66-2, valid for mc-si
+%samples only)
+lifetime_error = 0.11;
 
 %-----------------------------
 %which sample set, b or a? 
@@ -200,6 +203,8 @@ close all; clc;
 % 7) lifetime at a specific injection level, corrected by the surface
 % lifetime from the mc-Si sample using a ratio to this value (mcSi_ratio)
 % 8) #7, normalized (mcSi_ratio_norm)
+% 9) Nt*, calculated from the harmonic difference between each subsequent
+% measurement and the initial measurement. (Ntstar)
 
 %Get the measurement details
 [meas,samples] = xlsread(meas_details,'measurements');
@@ -212,11 +217,14 @@ lifetime_all = cell(length(samples),1);
 norm_lifetime_all = cell(length(samples),1); 
 thickness_all = cell(length(samples),1); 
 doping_all = cell(length(samples),1); 
+Ntstar = cell(length(samples),1); 
 for i = 1:length(samples)
     meas_thissample = meas(i,:);
     lifetime_store = [];
     doping_store = [];
     thickness_store = []; 
+    Ntstar_thissample = []; 
+    Ntstar_error = []; 
     for j = 1:length(meas_thissample)
         if isnan(meas_thissample(j))==0
             %now create the proper filename
@@ -249,6 +257,14 @@ for i = 1:length(samples)
             if isnan(lifetime_store(j,1))==1
                 disp(['Lifetime at ' num2str(deltan_target) ' was NaN for sample ' samples{i} ', time ' num2str(meas_thissample(j)) 's']);
             end
+            %calculate and store the harmonic difference = Ntstar
+            Ntstar_thissample(j,1) = (1/lifetime_store(j,1))-(1/lifetime_store(1,1)); %this should be in units of inverse seconds
+            %Calculate the error associated with Ntstar
+            dNtdtdeg = 1/(lifetime_store(j,1)^2); 
+            dNtdtinit = 1/(lifetime_store(1,1)^2);
+            dtdeg = lifetime_error*lifetime_store(j,1); 
+            dtinit = lifetime_error*lifetime_store(j,1); 
+            Ntstar_error(j,1) = sqrt(((dNtdtdeg*dtdeg)^2)+((dNtdtinit*dtinit)^2)); 
         end
     end
     nan_indices = find(isnan(meas_thissample)==1); 
@@ -257,6 +273,7 @@ for i = 1:length(samples)
     norm_lifetime_all{i} = [meas_thissample' lifetime_store./lifetime_store(1)];
     thickness_all{i} = thickness_store; 
     doping_all{i} = doping_store; 
+    Ntstar{i} = [meas_thissample' Ntstar_thissample Ntstar_error]; 
 end
 
 %Now we need to make the corrections - first, using FZ as the surface
@@ -396,7 +413,8 @@ for i = 1:length(plotting_group)
     lifetime_mcSi_harm_norm=figure('units','normalized','outerposition',[0 0 1 1]);
     lifetime_mcSi_ratio=figure('units','normalized','outerposition',[0 0 1 1]);
     lifetime_mcSi_ratio_norm=figure('units','normalized','outerposition',[0 0 1 1]);
-    labels_raw = {}; labels_FZcorr = {}; labels_mcSi = {}; 
+    Ntstar_time=figure('units','normalized','outerposition',[0 0 1 1]);
+    labels_raw = {}; labels_FZcorr = {}; labels_mcSi = {};
     hFZ = []; hFZnorm = [];
     cm = colormap(hsv(samp));
     for j = 1:samp
@@ -409,6 +427,10 @@ for i = 1:length(plotting_group)
         mcSi_harm_norm_now = mcSi_harm_norm{index}; 
         mcSi_ratio_now = mcSi_ratio{index}; 
         mcSi_ratio_norm_now = mcSi_ratio_norm{index}; 
+        Ntstar_now = Ntstar{index}; 
+        figure(Ntstar_time); 
+        plot(Ntstar_now(:,1),Ntstar_now(:,2),'o','LineWidth',3,'MarkerSize',10);
+        hold all; 
         figure(lifetime_raw); 
         plot(raw_now(:,1),raw_now(:,2),'-o','LineWidth',3,'MarkerSize',10); 
         hold all; 
@@ -466,6 +488,15 @@ for i = 1:length(plotting_group)
     set(0,'defaultAxesFontSize', 20)
     hgsave(lifetime_raw,[savedirname '\' plotting_names{i} '_raw' savename]);
     print(lifetime_raw,'-dpng','-r0',[savedirname '\' plotting_names{i} '_raw' savename '.png']);
+    
+    figure(Ntstar_time); 
+    xlabel('time [s]','FontSize',25); 
+    ylabel('N_t^* [s^-^1]','FontSize',25); 
+    legend(labels_raw); 
+    title(plotting_names{i},'FontSize',25); 
+    set(0,'defaultAxesFontSize', 20)
+    hgsave(Ntstar_time,[savedirname '\' plotting_names{i} '_Ntstar' savename]);
+    print(Ntstar_time,'-dpng','-r0',[savedirname '\' plotting_names{i} '_Ntstar' savename '.png']);
     
     figure(lifetime_norm); 
     xlabel('time [s]','FontSize',25); 
@@ -539,7 +570,7 @@ end
 save([savedirname '\' bora '_all_data' savename '.mat'],'lifetime_all',...
     'norm_lifetime_all','FZ_corr','FZ_corr_norm','mcSi_harm',...
     'mcSi_harm_norm','mcSi_ratio','mcSi_ratio_norm','doping_all',...
-    'thickness_all','samples','SRV_FZ','surface_control');
+    'thickness_all','samples','SRV_FZ','surface_control','Ntstar');
 
 %% Make the degradation curves comparing data already processed - compare sets a and b
 close all; clc; 
