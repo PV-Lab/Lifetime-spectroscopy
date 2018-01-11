@@ -43,6 +43,7 @@ deltan_target = 6e14; %cm^-3
 %Error in lifetime measurement (approximate based on 66-2, valid for mc-si
 %samples only)
 lifetime_error = 0.11;
+type = 'p'; 
 
 %-----------------------------
 %which sample set, b or a? 
@@ -741,22 +742,24 @@ end
 %% Lifetime spectroscopy analysis
 %Currently the inputs for this are only set for set-a
 close all; clc; 
+fit_tries = 1e5; 
 
 %loop over only the samples we want for lifetime analysis
 for i = 1:length(lifetime_analysis)
+    lifetimefig=figure; 
     %Load the initial lifetime, which should be the first entry in the
     %dirnames list
     try 
-        initial_data=load([dirnames{1} '\' lifetime_analysis{i} '\Raw_data.mat']); 
-        load([dirnames{1} '\' lifetime_analysis{i} '\meas_info.mat']); 
+        initial_data=load([dirnames{1} '\' lifetime_analysis{1,i} '\Raw_data.mat']); 
+        load([dirnames{1} '\' lifetime_analysis{1,i} '\meas_info.mat']); 
         initial_info = info; 
     catch
         %If that's not successful, just tell me that the sample doesn't
         %exist for that dirname. There will be a script error. 
-        warning(['Error accessing data for directory ' num2str(1) ', sample ' lifetime_analysis{i}]);
+        warning(['Error accessing data for directory ' num2str(1) ', sample ' lifetime_analysis{1,i}]);
     end
-    if length(initial_info.dataSave)>1
-        if length(initial_info.dataSave)>2
+    if length(initial_data.dataSave)>1
+        if length(initial_data.dataSave)>2
             t = 3; 
         else
             t = 2; 
@@ -764,8 +767,9 @@ for i = 1:length(lifetime_analysis)
     else
         t = 1; 
     end
-    data = initial_info.dataSave{t}; 
+    data = initial_data.dataSave{t}; 
     deltan_initial=data(:,1);tau_initial=data(:,2);
+    figure(lifetimefig); loglog(deltan_initial,tau_initial); 
     %Now we have: initial_data.fileListShort, initial_data.dataSave
     %initial_info.thickness,resistivity,doping,temperature
     %Now we need to loop over each measured lifetime and calculate the SRH
@@ -773,13 +777,13 @@ for i = 1:length(lifetime_analysis)
     for j = 2:length(dirnames)
         %Load the data for this sample
         try 
-            load([dirnames{j} '\' lifetime_analysis{i} '\Raw_data.mat']); 
-            load([dirnames{j} '\' lifetime_analysis{i} '\meas_info.mat']); 
+            load([dirnames{j} '\' lifetime_analysis{1,i} '\Raw_data.mat']); 
+            load([dirnames{j} '\' lifetime_analysis{1,i} '\meas_info.mat']); 
             flag = 1; 
         catch
             %If that's not successful, just tell me that the sample doesn't
             %exist for that dirname. There will be a script error. 
-            warning(['Error accessing data for directory ' num2str(j) ', sample ' lifetime_analysis{i}]);
+            warning(['Error accessing data for directory ' num2str(j) ', sample ' lifetime_analysis{1,i}]);
             flag = 0; 
         end
         %If we've successfully loaded the data, we need to do some
@@ -797,26 +801,105 @@ for i = 1:length(lifetime_analysis)
             for k  = t %just the second measurement in each set
                 data = dataSave{k}; 
                 deltan = data(:,1); tau = data(:,2); 
+                figure(lifetimefig); hold all; loglog(deltan,tau); 
                 %We need to interpolate this data set at the injection
                 %levels for our other sample
-                [deltan,tau] = interp1(deltan,tau,deltan_initial); 
+                try
+                    [tau] = interp1(deltan,tau,deltan_initial); 
+                catch
+                    [deltan,tau] = remove_duplicates(deltan,tau);
+                    try
+                        [tau] = interp1(deltan,tau,deltan_initial); 
+                    catch
+                        [deltan,tau] = remove_duplicates(deltan,tau);
+                        [tau] = interp1(deltan,tau,deltan_initial); 
+                    end
+                end
+                %If we've exited successfully deltan should now be
+                %deltan_initial
+                deltan = deltan_initial; 
+                %Ask where to crop the measured lifetime
+                figure;
+                loglog(deltan,tau,'-o');
+%                 disp('Select the region for cutting off the HIGH injection data');
+%                 [cutoff,nothing]=ginput(1);
+                cutoff = 1e16; 
+                [deltan_rev,tau_rev] = remove_highinj(deltan,tau,cutoff);
+                [deltan_initial_rev,tau_initial_rev] = remove_highinj(deltan_initial,tau_initial,cutoff); 
+                %We might always want to remove some low injection data
+%                 disp('Select the region for cutting off the LOW injection data');
+%                 [cutoff,nothing]=ginput(1);
+                cutoff = 1e14; 
+                [deltan_rev,tau_rev] = remove_lowinj(deltan_rev,tau_rev,cutoff);
+                [deltan_initial_rev,tau_initial_rev] = remove_lowinj(deltan_initial_rev,tau_initial_rev,cutoff); 
+                hold all;
+                loglog(deltan_rev,tau_rev,'+');
+                legend('Before cutoff','After cutoff'); 
                 %Now we calculate the harmonic difference, which represents
                 %the SRH lifetime
-                tauSRH = ((1./tau)-(1./tau_initial)).^(-1); %units of seconds
-                %Ask where the crop the SRH lifetime
-                %....
+                tauSRH = ((1./tau_rev)-(1./tau_initial_rev)).^(-1); %units of seconds
                 %Linearize the lifetime
-                %....
+                %Get sample parameters at specified temperature
+                [Efi,Efv,p0,n0,Eiv] = adv_Model_gen(info(t).temperature+273.15,info(t).doping,type); 
+                %Normalized carrier density
+                if type == 'p'
+                    X = (n0+deltan_rev)./(p0+deltan_rev);
+                elseif type == 'n'
+                    X = (p0+deltan_rev)./(n0+deltan_rev);
+                end
                 %Send the lifetime for fitting
-                %....
-                %Make sure the linearized lifetime and the fits are saved
-                %to an Excel file as in basic_TIDLS.m
-                %....
+                indices = find(tauSRH<0 | isnan(tauSRH)==1); 
+                tauSRH(indices) = [];
+                X(indices) = [];
+                xlswrite([savedirname '\Linearized_data_' lifetime_analysis{1,i} '.xlsx'],[X,tauSRH],['Sheet' num2str(j)]); 
+                [one_defect{j,i},MSE_one{j,i},two_defects{j,i},MSE_two{j,i},three_defects{j,i},MSE_three{j,i},all_parameters_store{j,i},all_MSE_store{j,i}] = fit_murphy_master(X,tauSRH.*1e6,info(t).temperature,savedirname,fit_tries);
+                to_write = zeros(6,3); 
+                to_write(1:2,1) = one_defect{j,i}';
+                twodef = two_defects{j,i}; 
+                to_write(1:2,2) = twodef(1,:)';
+                to_write(3:4,2) = twodef(2,:)';
+                threedef = three_defects{j,i}; 
+                to_write(1:2,3) = threedef(1,:)';
+                to_write(3:4,3) =threedef(2,:)';
+                to_write(5:6,3) = threedef(3,:)';
+                xlswrite([savedirname '\Linearized_data_' lifetime_analysis{1,i} '.xlsx'],to_write,['Sheet' num2str(j)],'C1:E6'); 
+                X_store{j,i} = X; 
+                tau_SRH_store{j,i} = tauSRH; 
             end
         end
     end
+    figure(lifetimefig); 
+    xlabel('excess carrier density [cm^-^3]'); 
+    ylabel('lifetime [s]'); 
+    legend(labels'); 
+    title([lifetime_analysis{1,i} ': ' lifetime_analysis{2,i}]); 
+    hgsave(lifetimefig,[savedirname '\' lifetime_analysis{1,i} '_meas_lifetimes']);
+    print(lifetimefig,'-dpng','-r0',[savedirname '\' lifetime_analysis{1,i} '_meas_lifetimes.png']); 
 end
+best_fits = struct('one_defect',one_defect,'MSE_one',MSE_one,...
+    'two_defects',two_defects,'MSE_two',MSE_two,'three_defects',...
+    three_defects,'MSE_three',MSE_three,'all_fits',all_parameters_store,...
+    'all_MSE',all_MSE_store);
+save([savedirname '\best_fits.mat'],'best_fits','lifetime_analysis');
+save([savedirname '\original_linearized.mat'],'X_store','tau_SRH_store','lifetime_analysis');
 
 %Outside of this, need to modify the fit parameters in Excel, match
 %defects. Then need to bring these into MATLAB and calculate the E-k
 %values, extract midgap value, and then extract for plotting in Origin. 
+
+%% Making E-k curves
+close all; clc; 
+
+for i = 1:length(lifetime_analysis)
+    %Load the first measurement just so we can get the relevant parameters
+    load([dirnames{1} '\' lifetime_analysis{1,i} '\meas_info.mat']); 
+    %Get the data from Excel
+    %....
+    %Make the E-k curves based on these new fits
+    %....
+    %Plot the E-k curves for both defects
+    %....
+    %Get the value at the intrinsic point
+    %....
+    %Save the data in some way
+    %....
