@@ -24,11 +24,11 @@ SOFTWARE.
 
 %This script analyzes TIDLS measurements taken with WCT-120TS. 
 clear all; close all; 
-directory = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\January 9 2017\Hpass-1'; 
+directory = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\Summary\C-samples investigated\C-L-5'; 
 before_directory = 'C:\Users\Mallory\Dropbox (MIT)\TIDLS at UNSW\Advanced system measurements\20160727\for_processing\before';
 after_directory = 'C:\Users\Mallory\Dropbox (MIT)\TIDLS at UNSW\Advanced system measurements\20160727\for_processing\after';
-processing_directory = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\January 9 2017\Hpass-1';
-SRV_directory = 'C:\Users\Malloryj\Dropbox (MIT)\TIDLS at UNSW\Advanced system measurements\By sample\16-6-28-P-2\Summary files';
+processing_directory = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\Summary\C-samples investigated\C-L-5';
+SRV_directory = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\Summary\C-samples investigated\17-7-27-1';
 deg_directory = 'C:\Users\Mallory\Dropbox (MIT)\TIDLS at UNSW\PERC LeTID Advanced System\Harmonic difference\degraded';
 undeg_directory = 'C:\Users\Mallory\Dropbox (MIT)\TIDLS at UNSW\PERC LeTID Advanced System\Harmonic difference\undegraded';
 %type - p or n
@@ -451,7 +451,7 @@ for i = 1:length(dataSave)
     %We might want to trim the lifetime
     %Plot the data and ask the user where the cut off in high injection
     figure;
-    loglog(deltan,tau,'.');
+    loglog(deltan,tau,'-');
     disp('Select the region for cutting off the HIGH injection data');
     [cutoff,nothing]=ginput(1);
     [deltan_rev,tau_rev] = remove_highinj(deltan,tau,cutoff);
@@ -523,7 +523,7 @@ for i = 1:length(dataSave);
     %We first need to remove the high injection data
     %Plot the data and ask the user where the cut off in high injection
     figure;
-    loglog(deltan,tau,'.');
+    loglog(deltan,tau,'-');
     disp('Select the region for cutting off the HIGH injection data');
     [cutoff,nothing]=ginput(1);
     [deltan_rev,tau_rev] = remove_highinj(deltan,tau,cutoff);
