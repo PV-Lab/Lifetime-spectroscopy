@@ -494,7 +494,7 @@ end
 %the "C" samples? Need to figure out which is the dominant defect. --
 %should we choose just a limited number of measurements to analyze?
 clear all; close all; clc; 
-savedirname = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\Summary\674200s';
+savedirname = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\Summary\674200s\lifetime spectroscopy\different defect 1-2 cutoff';
 savename = '_674200s_degradation';
 max_time = 674200; 
 meas_details = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\measurement_details.xlsx'; 
@@ -713,7 +713,7 @@ for i = 1:length(samples)
             def_param_thissample{j,4} = k; 
             def_param_thissample{j,5} = alphanN; 
             %Pick the dominant defect in low injection (3e14 to be safe)
-            inj = find(abs(deltan-3e14)==min(abs(deltan-3e14))); 
+            inj = find(abs(deltan-8e14)==min(abs(deltan-8e14))); 
             actual = tau_SRH(inj); 
             def1 = two_defects(1,1)*X(inj)+two_defects(2,2);
             def2 = two_defects(2,1)*X(inj)+two_defects(2,2);
