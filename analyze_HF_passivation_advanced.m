@@ -34,7 +34,7 @@ bora = 'set-a'; %'set-b' or 'set-a' or 'compE' or 'compare' if you want to compa
 %Most recent directory that we want to analyze now. 
 dirname = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\November 9 2017';
 %where we want to save any new, non-sample-specific data
-savedirname = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\PVSC abstract'; 
+savedirname = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\PVSC abstract\lifetime to plot'; 
 %Spreadsheet specification for the actual measurements
 spreadsheet = 'new'; %old (before TS) or new (after TS)
 %target injection level for the measurements, used to make degradation
@@ -168,11 +168,20 @@ for i = 1:length(samples)
             end
             for j  = t %just the second measurement in each set
                 datanow = dataSave{j}; 
+                deltan = datanow(:,1); tau = datanow(:,2); 
+                cutoff = 5e15; 
+                [deltan_rev,tau_rev] = remove_highinj(deltan,tau,cutoff);
+                %We might always want to remove some low injection data
+%                 disp('Select the region for cutting off the LOW injection data');
+%                 [cutoff,nothing]=ginput(1);
+                cutoff = 1e14; 
+                [deltan_rev,tau_rev] = remove_lowinj(deltan_rev,tau_rev,cutoff);
                 curves(count)=loglog(datanow(:,1),datanow(:,2),'LineWidth',2,'color',cm(k,:)); 
                 hold all; 
                 label{count} = labels{k};
                 xlim([5e13 1e17])
                 count = count+1; 
+                lifetime_store{k,i} = [deltan_rev,tau_rev];
             end
         end
     end
@@ -743,9 +752,9 @@ end
 %Currently the inputs for this are only set for set-a
 close all; clc; 
 fit_tries = 1e5; 
-
+[rows,num_samples] = size(lifetime_analysis); 
 %loop over only the samples we want for lifetime analysis
-for i = 1:length(lifetime_analysis)
+for i = 1:num_samples
     lifetimefig=figure; 
     %Load the initial lifetime, which should be the first entry in the
     %dirnames list
@@ -823,7 +832,7 @@ for i = 1:length(lifetime_analysis)
                 loglog(deltan,tau,'-o');
 %                 disp('Select the region for cutting off the HIGH injection data');
 %                 [cutoff,nothing]=ginput(1);
-                cutoff = 1e16; 
+                cutoff = 5e15; 
                 [deltan_rev,tau_rev] = remove_highinj(deltan,tau,cutoff);
                 [deltan_initial_rev,tau_initial_rev] = remove_highinj(deltan_initial,tau_initial,cutoff); 
                 %We might always want to remove some low injection data
@@ -887,19 +896,129 @@ save([savedirname '\original_linearized.mat'],'X_store','tau_SRH_store','lifetim
 %defects. Then need to bring these into MATLAB and calculate the E-k
 %values, extract midgap value, and then extract for plotting in Origin. 
 
-%% Making E-k curves
+%% Making E-k curves - from Excel
 close all; clc; 
 
 for i = 1:length(lifetime_analysis)
     %Load the first measurement just so we can get the relevant parameters
     load([dirnames{1} '\' lifetime_analysis{1,i} '\meas_info.mat']); 
     %Get the data from Excel
-    %....
-    %Make the E-k curves based on these new fits
-    %....
-    %Plot the E-k curves for both defects
-    %....
-    %Get the value at the intrinsic point
-    %....
-    %Save the data in some way
-    %....
+    filename = [savedirname '\IDLS two and three curve fitting_' lifetime_analysis{1,i} '.xlsm'];
+    fits = xlsread(filename,'Summary','B3:E20'); %Note - they should be sorted in increasing time
+    [m,n] = size(fits); 
+    %Make some figures for each defect
+    def1=figure; def2=figure;
+    %for each time for this sample 
+    for j = 1:m
+        %Get the fit at this time
+        defect_1 = fits(j,1:2); 
+        defect_2 = fits(j,3:4); 
+        %Make the E-k curves based on these new fits
+        [Et{j,1},k{j,1},alphanN{j,1}]=generate_Ek(defect_1,info(1).temperature+273.15,info(1).doping,type);
+        [Et{j,2},k{j,2},alphanN{j,2}]=generate_Ek(defect_2,info(1).temperature+273.15,info(1).doping,type);
+        %Plot the E-k curves for both defects
+        figure(def1);
+        plot(Et{j,1},k{j,1},'-','LineWidth',2); 
+        hold all;
+        figure(def2); 
+        plot(Et{j,2},k{j,2},'-','LineWidth',2); 
+        hold all;
+        %Get the value at the intrinsic point 
+        index = find(abs(Et{j,1}-0)==min(abs(Et{j,1}-0))); 
+        k_intrinsic_store(j,1) = k{j,1}(index);
+        alphanN_intrinsic_store(j,1) = alphanN{j,1}(index); 
+        index = find(abs(Et{j,2}-0)==min(abs(Et{j,2}-0))); 
+        k_intrinsic_store(j,2) = k{j,2}(index);
+        alphanN_intrinsic_store(j,2) = alphanN{j,2}(index); 
+    end
+    %format the figurse and save
+    figure(def1); 
+    xlabel('E_t-E_i [eV]','FontSize',20); 
+    ylabel('k [-]','FontSize',20);
+    legend(labels'); 
+    title([lifetime_analysis{1,i} ': Defect 1'],'FontSize',30); 
+    hgsave(def1,[savedirname '\' lifetime_analysis{1,i} '_defect1_E-k']);
+    print(def1,'-dpng','-r0',[savedirname '\' lifetime_analysis{1,i} '_defect1_E-k.png']); 
+    figure(def2); 
+    xlabel('E_t-E_i [eV]','FontSize',20); 
+    ylabel('k [-]','FontSize',20);
+    legend(labels(2:end)'); 
+    title([lifetime_analysis{1,i} ': Defect 2'],'FontSize',30); 
+    hgsave(def1,[savedirname '\' lifetime_analysis{1,i} '_defect2_E-k']);
+    print(def1,'-dpng','-r0',[savedirname '\' lifetime_analysis{1,i} '_defect2_E-k.png']); 
+    %Store the data
+    all_kintr{i} = k_intrinsic_store; 
+    all_alphanNintr{i} = alphanN_intrinsic_store; 
+    Et_store{i} = Et; 
+    k_store{i} = k; 
+    alphanN_store{i} = alphanN; 
+end
+
+%% Making E-k curves - directly from .mat
+close all; clc; 
+load([savedirname '\best_fits.mat']); 
+% cutoff_X = 0.025;
+[rows,num_samples] = size(lifetime_analysis); 
+%loop over only the samples we want for lifetime analysis
+for i = 1:num_samples
+    %Load the first measurement just so we can get the relevant parameters
+    load([dirnames{1} '\' lifetime_analysis{1,i} '\meas_info.mat']); 
+%     %Get the data from Excel
+%     fits = best_fits; 
+%     [m,n] = size(fits); 
+    %Make some figures for each defect
+    def1=figure; def2=figure;
+    %for each time for this sample 
+    for j = 2:length(dirnames)
+%         index = find(abs(X{j}-cutoff_X)==min(abs(X{j}-cutoff_X))); 
+%         target_tau = tau_SRH_store{j}(index); 
+        fits = best_fits(j).two_defects;
+        %Get the fit at this time
+        if fits(1,1)<fits(2,1)
+            defect_1 = fits(2,:);
+            defect_2 = fits(1,:);
+        else
+            defect_1 = fits(1,:);
+            defect_2 = fits(2,:); 
+        end
+        %Make the E-k curves based on these new fits
+        [Et{j,1},k{j,1},alphanN{j,1}]=generate_Ek(defect_1,info(1).temperature+273.15,info(1).doping,type);
+        [Et{j,2},k{j,2},alphanN{j,2}]=generate_Ek(defect_2,info(1).temperature+273.15,info(1).doping,type);
+        %Plot the E-k curves for both defects
+        figure(def1);
+        plot(Et{j,1},k{j,1},'-','LineWidth',2); 
+        hold all;
+        figure(def2); 
+        plot(Et{j,2},k{j,2},'-','LineWidth',2); 
+        hold all;
+        %Get the value at the intrinsic point 
+        index = find(abs(Et{j,1}-0)==min(abs(Et{j,1}-0))); 
+        k_intrinsic_store(j,1) = k{j,1}(index);
+        alphanN_intrinsic_store(j,1) = alphanN{j,1}(index); 
+        index = find(abs(Et{j,2}-0)==min(abs(Et{j,2}-0))); 
+        k_intrinsic_store(j,2) = k{j,2}(index);
+        alphanN_intrinsic_store(j,2) = alphanN{j,2}(index); 
+    end
+    %format the figurse and save
+    figure(def1); 
+    xlabel('E_t-E_i [eV]','FontSize',20); 
+    ylabel('k [-]','FontSize',20);
+    legend(labels(2:end)'); 
+    title([lifetime_analysis{1,i} ': Defect 1'],'FontSize',30); 
+    hgsave(def1,[savedirname '\' lifetime_analysis{1,i} '_defect1_E-k']);
+    print(def1,'-dpng','-r0',[savedirname '\' lifetime_analysis{1,i} '_defect1_E-k.png']); 
+    figure(def2); 
+    xlabel('E_t-E_i [eV]','FontSize',20); 
+    ylabel('k [-]','FontSize',20);
+    legend(labels'); 
+    title([lifetime_analysis{1,i} ': Defect 2'],'FontSize',30); 
+    hgsave(def1,[savedirname '\' lifetime_analysis{1,i} '_defect2_E-k']);
+    print(def1,'-dpng','-r0',[savedirname '\' lifetime_analysis{1,i} '_defect2_E-k.png']); 
+    %Store the data
+    all_kintr{i} = k_intrinsic_store; 
+    all_alphanNintr{i} = alphanN_intrinsic_store; 
+    Et_store{i} = Et; 
+    k_store{i} = k; 
+    alphanN_store{i} = alphanN; 
+end
+    
