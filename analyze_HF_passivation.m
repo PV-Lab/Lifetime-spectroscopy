@@ -718,6 +718,7 @@ for i = 1:length(samples)
             def1 = two_defects(1,1)*X(inj)+two_defects(2,2);
             def2 = two_defects(2,1)*X(inj)+two_defects(2,2);
 %             Eg = Sze(temp+273.15); 
+            %Revise the below for defect 2 - save data!! 
             if abs(def1-actual)<abs(def2-actual)
                 Et_now = Et{1}; 
                 Et_index = find(abs(0-Et_now)==min(abs(0-Et_now))); 
@@ -749,3 +750,204 @@ end
 %Save all of the important data
 save([savedirname '\lifetime_spect_analysis'],'all_data','SRV_store',...
     'SRV_avg','defect_parameters','type','temp','max_time'); 
+
+%% Plot the k-values and lifetime degradation on comparable figure
+%Subplot 3x2. First column = low hydrogen. Second column = high hydrogen. 
+%First row = lifetime, or normalized lifetime, or effect defect density
+%throughout degradation?
+%Second row = k value defect 1 at the same time points throughout degradation
+%Third row = k value defect 2 at the same time points throughout
+%degradation
+
+clear all; close all; clc; 
+savedirname = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\Summary\674200s\lifetime spectroscopy\different defect 1-2 cutoff';
+savename = '_674200s_degradation';
+max_time = 674200; 
+meas_details = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\measurement_details.xlsx'; 
+deltan_target = 8e14; %target injection level for the measurements, changed to 6e14 on 2/13/17 from 5e14
+%Get the measurement details
+[meas,samples] = xlsread(meas_details,'measurements');
+samples(1,:) = []; 
+[times,filenames] = xlsread(meas_details,'filenames'); 
+%Make these the same size
+filenames = filenames(2:end,2); 
+
+lifetime_all = cell(length(samples),1); 
+norm_lifetime_all = cell(length(samples),1); 
+
+for i = 1:length(samples)
+    meas_thissample = meas(i,:);
+    lifetime_store = [];
+    for j = 1:length(meas_thissample)
+        if isnan(meas_thissample(j))==0
+            %now create the proper filename
+            findex = find(meas_thissample(j)==times);  
+            filename = [filenames{findex} '\' samples{i} '\Raw_data.mat'];
+            load(filename);
+            if length(dataSave)==3
+                t = 2; 
+            else
+                t = 1;
+            end
+            datanow = dataSave{t}; 
+            [deltan,tau] = remove_duplicates(datanow(:,1),datanow(:,2));
+            %There's a little bug in this program, for now just do this... 
+            try
+                lifetime_store(j,1) = interp1(deltan,tau,deltan_target); 
+            catch
+                [deltan,tau] = remove_duplicates(deltan,tau);
+                try
+                    lifetime_store(j,1) = interp1(deltan,tau,deltan_target);
+                catch
+                    [deltan,tau] = remove_duplicates(deltan,tau);
+                    lifetime_store(j,1) = interp1(deltan,tau,deltan_target);
+                end
+            end
+            if isnan(lifetime_store(j,1))==1
+                disp(['Lifetime at ' num2str(deltan_target) ' was NaN for sample ' samples{i} ', time ' num2str(meas_thissample(j)) 's']);
+            end
+        end
+    end
+    nan_indices = find(isnan(meas_thissample)==1); 
+    meas_thissample(nan_indices) = []; 
+    lifetime_all{i} = [meas_thissample' lifetime_store]; 
+    norm_lifetime_all{i} = [meas_thissample' lifetime_store./lifetime_store(1)];
+end
+
+load([savedirname '\lifetime_spect_analysis.mat']); 
+    
+%Now, which samples do we want to plot together?
+control = {'Ti-L-5','Ni-L-5','Mo-L-5','V-L-5','C-L-5','17-7-27-2';...
+    'Ti','Ni','Mo','V','Control','FZ'};
+
+lifetime_norm = figure; 
+[nothing,samp] = size(control); 
+labels = {}; 
+for i = 1:samp
+    %First plot the normalized lifetime for this sample
+    index = find(strcmp(control{1,i},samples)==1);
+    norm_now = norm_lifetime_all{index}; 
+    figure(lifetime_norm); 
+    subplot(3,2,1); 
+    if norm_now(1,1) == 0
+        norm_now(1,1) = 1; 
+    end
+    semilogx(norm_now(:,1),norm_now(:,2),'-o','LineWidth',2,'MarkerSize',5); 
+    hold all; 
+    labels{i,1} = control{2,i};
+    %Now defect 1 k value
+    defect1 = defect_parameters{index,2};
+    if isempty(defect1)==0
+        if defect1(1,1) == 0
+            defect1(1,1) = 1; 
+        end
+        subplot(3,2,3); 
+        loglog(defect1(:,1),defect1(:,2),'-o','LineWidth',2,'MarkerSize',5); 
+        hold all;
+        %Get the defect 2 k value
+        %Pick the dominant defect in low injection (3e14 to be safe)
+        %Revise to calculate both defect 1 and 2 k-values at midgap in the
+        %previous section, then read those directly
+%         deltan = all_data{index,1}{:,2};
+%         defect2 = defect_parameters{index,1}; 
+%         Et = defect2(:,3); k = defect2(:,4); 
+%         k_plot = zeros(length(Et),1); 
+%         [Efi,Efv,p0,n0,Eiv] = adv_Model_gen(temp+273.15,all_data{index,3},type); 
+%         for j = 1:length(Et)
+%             deltan_now = deltan{j}; 
+%             two_defects = defect2{j,1}; 
+%             X = (n0+8e14)./(p0+8e14);
+%             def1 = two_defects(1,1)*X+two_defects(2,2);
+%             def2 = two_defects(2,1)*X+two_defects(2,2);
+%             if abs(def1-actual)<abs(def2-actual)
+%                 Et_now = Et{j}{2}; 
+%                 k_now = k{j}{2};
+%                 Et_index = find(abs(0-Et_now)==min(abs(0-Et_now))); 
+%                 k_plot(j) = k_now(Et_index); 
+%         end
+        subplot(3,2,5); 
+        loglog(defect1(:,1),k_plot,'-o','LineWidth',2,'MarkerSize',5); 
+        hold all; 
+    end
+end
+
+%Lets format these plots
+subplot(3,2,1); 
+xlabel('degradation time [s]','FontSize',14); 
+ylabel('norm. lifetime [-]','FontSize',14); 
+title('low hydrogen','FontSize',14); 
+legend(labels); 
+axis([1 max_time 0 2]);
+subplot(3,2,3); 
+xlabel('degradation time [s]','FontSize',14); 
+ylabel('k-value [-]','FontSize',14);  
+title('defect 1','FontSize',14); 
+axis([1 max_time 1e-2 1e3]);
+subplot(3,2,5); 
+xlabel('degradation time [s]','FontSize',14); 
+ylabel('k-value [-]','FontSize',14);  
+title('defect 2','FontSize',14); 
+axis([1 max_time 1e-2 1e3]);
+
+%Do the same for the other hydrogen samples
+%Now, which samples do we want to plot together?
+control = {'Ti-h-5','Ni-h-5','Mo-h-5','V-h-5','C-h-5','17-7-27-1';...
+    'Ti','Ni','Mo','V','Control','FZ'};
+ 
+[nothing,samp] = size(control); 
+labels = {}; 
+for i = 1:samp
+    %First plot the normalized lifetime for this sample
+    index = find(strcmp(control{1,i},samples)==1);
+    norm_now = norm_lifetime_all{index}; 
+    figure(lifetime_norm); 
+    subplot(3,2,2); 
+    if norm_now(1,1) == 0
+        norm_now(1,1) = 1; 
+    end
+    semilogx(norm_now(:,1),norm_now(:,2),'-o','LineWidth',2,'MarkerSize',5); 
+    hold all; 
+    labels{i,1} = control{2,i};
+    %Now defect 1 k value
+    defect1 = defect_parameters{index,2};
+    if isempty(defect1)==0
+        if defect1(1,1) == 0
+            defect1(1,1) = 1; 
+        end
+        subplot(3,2,4); 
+        loglog(defect1(:,1),defect1(:,2),'-o','LineWidth',2,'MarkerSize',5); 
+        hold all;
+        %Get the defect 2 k value
+        defect2 = defect_parameters{index,1}; 
+        Et = defect2(:,3); k = defect2(:,4); 
+        k_plot = zeros(length(Et),1); 
+        for j = 1:length(Et)
+            Et_now = Et{j}{2}; 
+            k_now = k{j}{2};
+            Et_index = find(abs(0-Et_now)==min(abs(0-Et_now))); 
+            k_plot(j) = k_now(Et_index); 
+        end
+        subplot(3,2,6); 
+        loglog(defect1(:,1),k_plot,'-o','LineWidth',2,'MarkerSize',5); 
+        hold all;
+    end
+end
+
+
+%Lets format these plots
+subplot(3,2,2); 
+xlabel('degradation time [s]','FontSize',14); 
+ylabel('norm. lifetime [-]','FontSize',14); 
+title('high hydrogen','FontSize',14); 
+legend(labels); 
+axis([1 max_time 0 2]);
+subplot(3,2,4); 
+xlabel('degradation time [s]','FontSize',14); 
+ylabel('k-value [-]','FontSize',14);  
+title('defect 1','FontSize',14); 
+axis([1 max_time 1e-2 1e3]);
+subplot(3,2,6); 
+xlabel('degradation time [s]','FontSize',14); 
+ylabel('k-value [-]','FontSize',14);  
+title('defect 2','FontSize',14); 
+axis([1 max_time 1e-2 1e3]);
