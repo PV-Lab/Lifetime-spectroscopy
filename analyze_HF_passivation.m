@@ -23,8 +23,13 @@ SOFTWARE.
 %}
 %% First process the raw data
 clear all; close all; clc; 
-dirname = 'C:\Users\Mallory Jensen\Documents\LeTID\PDG\round 2 data\Degradation\January 11 2018'; 
-samples = {'1-6','2-6','3-6','4-6','5-6','6-6','7-6','8-6','P-1'};
+dirname = 'C:\Users\Mallory Jensen\Documents\LeTID\PDG\round 2 data\#7 degradation\February 1 2018'; 
+% samples = {'1-6','2-6','3-6','4-6','5-6','6-6','7-6','8-6','P-1'};
+% samples = {'1-7','2-7','3-7','4-7','5-7','6-7','7-7','8-7'};
+samples = {'1-7','4-7','6-7','7-7'};
+% samples = {'2-7','3-7','5-7','8-7'};
+% samples = {'1-3','2-3','3-3','4-3','5-3','6-3','7-3','8-3','P-2'};
+% samples = {'P-2'};
 for index = 1:length(samples)
     [fileList,fileListShort] = getAllFiles([dirname '\' samples{index}]); 
     savename = [dirname '\' samples{index} '\Raw_data.mat']';
@@ -57,8 +62,12 @@ end
 clear all; close all; clc;
 %Process data after HF passivation
 
-dirname = 'C:\Users\Mallory Jensen\Documents\LeTID\PDG\round 2 data\Degradation\January 11 2018'; 
-samples = {'1-6','2-6','3-6','4-6','5-6','6-6','7-6','8-6','P-1'};
+dirname = 'C:\Users\Mallory Jensen\Documents\LeTID\PDG\round 2 data\#7 degradation\February 1 2018'; 
+% samples = {'1-6','2-6','3-6','4-6','5-6','6-6','7-6','8-6','P-1'};
+% samples = {'1-7','2-7','3-7','4-7','5-7','6-7','7-7','8-7'};
+samples = {'1-7','4-7','6-7','7-7'};
+% samples = {'2-7','3-7','5-7','8-7'};
+% samples = {'1-3','2-3','3-3','4-3','5-3','6-3','7-3','8-3','P-2'};
 lifetime_store = zeros(length(samples),1); 
 
 for i = 1:length(samples)
@@ -105,24 +114,35 @@ end
 
 %% Analyze different states together
 clear all; close all; clc;
-savedirname = 'C:\Users\Mallory Jensen\Documents\LeTID\PDG\round 2 data\Degradation\Summary\150370s';
-dirname1 = 'C:\Users\Mallory Jensen\Documents\LeTID\PDG\round 2 data\Degradation\December 6 2017';
-dirname2 = 'C:\Users\Mallory Jensen\Documents\LeTID\PDG\round 2 data\Degradation\December 8 2017\before';
-dirname3 = 'C:\Users\Mallory Jensen\Documents\LeTID\PDG\round 2 data\Degradation\December 18 2017';
-dirname4 = 'C:\Users\Mallory Jensen\Documents\LeTID\PDG\round 2 data\Degradation\December 19 2017';
-dirname5 = 'C:\Users\Mallory Jensen\Documents\LeTID\PDG\round 2 data\Degradation\January 03 2018';
-dirname6 = 'C:\Users\Mallory Jensen\Documents\LeTID\PDG\round 2 data\Degradation\January 05 2018';
-dirname7 = 'C:\Users\Mallory Jensen\Documents\LeTID\PDG\round 2 data\Degradation\January 08 2018';
-dirname8 = 'C:\Users\Mallory Jensen\Documents\LeTID\PDG\round 2 data\Degradation\January 09 2018';
-dirname9 = 'C:\Users\Mallory Jensen\Documents\LeTID\PDG\round 2 data\Degradation\January 10 2018';
-dirname10 = 'C:\Users\Mallory Jensen\Documents\LeTID\PDG\round 2 data\Degradation\January 11 2018';
-dirnames = {dirname1 dirname2 dirname3 dirname4 dirname5 dirname6 dirname7 ...
-    dirname8 dirname9 dirname10}; 
-labels = {'initial','1000s','5000s','10000s','50000s','60000s',...
-    '81580s','100370s','125370s','150370s'};
+% savedirname = 'C:\Users\Mallory Jensen\Documents\LeTID\PDG\round 2 data\#7 degradation\Summary\188190s';
+% dirname1 = 'C:\Users\Mallory Jensen\Documents\LeTID\PDG\round 2 data\#7 degradation\January 11 2018';
+% dirname2 = 'C:\Users\Mallory Jensen\Documents\LeTID\PDG\round 2 data\#7 degradation\January 15 2018';
+% dirname3 = 'C:\Users\Mallory Jensen\Documents\LeTID\PDG\round 2 data\#7 degradation\January 17 2018';
+% dirnames = {dirname1 dirname2 dirname3}; 
+% labels = {'initial','87150s','188190s'};
+% savedirname = 'C:\Users\Mallory Jensen\Documents\LeTID\PDG\round 2 data\#7 degradation\Summary\186450s';
+% dirname1 = 'C:\Users\Mallory Jensen\Documents\LeTID\PDG\round 2 data\#7 degradation\January 11 2018';
+% dirname2 = 'C:\Users\Mallory Jensen\Documents\LeTID\PDG\round 2 data\#7 degradation\January 16 2018';
+% dirname3 = 'C:\Users\Mallory Jensen\Documents\LeTID\PDG\round 2 data\#7 degradation\January 18 2018';
+% dirname4 = 'C:\Users\Mallory Jensen\Documents\LeTID\PDG\round 2 data\#7 degradation\February 1 2018';
+% dirnames = {dirname1 dirname2 dirname3 dirname4}; 
+% labels = {'initial','initial 2','81480s','186450s'};
+savedirname = 'C:\Users\Mallory Jensen\Documents\LeTID\PDG\round 2 data\#3 degradation\Summary\101735s';
+dirname1 = 'C:\Users\Mallory Jensen\Documents\LeTID\PDG\round 2 data\#3 degradation\January 22 2018';
+dirname2 = 'C:\Users\Mallory Jensen\Documents\LeTID\PDG\round 2 data\#3 degradation\January 23 2018';
+dirname3 = 'C:\Users\Mallory Jensen\Documents\LeTID\PDG\round 2 data\#3 degradation\January 24 2018';
+dirname4 = 'C:\Users\Mallory Jensen\Documents\LeTID\PDG\round 2 data\#3 degradation\January 25 2018';
+dirname5 = 'C:\Users\Mallory Jensen\Documents\LeTID\PDG\round 2 data\#3 degradation\January 26 2018';
+dirname6 = 'C:\Users\Mallory Jensen\Documents\LeTID\PDG\round 2 data\#3 degradation\January 29 2018';
+dirname7 = 'C:\Users\Mallory Jensen\Documents\LeTID\PDG\round 2 data\#3 degradation\January 31 2018';
+dirnames = {dirname1 dirname2 dirname3 dirname4 dirname5 dirname6 dirname7}; 
+labels = {'initial','2500s','5000s','10000s','25000s','50000s','101735s'};
 cm = colormap(hsv(length(dirnames))); 
-samples = {'1-6','2-6','3-6','4-6','5-6','6-6','7-6','8-6','P-1'};
-savename = '_150370s_lifetime summary';
+% samples = {'1-6','2-6','3-6','4-6','5-6','6-6','7-6','8-6','P-1'};
+% samples = {'1-7','4-7','6-7','7-7'};
+% samples = {'2-7','3-7','5-7','8-7'};
+samples = {'1-3','2-3','3-3','4-3','5-3','6-3','7-3','8-3','P-2'};
+savename = '_101735s_lifetime summary';
 for i = 1:length(samples)
     h=figure('units','normalized','outerposition',[0 0 1 1]);
     curves = [];
@@ -176,7 +196,7 @@ end
 
 %% Plot lifetime as function of LTA temperature
 clear all; close all; clc; 
-savedirname = 'C:\Users\Mallory Jensen\Documents\LeTID\PDG\round 2 data\from SERIS\Lifetime data\summary\initial';
+savedirname = 'C:\Users\Mallory Jensen\Documents\LeTID\PDG\round 2 data\#6 degradation\Summary';
 dirname = 'C:\Users\Mallory Jensen\Documents\LeTID\PDG\round 2 data\from SERIS\Lifetime data\December 5 2017';
 samples = {'1-6','2-6','3-6','4-6','5-6','6-6','7-6','8-6'};
 LTA = [0 600 550 500 450 700 750 650];
@@ -225,10 +245,10 @@ print(h,'-dpng','-r0',[savedirname '\initial lifetime summary with LTA.png']);
 
 %% Make the degradation curves
 clear all; close all; clc; 
-savedirname = 'C:\Users\Mallory Jensen\Documents\LeTID\PDG\round 2 data\Degradation\Summary\150370s';
-savename = '_150370s_degradation';
-max_time = 150370; 
-meas_details = 'C:\Users\Mallory Jensen\Documents\LeTID\PDG\round 2 data\Degradation\measurement_details.xlsx'; 
+savedirname = 'C:\Users\Mallory Jensen\Documents\LeTID\PDG\round 2 data\#6 degradation\Summary\179620s';
+savename = '_179620s_degradation';
+max_time = 179620; 
+meas_details = 'C:\Users\Mallory Jensen\Documents\LeTID\PDG\round 2 data\#6 degradation\measurement_details.xlsx'; 
 deltan_target = 6e14; %target injection level for the measurements, changed to 6e14 on 2/13/17 from 5e14
 %Get the measurement details
 [meas,samples] = xlsread(meas_details,'measurements');
@@ -282,6 +302,10 @@ end
 %Now, which samples do we want to plot together?
 control = {'1-6','5-6','4-6','3-6','2-6','8-6','6-6','7-6','P-1';...
     'STD','450C','500C','550C','600C','650C','700C','750C','FZ'};
+% control = {'1-7','2-7','3-7','4-7','5-7','6-7','7-7','8-7';...
+%     'STD','STD','STD','STD','STD','STD','STD','STD',};
+% control = {'5-3','7-3','8-3','6-3','4-3','2-3','1-3','3-3','P-2';...
+%     'STD','450C','500C','550C','600C','650C','700C','750C','FZ'};
 
 lifetime_raw=figure('units','normalized','outerposition',[0 0 1 1]);
 lifetime_norm=figure('units','normalized','outerposition',[0 0 1 1]);
@@ -295,6 +319,9 @@ for i = 1:samp
         raw_now(1,1) = 1; 
     end
     norm_now = norm_lifetime_all{index}; 
+    if norm_now(1,1)==0
+        norm_now(1,1) = 1; 
+    end
     figure(lifetime_raw); 
     loglog(raw_now(:,1),raw_now(:,2),'-o','LineWidth',3,'MarkerSize',10); 
     hold all; 
@@ -323,7 +350,7 @@ figure(lifetime_norm);
 xlabel('time [s]','FontSize',25); 
 ylabel('norm. lifetime [-]','FontSize',25); 
 legend(labels); 
-axis([0 max_time 0 2]);
+axis([1 max_time 0 2]);
 % title('high hydrogen','FontSize',25); 
 set(0,'defaultAxesFontSize', 20)
 hgsave(lifetime_norm,[savedirname '\highH_norm' savename]);
