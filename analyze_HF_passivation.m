@@ -23,8 +23,9 @@ SOFTWARE.
 %}
 %% First process the raw data
 clear all; close all; clc; 
-dirname = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\December 18 2017\just after deg'; 
-samples = {'Ti-h-5','Ni-h-5','Mo-h-5','V-h-5','C-h-5','Ti-L-5','Ni-L-5','Mo-L-5','V-L-5','C-L-5','17-7-27-1','17-7-27-2'};
+dirname = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\February 9 2018\1350000s'; 
+% samples = {'Ti-h-5','Ni-h-5','Mo-h-5','V-h-5','C-h-5','Ti-L-5','Ni-L-5','Mo-L-5','V-L-5','C-L-5','17-7-27-1','17-7-27-2'};
+samples = {'C-L-5'};
 for index = 1:length(samples)
 %     [fileList,fileListShort] = getAllFiles([dirname '\' samples{index}]); 
     %Get all of the files in this directory
@@ -57,8 +58,9 @@ end
 clear all; close all; clc;
 %Process data after HF passivation
 
-dirname = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\December 18 2017\just after deg'; 
-samples = {'Ti-h-5','Ni-h-5','Mo-h-5','V-h-5','C-h-5','Ti-L-5','Ni-L-5','Mo-L-5','V-L-5','C-L-5','17-7-27-1','17-7-27-2'};
+dirname = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\February 9 2018\1350000s'; 
+% samples = {'Ti-h-5','Ni-h-5','Mo-h-5','V-h-5','C-h-5','Ti-L-5','Ni-L-5','Mo-L-5','V-L-5','C-L-5','17-7-27-1','17-7-27-2'};
+samples = {'C-L-5'};
 lifetime_store = zeros(length(samples),1); 
 
 for i = 1:length(samples)
@@ -90,22 +92,22 @@ for i = 1:length(samples)
     datanow = dataSave{index}; 
     [deltan,tau] = remove_duplicates(datanow(:,1),datanow(:,2));
     %There's a little bug in this program, for now just do this... 
-    try
-        lifetime_store(i) = interp1(deltan,tau,1e15); 
-    catch
-        [deltan,tau] = remove_duplicates(deltan,tau);
-        try 
-            lifetime_store(i) = interp1(deltan,tau,1e15);
-        catch
-            [deltan,tau] = remove_duplicates(deltan,tau);
-            lifetime_store(i) = interp1(deltan,tau,1e15);
-        end
-    end
+%     try
+%         lifetime_store(i) = interp1(deltan,tau,1e15); 
+%     catch
+%         [deltan,tau] = remove_duplicates(deltan,tau);
+%         try 
+%             lifetime_store(i) = interp1(deltan,tau,1e15);
+%         catch
+%             [deltan,tau] = remove_duplicates(deltan,tau);
+%             lifetime_store(i) = interp1(deltan,tau,1e15);
+%         end
+%     end
 end
 
 %% Analyze different states together
 clear all; close all; clc;
-savedirname = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\Summary\552550s';
+savedirname = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\Summary\1814530s';
 % dirname1 = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\August 16 2017';
 % dirname2 = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\August 17 2017\250s';
 % dirname3 = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\August 17 2017\500s';
@@ -186,18 +188,38 @@ dirname24 = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samp
 dirname25 = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\December 15 2017\540000s';
 dirname26 = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\December 18 2017\570000s';
 dirname27 = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\December 18 2017\just after deg';
+dirname28 = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\January 5 2018\595000s'; 
+dirname29 = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\January 8 2018\620000s';
+dirname30 = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\January 9 2018\670000s';
+dirname31 = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\January 11 2018\740000s';
+dirname32 = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\January 15 2018\820000s'; 
+dirname33 = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\January 17 2018\900000s';
+dirname34 = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\January 22 2018\1000000s';
+dirname35 = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\January 31 2018\1100000s';
+dirname36 = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\February 5 2018\1250000s';
+dirname37 = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\February 9 2018\1350000s';
+dirname38 = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\February 14 2018\1350000s';
+dirname39 = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\February 19 2018\1530000s';
+dirname40 = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\February 23 2018\1650000s';
+dirname41 = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\March 6 2018';
 dirnames = {dirname1 dirname2 dirname3 dirname4 dirname5 dirname6 dirname7 ...
     dirname8 dirname9 dirname10 dirname11 dirname12 dirname13 dirname14 ...
     dirname15 dirname16 dirname18 dirname19 dirname20 dirname21 ...
-    dirname22 dirname23 dirname24 dirname25 dirname26 dirname27}; 
+    dirname22 dirname23 dirname24 dirname25 dirname26 dirname27 ...
+    dirname28 dirname29 dirname30 dirname31 dirname32 dirname33 ...
+    dirname34 dirname35 dirname36 dirname37 dirname38 dirname39 ...
+    dirname40 dirname41}; 
 labels = {'initial','1000s','10000s','20000s','30000s','40030s',...
     '47471s','60221s','70031s','80031s','90031s','100361s',...
     '157871s','209681s','255581s',...
     '307541s','363310s','421300s just after','421300s wait','456940s',...
-    '456940s wait','510190s','552550s','599290s','648910s','674200s just after'};
+    '456940s wait','510190s','552550s','599290s','648910s','674200s just after',...
+    '674200s wait','699070s','757210s','842440s','937360s','1024120s',...
+    '1106680s','1202380s','1357600s','1468120s','1468120s wait','1648300s',...
+    '1814530s','1814530s wait'};
 cm = colormap(hsv(length(dirnames))); 
 samples = {'Ti-h-5','Ni-h-5','Mo-h-5','V-h-5','C-h-5','Ti-L-5','Ni-L-5','Mo-L-5','V-L-5','C-L-5','17-7-27-1','17-7-27-2'};
-savename = '_674200s_lifetime summary';
+savename = '_1814530s_lifetime summary';
 for i = 1:length(samples)
     h=figure('units','normalized','outerposition',[0 0 1 1]);
     curves = [];
@@ -247,9 +269,9 @@ end
 
 %% Make the degradation curves
 clear all; close all; clc; 
-savedirname = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\Summary\674200s';
-savename = '_674200s_degradation';
-max_time = 674200; 
+savedirname = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\Summary\1814530s';
+savename = '_1814530s_degradation';
+max_time = 1814530; 
 meas_details = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\measurement_details.xlsx'; 
 deltan_target = 8e14; %target injection level for the measurements, changed to 6e14 on 2/13/17 from 5e14
 %Get the measurement details
@@ -494,9 +516,9 @@ end
 %the "C" samples? Need to figure out which is the dominant defect. --
 %should we choose just a limited number of measurements to analyze?
 clear all; close all; clc; 
-savedirname = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\Summary\674200s\lifetime spectroscopy\different defect 1-2 cutoff';
-savename = '_674200s_degradation';
-max_time = 674200; 
+savedirname = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\Summary\1814530s\lifetime spectroscopy';
+savename = '_1814530s_degradation';
+max_time = 1814530; 
 meas_details = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\measurement_details.xlsx'; 
 deltan_target = 8e14; %target injection level for the measurements, changed to 6e14 on 2/13/17 from 5e14
 %Get the measurement details
@@ -524,10 +546,16 @@ for i = 1:length(samples)
             findex = find(meas_thissample(j)==times);  
             filename = [filenames{findex} '\' samples{i} '\Raw_data.mat'];
             load(filename);
+            %the order of files is typically:
+            %1 - 1/64 (if measured)
+            %2 - avg3 (normal height)
+            %3 - high_avg3 (high height)
             if length(dataSave)==3
-                t = 2; 
-            else
-                t = 1;
+                t = 3; %choose the high height measurement (C)
+            elseif length(dataSave)==2
+                t = 1; %choose the normal height measurement (mcSi)
+            else  
+                t = 1; %this will be for the FZ samples where there's only one measurement
             end
             datanow = dataSave{t}; 
             [deltan,tau] = remove_duplicates(datanow(:,1),datanow(:,2));
@@ -640,7 +668,7 @@ for i = 1:length(samples)
         all_data_now = all_data{i,1}; 
         [num_meas,n] = size(all_data_now); 
         def_param_thissample = cell(num_meas,5);
-        easy_summary = zeros(num_meas,3); 
+        easy_summary = zeros(num_meas,6); 
         for j = 1:num_meas
             SRV_index = find(all_data_now{j,1}==cell2mat(SRV_avg(:,1)));
             SRV = SRV_avg{SRV_index,3};
@@ -725,14 +753,32 @@ for i = 1:length(samples)
                 k_now = k{1}; 
                 alphanN_now = alphanN{1}; 
                 %Defect 1 is dominant
-                easy_summary(j,:) = [all_data_now{j,1} k_now(Et_index) alphanN_now(Et_index)];
+                to_write = [all_data_now{j,1} k_now(Et_index) alphanN_now(Et_index)];
+                %Defect 2 is secondary
+                Et_now = Et{2}; 
+                Et_index = find(abs(0-Et_now)==min(abs(0-Et_now))); 
+                k_now = k{2}; 
+                alphanN_now = alphanN{2};
+                to_write(1,4) = k_now(Et_index);
+                to_write(1,5) = alphanN_now(Et_index);
+                to_write(1,6) = MSE_two; 
+                easy_summary(j,:) = to_write; 
             elseif abs(def2-actual)<abs(def1-actual)
                 Et_now = Et{2}; 
                 Et_index = find(abs(0-Et_now)==min(abs(0-Et_now))); 
                 k_now = k{2}; 
                 alphanN_now = alphanN{2}; 
                 %Defect 2 is dominant
-                easy_summary(j,:) = [all_data_now{j,1} k_now(Et_index) alphanN_now(Et_index)];
+                to_write = [all_data_now{j,1} k_now(Et_index) alphanN_now(Et_index)];
+                %Defect 1 is secondary
+                Et_now = Et{1}; 
+                Et_index = find(abs(0-Et_now)==min(abs(0-Et_now))); 
+                k_now = k{1}; 
+                alphanN_now = alphanN{1};
+                to_write(1,4) = k_now(Et_index);
+                to_write(1,5) = alphanN_now(Et_index);
+                to_write(1,6) = MSE_two; 
+                easy_summary(j,:) = to_write;
            end
         end
         defect_parameters{i,1} = def_param_thissample; 
@@ -743,7 +789,7 @@ for i = 1:length(samples)
         legend(label); 
         title(samples{i},'FontSize',20); 
         hgsave(linSRH,[savedirname '\' samples{i} '_linSRH']);
-        print(linSRH,'-dpng','-r0',[savedirname '\' samples{i} '_linSRH.png'])
+        print(linSRH,'-dpng','-r0',[savedirname '\' samples{i} '_linSRH.png']);
     end
 end
 
@@ -760,9 +806,9 @@ save([savedirname '\lifetime_spect_analysis'],'all_data','SRV_store',...
 %degradation
 
 clear all; close all; clc; 
-savedirname = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\Summary\674200s\lifetime spectroscopy\different defect 1-2 cutoff';
-savename = '_674200s_degradation';
-max_time = 674200; 
+savedirname = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\Summary\1814530s\lifetime spectroscopy';
+savename = '_1814530s_degradation';
+max_time = 1814530; 
 meas_details = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\measurement_details.xlsx'; 
 deltan_target = 8e14; %target injection level for the measurements, changed to 6e14 on 2/13/17 from 5e14
 %Get the measurement details
@@ -784,10 +830,16 @@ for i = 1:length(samples)
             findex = find(meas_thissample(j)==times);  
             filename = [filenames{findex} '\' samples{i} '\Raw_data.mat'];
             load(filename);
+            %the order of files is typically:
+            %1 - 1/64 (if measured)
+            %2 - avg3 (normal height)
+            %3 - high_avg3 (high height)
             if length(dataSave)==3
-                t = 2; 
-            else
-                t = 1;
+                t = 3; %choose the high height measurement (C)
+            elseif length(dataSave) == 2
+                t = 1; %choose the normal height measurement (mcSi)
+            else  
+                t = 1; %this will be for the FZ samples where there's only one measurement
             end
             datanow = dataSave{t}; 
             [deltan,tau] = remove_duplicates(datanow(:,1),datanow(:,2));
@@ -814,12 +866,15 @@ for i = 1:length(samples)
     norm_lifetime_all{i} = [meas_thissample' lifetime_store./lifetime_store(1)];
 end
 
+%Now that we have the lifetime data - normalized, raw - load the fitted
+%lifetime data from the previous section. 
 load([savedirname '\lifetime_spect_analysis.mat']); 
     
 %Now, which samples do we want to plot together?
 control = {'Ti-L-5','Ni-L-5','Mo-L-5','V-L-5','C-L-5','17-7-27-2';...
     'Ti','Ni','Mo','V','Control','FZ'};
 
+%We will have all the samples on the same figure. 
 lifetime_norm = figure; 
 [nothing,samp] = size(control); 
 labels = {}; 
@@ -828,66 +883,57 @@ for i = 1:samp
     index = find(strcmp(control{1,i},samples)==1);
     norm_now = norm_lifetime_all{index}; 
     figure(lifetime_norm); 
-    subplot(3,2,1); 
+    subplot(4,2,1); 
     if norm_now(1,1) == 0
         norm_now(1,1) = 1; 
     end
     semilogx(norm_now(:,1),norm_now(:,2),'-o','LineWidth',2,'MarkerSize',5); 
     hold all; 
     labels{i,1} = control{2,i};
-    %Now defect 1 k value
-    defect1 = defect_parameters{index,2};
-    if isempty(defect1)==0
-        if defect1(1,1) == 0
-            defect1(1,1) = 1; 
+    %only do the following if we are not working with FZ
+    if strcmp(control{2,i},'FZ')==0
+        %Now we get the defect parameters which have been processed in the
+        %previous section
+        defects_now = defect_parameters{index,2}; %easy summary
+        if defects_now(1,1) == 0
+            defects_now(1,1) = 1; 
         end
-        subplot(3,2,3); 
-        loglog(defect1(:,1),defect1(:,2),'-o','LineWidth',2,'MarkerSize',5); 
+        %defect 1
+        subplot(4,2,3); 
+        loglog(defects_now(:,1),defects_now(:,2),'-o','LineWidth',2,'MarkerSize',5);
         hold all;
-        %Get the defect 2 k value
-        %Pick the dominant defect in low injection (3e14 to be safe)
-        %Revise to calculate both defect 1 and 2 k-values at midgap in the
-        %previous section, then read those directly
-%         deltan = all_data{index,1}{:,2};
-%         defect2 = defect_parameters{index,1}; 
-%         Et = defect2(:,3); k = defect2(:,4); 
-%         k_plot = zeros(length(Et),1); 
-%         [Efi,Efv,p0,n0,Eiv] = adv_Model_gen(temp+273.15,all_data{index,3},type); 
-%         for j = 1:length(Et)
-%             deltan_now = deltan{j}; 
-%             two_defects = defect2{j,1}; 
-%             X = (n0+8e14)./(p0+8e14);
-%             def1 = two_defects(1,1)*X+two_defects(2,2);
-%             def2 = two_defects(2,1)*X+two_defects(2,2);
-%             if abs(def1-actual)<abs(def2-actual)
-%                 Et_now = Et{j}{2}; 
-%                 k_now = k{j}{2};
-%                 Et_index = find(abs(0-Et_now)==min(abs(0-Et_now))); 
-%                 k_plot(j) = k_now(Et_index); 
-%         end
-        subplot(3,2,5); 
-        loglog(defect1(:,1),k_plot,'-o','LineWidth',2,'MarkerSize',5); 
+        %defect 2
+        subplot(4,2,5); 
+        loglog(defects_now(:,1),defects_now(:,4),'-o','LineWidth',2,'MarkerSize',5); 
+        hold all; 
+        %MSE
+        subplot(4,2,7); 
+        loglog(defects_now(:,1),defects_now(:,6),'-o','LineWidth',2,'MarkerSize',5); 
         hold all; 
     end
 end
 
 %Lets format these plots
-subplot(3,2,1); 
-xlabel('degradation time [s]','FontSize',14); 
+subplot(4,2,1); 
+% xlabel('degradation time [s]','FontSize',14); 
 ylabel('norm. lifetime [-]','FontSize',14); 
 title('low hydrogen','FontSize',14); 
 legend(labels); 
-axis([1 max_time 0 2]);
-subplot(3,2,3); 
-xlabel('degradation time [s]','FontSize',14); 
+axis([1 max_time*1.25 0 2]);
+subplot(4,2,3); 
+% xlabel('degradation time [s]','FontSize',14); 
 ylabel('k-value [-]','FontSize',14);  
-title('defect 1','FontSize',14); 
-axis([1 max_time 1e-2 1e3]);
-subplot(3,2,5); 
-xlabel('degradation time [s]','FontSize',14); 
+title('dominant defect','FontSize',14); 
+axis([1 max_time*1.25 0.4 100]);
+subplot(4,2,5); 
+% xlabel('degradation time [s]','FontSize',14); 
 ylabel('k-value [-]','FontSize',14);  
-title('defect 2','FontSize',14); 
-axis([1 max_time 1e-2 1e3]);
+title('secondary defect','FontSize',14); 
+axis([1 max_time*1.25 1 1000]);
+subplot(4,2,7); 
+xlabel('degradation time [s]','FontSize',14); 
+ylabel('MSE fit','FontSize',14);  
+xlim([1 max_time*1.25]);
 
 %Do the same for the other hydrogen samples
 %Now, which samples do we want to plot together?
@@ -901,53 +947,56 @@ for i = 1:samp
     index = find(strcmp(control{1,i},samples)==1);
     norm_now = norm_lifetime_all{index}; 
     figure(lifetime_norm); 
-    subplot(3,2,2); 
+    subplot(4,2,2); 
     if norm_now(1,1) == 0
         norm_now(1,1) = 1; 
     end
     semilogx(norm_now(:,1),norm_now(:,2),'-o','LineWidth',2,'MarkerSize',5); 
     hold all; 
     labels{i,1} = control{2,i};
-    %Now defect 1 k value
-    defect1 = defect_parameters{index,2};
-    if isempty(defect1)==0
-        if defect1(1,1) == 0
-            defect1(1,1) = 1; 
+    %only do the following if we are not working with FZ
+    if strcmp(control{2,i},'FZ')==0
+        %Now we get the defect parameters which have been processed in the
+        %previous section
+        defects_now = defect_parameters{index,2}; %easy summary
+        if defects_now(1,1) == 0
+            defects_now(1,1) = 1; 
         end
-        subplot(3,2,4); 
-        loglog(defect1(:,1),defect1(:,2),'-o','LineWidth',2,'MarkerSize',5); 
+        %defect 1
+        subplot(4,2,4); 
+        loglog(defects_now(:,1),defects_now(:,2),'-o','LineWidth',2,'MarkerSize',5);
         hold all;
-        %Get the defect 2 k value
-        defect2 = defect_parameters{index,1}; 
-        Et = defect2(:,3); k = defect2(:,4); 
-        k_plot = zeros(length(Et),1); 
-        for j = 1:length(Et)
-            Et_now = Et{j}{2}; 
-            k_now = k{j}{2};
-            Et_index = find(abs(0-Et_now)==min(abs(0-Et_now))); 
-            k_plot(j) = k_now(Et_index); 
-        end
-        subplot(3,2,6); 
-        loglog(defect1(:,1),k_plot,'-o','LineWidth',2,'MarkerSize',5); 
+        %defect 2
+        subplot(4,2,6); 
+        loglog(defects_now(:,1),defects_now(:,4),'-o','LineWidth',2,'MarkerSize',5); 
         hold all;
+        %MSE
+        subplot(4,2,8); 
+        loglog(defects_now(:,1),defects_now(:,6),'-o','LineWidth',2,'MarkerSize',5); 
+        hold all; 
     end
 end
 
-
 %Lets format these plots
-subplot(3,2,2); 
-xlabel('degradation time [s]','FontSize',14); 
+subplot(4,2,2); 
+% xlabel('degradation time [s]','FontSize',14); 
 ylabel('norm. lifetime [-]','FontSize',14); 
 title('high hydrogen','FontSize',14); 
 legend(labels); 
-axis([1 max_time 0 2]);
-subplot(3,2,4); 
-xlabel('degradation time [s]','FontSize',14); 
+axis([1 max_time*1.25 0 2]);
+subplot(4,2,4); 
+% xlabel('degradation time [s]','FontSize',14); 
 ylabel('k-value [-]','FontSize',14);  
-title('defect 1','FontSize',14); 
-axis([1 max_time 1e-2 1e3]);
-subplot(3,2,6); 
-xlabel('degradation time [s]','FontSize',14); 
+title('dominant defect','FontSize',14); 
+axis([1 max_time*1.25 0.4 100]);
+subplot(4,2,6); 
+% xlabel('degradation time [s]','FontSize',14); 
 ylabel('k-value [-]','FontSize',14);  
-title('defect 2','FontSize',14); 
-axis([1 max_time 1e-2 1e3]);
+title('secondary defect','FontSize',14); 
+axis([1 max_time*1.25 1 1000]);
+subplot(4,2,8); 
+xlabel('degradation time [s]','FontSize',14); 
+ylabel('MSE fit','FontSize',14);  
+xlim([1 max_time*1.25]);
+hgsave(lifetime_norm,[savedirname '\fitted_lifetime_summary']);
+print(lifetime_norm,'-dpng','-r0',[savedirname '\fitted_lifetime_summary.png']);
