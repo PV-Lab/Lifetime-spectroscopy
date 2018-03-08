@@ -34,7 +34,7 @@ bora = 'compE'; %'set-b' or 'set-a' or 'compE' or 'compare' if you want to compa
 %Most recent directory that we want to analyze now. 
 dirname = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\January 23 2018';
 %where we want to save any new, non-sample-specific data
-savedirname = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\set b\113020s'; 
+savedirname = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\compE\1518840s'; 
 %Spreadsheet specification for the actual measurements
 spreadsheet = 'new'; %old (before TS) or new (after TS)
 %target injection level for the measurements, used to make degradation
@@ -285,7 +285,7 @@ end
 %We need to get the surface information from FZ before we loop
 SRV_FZ = cell(size(index_FZ)); 
 SRV_label = cell(size(index_FZ)); 
-figure; 
+figure('units','normalized','outerposition',[0 0 1 1]);; 
 for i = 1:length(index_FZ)
     doping_FZ = doping_all{index_FZ(i)}; %cm-3
     thickness_FZ = thickness_all{index_FZ(i)}; %cm
@@ -307,14 +307,20 @@ for i = 1:length(index_FZ)
         SRV(j) = thickness_FZ(j)./((tau_surf-((1/D_FZ)*((thickness_FZ(j)/pi)^2))).*2);
     end
     SRV_FZ{i} = [raw_FZ(:,1) SRV]; 
-    plot(raw_FZ(:,1),SRV); 
+    if raw_FZ(1,1) == 0
+        raw_FZ(1,1) = 1; 
+    end
+    semilogx(raw_FZ(:,1),SRV,'LineWidth',3); 
     hold all; 
     SRV_label{i} = samples{index_FZ(i)}; 
 end
-axis([0 max_time 0 10]);
+axis([1 max_time 0 10]);
 xlabel('time [s]','FontSize',25); 
 ylabel('SRV [cm/s]','FontSize',25); 
 legend(SRV_label); 
+set(0,'defaultAxesFontSize', 20)
+hgsave(gcf,[savedirname '\SRV' savename]);
+print(gcf,'-dpng','-r0',[savedirname '\SRV' savename '.png']);
 
 FZ_corr = cell(size(samples)); 
 FZ_corr_norm = cell(size(samples)); 
@@ -428,14 +434,42 @@ for i = 1:length(plotting_group)
         mcSi_ratio_now = mcSi_ratio{index}; 
         mcSi_ratio_norm_now = mcSi_ratio_norm{index}; 
         Ntstar_now = Ntstar{index}; 
+        %correct any 0 time starts
+        if isempty(Ntstar_now)==0 && Ntstar_now(1,1) == 0
+            Nstar_now(1,1) = 1; 
+        end
+        if isempty(raw_now)==0 && raw_now(1,1) == 0
+            raw_now(1,1) = 1; 
+        end
+        if isempty(norm_now)==0 && norm_now(1,1) == 0 
+            norm_now(1,1) = 1; 
+        end
+        if isempty(FZ_corr_now)==0 && FZ_corr_now(1,1) == 0 
+            FZ_corr_now(1,1) = 1; 
+        end
+        if isempty(FZ_corr_norm_now)==0 && FZ_corr_norm_now(1,1) == 0 
+            FZ_corr_norm_now(1,1) = 1; 
+        end
+        if isempty(mcSi_harm_now)==0 && mcSi_harm_now(1,1) == 0 
+            mcSi_harm_now(1,1) = 1; 
+        end
+        if isempty(mcSi_harm_norm_now)==0 && mcSi_harm_norm_now(1,1) == 0 
+            mcSi_harm_norm_now(1,1) = 1; 
+        end
+        if isempty(mcSi_ratio_now)==0 && mcSi_ratio_now(1,1) == 0 
+            mcSi_ratio_now(1,1) = 1; 
+        end
+        if isempty(mcSi_ratio_norm_now)==0 && mcSi_ratio_norm_now(1,1) == 0 
+            mcSi_ratio_norm_now(1,1) = 1; 
+        end
         figure(Ntstar_time); 
-        plot(Ntstar_now(:,1),Ntstar_now(:,2),'o','LineWidth',3,'MarkerSize',10);
+        loglog(Ntstar_now(:,1),Ntstar_now(:,2),'-o','LineWidth',3,'MarkerSize',10);
         hold all; 
         figure(lifetime_raw); 
-        plot(raw_now(:,1),raw_now(:,2),'-o','LineWidth',3,'MarkerSize',10); 
+        loglog(raw_now(:,1),raw_now(:,2),'-o','LineWidth',3,'MarkerSize',10); 
         hold all; 
         figure(lifetime_norm); 
-        plot(norm_now(:,1),norm_now(:,2),'-o','LineWidth',3,'MarkerSize',10);
+        semilogx(norm_now(:,1),norm_now(:,2),'-o','LineWidth',3,'MarkerSize',10);
         hold all;  
         labels_raw{end+1} = group_now{2,j};  
         if strcmp(group_now{1,j},'FZ')==0 && strcmp(group_now{1,j},'FZ-new')==0 && ...
@@ -444,16 +478,16 @@ for i = 1:length(plotting_group)
             for k = 1:length(index_FZ)
                 figure(lifetime_FZcorr); 
                 if k == 1
-                    hFZ(end+1)=plot(FZ_corr_now(:,1),FZ_corr_now(:,k+1),'-o','LineWidth',3,'MarkerSize',10,'color',cm(j,:)); 
+                    hFZ(end+1)=loglog(FZ_corr_now(:,1),FZ_corr_now(:,k+1),'-o','LineWidth',3,'MarkerSize',10,'color',cm(j,:)); 
                     hold on; 
                     figure(lifetime_FZcorr_norm); 
-                    hFZnorm(end+1)=plot(FZ_corr_norm_now(:,1),FZ_corr_norm_now(:,k+1),'-o','LineWidth',3,'MarkerSize',10,'color',cm(j,:));
+                    hFZnorm(end+1)=semilogx(FZ_corr_norm_now(:,1),FZ_corr_norm_now(:,k+1),'-o','LineWidth',3,'MarkerSize',10,'color',cm(j,:));
                     hold on;  
                 else
-                    plot(FZ_corr_now(:,1),FZ_corr_now(:,k+1),'-o','LineWidth',3,'MarkerSize',10,'color',cm(j,:)); 
+                    loglog(FZ_corr_now(:,1),FZ_corr_now(:,k+1),'-o','LineWidth',3,'MarkerSize',10,'color',cm(j,:)); 
                     hold on; 
                     figure(lifetime_FZcorr_norm); 
-                    plot(FZ_corr_norm_now(:,1),FZ_corr_norm_now(:,k+1),'-o','LineWidth',3,'MarkerSize',10,'color',cm(j,:));
+                    semilogx(FZ_corr_norm_now(:,1),FZ_corr_norm_now(:,k+1),'-o','LineWidth',3,'MarkerSize',10,'color',cm(j,:));
                     hold on;  
                 end
             end
@@ -466,16 +500,16 @@ for i = 1:length(plotting_group)
             strcmp(group_now{1,j},'C-2')==0 && strcmp(group_now{1,j},'H-1')==0 && ...
             strcmp(group_now{1,j},'H-2')==0 && strcmp(group_now{1,j},'FZ-new2')==0
             figure(lifetime_mcSi_harm); 
-            plot(mcSi_harm_now(:,1),mcSi_harm_now(:,2),'-o','LineWidth',3,'MarkerSize',10); 
+            loglog(mcSi_harm_now(:,1),mcSi_harm_now(:,2),'-o','LineWidth',3,'MarkerSize',10); 
             hold all; 
             figure(lifetime_mcSi_harm_norm); 
-            plot(mcSi_harm_norm_now(:,1),mcSi_harm_norm_now(:,2),'-o','LineWidth',3,'MarkerSize',10);
+            semilogx(mcSi_harm_norm_now(:,1),mcSi_harm_norm_now(:,2),'-o','LineWidth',3,'MarkerSize',10);
             hold all;
             figure(lifetime_mcSi_ratio); 
-            plot(mcSi_ratio_now(:,1),mcSi_ratio_now(:,2),'-o','LineWidth',3,'MarkerSize',10); 
+            semilogx(mcSi_ratio_now(:,1),mcSi_ratio_now(:,2),'-o','LineWidth',3,'MarkerSize',10); 
             hold all; 
             figure(lifetime_mcSi_ratio_norm); 
-            plot(mcSi_ratio_norm_now(:,1),mcSi_ratio_norm_now(:,2),'-o','LineWidth',3,'MarkerSize',10);
+            semilogx(mcSi_ratio_norm_now(:,1),mcSi_ratio_norm_now(:,2),'-o','LineWidth',3,'MarkerSize',10);
             hold all;
             labels_mcSi{end+1} = group_now{2,j}; 
         end
@@ -484,6 +518,7 @@ for i = 1:length(plotting_group)
     xlabel('time [s]','FontSize',25); 
     ylabel('lifetime [s]','FontSize',25); 
     legend(labels_raw); 
+    xlim([1 max_time]); 
     title(plotting_names{i},'FontSize',25); 
     set(0,'defaultAxesFontSize', 20)
     hgsave(lifetime_raw,[savedirname '\' plotting_names{i} '_raw' savename]);
@@ -493,6 +528,7 @@ for i = 1:length(plotting_group)
     xlabel('time [s]','FontSize',25); 
     ylabel('N_t^* [s^-^1]','FontSize',25); 
     legend(labels_raw); 
+    xlim([1 max_time]); 
     title(plotting_names{i},'FontSize',25); 
     set(0,'defaultAxesFontSize', 20)
     hgsave(Ntstar_time,[savedirname '\' plotting_names{i} '_Ntstar' savename]);
@@ -501,7 +537,7 @@ for i = 1:length(plotting_group)
     figure(lifetime_norm); 
     xlabel('time [s]','FontSize',25); 
     ylabel('normalized lifetime [-]','FontSize',25); 
-    axis([0 max_time 0 2]);
+    axis([1 max_time 0 2]);
     legend(labels_raw); 
     title(plotting_names{i},'FontSize',25); 
     set(0,'defaultAxesFontSize', 20)
@@ -512,6 +548,7 @@ for i = 1:length(plotting_group)
     xlabel('time [s]','FontSize',25); 
     ylabel('lifetime [s]','FontSize',25); 
     legend(hFZ,labels_FZcorr); 
+    xlim([1 max_time]); 
     title([plotting_names{i} ' corrected by FZ SRV'],'FontSize',25); 
     set(0,'defaultAxesFontSize', 20)
     hgsave(lifetime_FZcorr,[savedirname '\' plotting_names{i} '_FZcorr' savename]);
@@ -520,7 +557,7 @@ for i = 1:length(plotting_group)
     figure(lifetime_FZcorr_norm); 
     xlabel('time [s]','FontSize',25); 
     ylabel('normalized lifetime [-]','FontSize',25); 
-    axis([0 max_time 0 2]);
+    axis([1 max_time 0 2]);
     legend(hFZnorm,labels_FZcorr); 
     title([plotting_names{i} ' corrected by FZ SRV'],'FontSize',25); 
     set(0,'defaultAxesFontSize', 20)
@@ -531,6 +568,7 @@ for i = 1:length(plotting_group)
     xlabel('time [s]','FontSize',25); 
     ylabel('lifetime [s]','FontSize',25); 
     legend(labels_mcSi); 
+    xlim([1 max_time]); 
     title([plotting_names{i} ' corrected by mcSi control harmonic sum'],'FontSize',25); 
     set(0,'defaultAxesFontSize', 20)
     hgsave(lifetime_mcSi_harm,[savedirname '\' plotting_names{i} '_mcSi_harm' savename]);
@@ -539,7 +577,7 @@ for i = 1:length(plotting_group)
     figure(lifetime_mcSi_harm_norm); 
     xlabel('time [s]','FontSize',25); 
     ylabel('normalized lifetime [-]','FontSize',25); 
-    axis([0 max_time 0 2]);
+    axis([1 max_time 0 2]);
     legend(labels_mcSi); 
     title([plotting_names{i} ' corrected by mcSi control harmonic sum'],'FontSize',25); 
     set(0,'defaultAxesFontSize', 20)
@@ -550,6 +588,7 @@ for i = 1:length(plotting_group)
     xlabel('time [s]','FontSize',25); 
     ylabel('lifetime [s]','FontSize',25); 
     legend(labels_mcSi); 
+    xlim([1 max_time]);
     title([plotting_names{i} ' corrected by mcSi control ratio'],'FontSize',25); 
     set(0,'defaultAxesFontSize', 20)
     hgsave(lifetime_mcSi_ratio,[savedirname '\' plotting_names{i} '_mcSi_ratio' savename]);
@@ -558,7 +597,7 @@ for i = 1:length(plotting_group)
     figure(lifetime_mcSi_ratio_norm); 
     xlabel('time [s]','FontSize',25); 
     ylabel('normalized lifetime [-]','FontSize',25); 
-    axis([0 max_time 0 2]);
+    axis([1 max_time 0 2]);
     legend(labels_mcSi); 
     title([plotting_names{i} ' corrected by mcSi control ratio'],'FontSize',25); 
     set(0,'defaultAxesFontSize', 20)
@@ -607,11 +646,36 @@ for i = 1:length(plotting_group)
         mcSi_harm_norm_now = mcSi_harm_norm{index}; 
         mcSi_ratio_now = mcSi_ratio{index}; 
         mcSi_ratio_norm_now = mcSi_ratio_norm{index}; 
+        %correct any 0 time starts
+        if isempty(raw_now)==0 && raw_now(1,1) == 0
+            raw_now(1,1) = 1; 
+        end
+        if isempty(norm_now)==0 && norm_now(1,1) == 0 
+            norm_now(1,1) = 1; 
+        end
+        if isempty(FZ_corr_now)==0 && FZ_corr_now(1,1) == 0 
+            FZ_corr_now(1,1) = 1; 
+        end
+        if isempty(FZ_corr_norm_now)==0 && FZ_corr_norm_now(1,1) == 0 
+            FZ_corr_norm_now(1,1) = 1; 
+        end
+        if isempty(mcSi_harm_now)==0 && mcSi_harm_now(1,1) == 0 
+            mcSi_harm_now(1,1) = 1; 
+        end
+        if isempty(mcSi_harm_norm_now)==0 && mcSi_harm_norm_now(1,1) == 0 
+            mcSi_harm_norm_now(1,1) = 1; 
+        end
+        if isempty(mcSi_ratio_now)==0 && mcSi_ratio_now(1,1) == 0 
+            mcSi_ratio_now(1,1) = 1; 
+        end
+        if isempty(mcSi_ratio_norm_now)==0 && mcSi_ratio_norm_now(1,1) == 0 
+            mcSi_ratio_norm_now(1,1) = 1; 
+        end
         figure(lifetime_raw); 
-        plot(raw_now(:,1),raw_now(:,2),'-o','LineWidth',3,'MarkerSize',10); 
+        loglog(raw_now(:,1),raw_now(:,2),'-o','LineWidth',3,'MarkerSize',10); 
         hold all; 
         figure(lifetime_norm); 
-        plot(norm_now(:,1),norm_now(:,2),'-o','LineWidth',3,'MarkerSize',10);
+        semilogx(norm_now(:,1),norm_now(:,2),'-o','LineWidth',3,'MarkerSize',10);
         hold all;  
         labels_raw{end+1} = group_now{2,j};  
         if strcmp(group_now{1,j},'FZ')==0 && strcmp(group_now{1,j},'FZ-new')==0 && ...
@@ -622,16 +686,16 @@ for i = 1:length(plotting_group)
             for k = 1:index_FZ
                 figure(lifetime_FZcorr); 
                 if k == 1
-                    hFZ(end+1)=plot(FZ_corr_now(:,1),FZ_corr_now(:,k+1),'-o','LineWidth',3,'MarkerSize',10,'color',cm(j,:)); 
+                    hFZ(end+1)=loglog(FZ_corr_now(:,1),FZ_corr_now(:,k+1),'-o','LineWidth',3,'MarkerSize',10,'color',cm(j,:)); 
                     hold on; 
                     figure(lifetime_FZcorr_norm); 
-                    hFZnorm(end+1)=plot(FZ_corr_norm_now(:,1),FZ_corr_norm_now(:,k+1),'-o','LineWidth',3,'MarkerSize',10,'color',cm(j,:));
+                    hFZnorm(end+1)=semilogx(FZ_corr_norm_now(:,1),FZ_corr_norm_now(:,k+1),'-o','LineWidth',3,'MarkerSize',10,'color',cm(j,:));
                     hold on;  
                 else
-                    plot(FZ_corr_now(:,1),FZ_corr_now(:,k+1),'-o','LineWidth',3,'MarkerSize',10,'color',cm(j,:)); 
+                    loglog(FZ_corr_now(:,1),FZ_corr_now(:,k+1),'-o','LineWidth',3,'MarkerSize',10,'color',cm(j,:)); 
                     hold on; 
                     figure(lifetime_FZcorr_norm); 
-                    plot(FZ_corr_norm_now(:,1),FZ_corr_norm_now(:,k+1),'-o','LineWidth',3,'MarkerSize',10,'color',cm(j,:));
+                    semilogx(FZ_corr_norm_now(:,1),FZ_corr_norm_now(:,k+1),'-o','LineWidth',3,'MarkerSize',10,'color',cm(j,:));
                     hold on;  
                 end
             end
@@ -644,16 +708,16 @@ for i = 1:length(plotting_group)
             strcmp(group_now{1,j},'C-2')==0 && strcmp(group_now{1,j},'H-1')==0 && ...
             strcmp(group_now{1,j},'H-2')==0 && strcmp(group_now{1,j},'FZ-new2')==0
             figure(lifetime_mcSi_harm); 
-            plot(mcSi_harm_now(:,1),mcSi_harm_now(:,2),'-o','LineWidth',3,'MarkerSize',10); 
+            loglog(mcSi_harm_now(:,1),mcSi_harm_now(:,2),'-o','LineWidth',3,'MarkerSize',10); 
             hold all; 
             figure(lifetime_mcSi_harm_norm); 
-            plot(mcSi_harm_norm_now(:,1),mcSi_harm_norm_now(:,2),'-o','LineWidth',3,'MarkerSize',10);
+            semilogx(mcSi_harm_norm_now(:,1),mcSi_harm_norm_now(:,2),'-o','LineWidth',3,'MarkerSize',10);
             hold all;
             figure(lifetime_mcSi_ratio); 
-            plot(mcSi_ratio_now(:,1),mcSi_ratio_now(:,2),'-o','LineWidth',3,'MarkerSize',10); 
+            semilogx(mcSi_ratio_now(:,1),mcSi_ratio_now(:,2),'-o','LineWidth',3,'MarkerSize',10); 
             hold all; 
             figure(lifetime_mcSi_ratio_norm); 
-            plot(mcSi_ratio_norm_now(:,1),mcSi_ratio_norm_now(:,2),'-o','LineWidth',3,'MarkerSize',10);
+            semilogx(mcSi_ratio_norm_now(:,1),mcSi_ratio_norm_now(:,2),'-o','LineWidth',3,'MarkerSize',10);
             hold all;
             labels_mcSi{end+1} = group_now{2,j}; 
         end
