@@ -751,10 +751,134 @@ end
 %% Lifetime spectroscopy analysis
 %Currently the inputs for this are only set for set-a
 close all; clc; 
-fit_tries = 1e5; 
+fit_tries = 1e5;
+%For each sample, we will have a set of measurements - we want to fit each
+%one 
+[meas,samples] = xlsread(meas_details,'measurements');
+samples(1,:) = []; 
+[times,filenames] = xlsread(meas_details,'filenames'); 
+%Make these the same size
+filenames = filenames(2:end,2); 
+
+%Figure out the number of samples we are going to analyze this round 
 [rows,num_samples] = size(lifetime_analysis); 
+
+%Initialize the structures
+lifetime_all = cell(num_samples,2); 
+thickness_all = cell(num_samples,1); 
+doping_all = cell(num_samples,1); 
+
 %loop over only the samples we want for lifetime analysis
+for i = 1:length(samples)
+    %figure out which measurements were taking for this sample
+%     index = find(strcmp(samples,lifetime_analysis{1,i})==1); 
+    index = i; 
+    meas_thissample = meas(index,:); 
+    lifetime_store = {};
+    doping_store = [];
+    thickness_store = [];
+    %We will do the same procedure for each measurement at each degradation
+    %time
+    for j = 1:length(meas_thissample)
+        if isnan(meas_thissample(j))==0
+            %now create the proper filename
+            findex = find(meas_thissample(j)==times);  
+            filename = [filenames{findex} '\' samples{index} '\Raw_data.mat'];
+            load(filename);
+            filename = [filenames{findex} '\' samples{index} '\meas_info.mat'];
+            load(filename);
+            if length(dataSave)>1
+                t = 2; 
+            else
+                t = 1;
+            end
+            doping_store(j) = info(t).doping; 
+            thickness_store(j) = info(t).thickness; 
+            datanow = dataSave{t}; 
+            [deltan,tau] = remove_duplicates(datanow(:,1),datanow(:,2));
+            lifetime_store{j,1} = [deltan,tau]; 
+        end
+    end
+    thickness_all{i} = thickness_store; 
+    doping_all{i} = doping_store; 
+    nan_indices = find(isnan(meas_thissample)==1); 
+    meas_thissample(nan_indices) = []; 
+    lifetime_all{i,1} = meas_thissample';
+    lifetime_all{i,2} = lifetime_store;
+end
+            
+%Now we need to make the corrections - first, using FZ as the surface
+%reference.
+index_FZ = [];
+for i = 1:length(surface_control)
+    index_FZ(end+1) = find(strcmp(samples,surface_control{i})==1); 
+end
+%We need to get the surface information from FZ before we loop
+%This needs to be done in an injection dependent way
+SRV_FZ = cell(length(index_FZ),2); 
+SRV_label = cell(size(index_FZ)); 
+for i = 1:length(index_FZ)
+    doping_FZ = doping_all{index_FZ(i)}; %cm-3
+    thickness_FZ = thickness_all{index_FZ(i)}; %cm
+    %Check that the parameters are consistent for this sample
+    if length(doping_FZ) ~= length(find(doping_FZ(1)==doping_FZ))
+        disp(['the doping for sample ' samples{index_FZ(i)} ' is not consistent']); 
+    end
+    if length(thickness_FZ) ~= length(find(thickness_FZ(1)==thickness_FZ))
+        disp(['the thickness for sample ' samples{index_FZ(i)} ' is not consistent']); 
+    end
+    raw_FZ = lifetime_all{index_FZ(i),2};
+    meas = lifetime_all{index_FZ(i),1}; 
+    SRV_thisFZ = cell(length(meas),1); 
+    for j = 1:length(meas)
+        raw_FZ_data = raw_FZ{j};
+        [injection,col] = size(raw_FZ_data); 
+        SRV = zeros(injection,1); 
+        for k = 1:injection
+            [De,Dh] = diffusivity(300,'p',doping_FZ(j),raw_FZ_data(k,1)); 
+            D_FZ  = De; %cm2/s
+            tau_intr = Richter(300,raw_FZ_data(k,1),doping_FZ(j),'p');
+            tau_surf = ((1./raw_FZ_data(k,2))-(1./tau_intr)).^(-1);
+            SRV(k) = thickness_FZ(j)./((tau_surf-((1/D_FZ)*((thickness_FZ(j)/pi)^2))).*2);
+        end
+        %get rid of any negative or nan SRV's
+        index_neg = find(SRV<0); 
+        deltan = raw_FZ_data(:,1); 
+        SRV(index_neg) = []; deltan(index_neg) = []; 
+        index_nan = find(isnan(SRV)==1); 
+        SRV(index_nan) = []; deltan(index_nan) = []; 
+        SRV_thisFZ{j,1} = [deltan SRV]; 
+    end
+    SRV_FZ{i,1} = meas;
+    SRV_FZ{i,2} = SRV_thisFZ; 
+    SRV_label{i} = samples{index_FZ(i)}; 
+end
+    
+%Now we have the lifetime for every sample, and the FZ lifetime for every
+%time. We need to bring them together to get the injection dependent SRH
+%lifetime, which we can then fit, for each sample of interest at each time.
 for i = 1:num_samples
+    if strcmp(lifetime_analysis{1,i},'FZ')==0 && strcmp(lifetime_analysis{1,i},'FZ-new')==0 && ...
+            strcmp(lifetime_analysis{1,i},'68-4')==0 && strcmp(lifetime_analysis{1,i},'60a')==0 && ...
+            strcmp(lifetime_analysis{1,i},'56b')==0 && strcmp(lifetime_analysis{1,i},'FZ-new2')==0
+        %Then we explicitly find the lifetime using the FZ wafer as a
+        %reference
+        %....
+    elseif strcmp(lifetime_analysis{1,i},'68-4')==1 || ...
+            strcmp(lifetime_analysis{1,i},'60a')==1 || ...
+            strcmp(lifetime_analysis{1,i},'56b')==1
+        %Then we will go ahead and use the harmonic sum 
+        %....
+    end
+end
+
+    
+    
+    
+    
+    
+%% 
+    
     lifetimefig=figure; 
     %Load the initial lifetime, which should be the first entry in the
     %dirnames list
