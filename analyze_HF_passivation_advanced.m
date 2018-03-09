@@ -372,6 +372,7 @@ for i = 1:length(samples)
         end
     end
 end
+%% 
 
 %Now, get the information for the mc-Si as the surface reference. This time
 %we won't calculate the SRV but we'll assume similar doping and try
@@ -768,12 +769,11 @@ lifetime_all = cell(num_samples,2);
 thickness_all = cell(num_samples,1); 
 doping_all = cell(num_samples,1); 
 
-%loop over only the samples we want for lifetime analysis
+%loop over all the samples and get the relevant data in a structure we can
+%work with
 for i = 1:length(samples)
     %figure out which measurements were taking for this sample
-%     index = find(strcmp(samples,lifetime_analysis{1,i})==1); 
-    index = i; 
-    meas_thissample = meas(index,:); 
+    meas_thissample = meas(i,:); 
     lifetime_store = {};
     doping_store = [];
     thickness_store = [];
@@ -783,9 +783,9 @@ for i = 1:length(samples)
         if isnan(meas_thissample(j))==0
             %now create the proper filename
             findex = find(meas_thissample(j)==times);  
-            filename = [filenames{findex} '\' samples{index} '\Raw_data.mat'];
+            filename = [filenames{findex} '\' samples{i} '\Raw_data.mat'];
             load(filename);
-            filename = [filenames{findex} '\' samples{index} '\meas_info.mat'];
+            filename = [filenames{findex} '\' samples{i} '\meas_info.mat'];
             load(filename);
             if length(dataSave)>1
                 t = 2; 
@@ -857,25 +857,125 @@ end
 %Now we have the lifetime for every sample, and the FZ lifetime for every
 %time. We need to bring them together to get the injection dependent SRH
 %lifetime, which we can then fit, for each sample of interest at each time.
+lifetime_breakdown = figure; 
+defect_summary = cell(num_samples,1); 
 for i = 1:num_samples
+    index = find(strcmp(samples,lifetime_analysis{1,i})==1);
+    raw_now = lifetime_all{index,2}; 
+    raw_times = lifetime_all{index,1}; 
+    [num_meas,columns] = size(raw_now); 
+    doping_now = doping_all{index};
+    thickness_now = thickness_all{index}; 
+    %Check that the parameters are consistent for this sample
+    if length(doping_now) ~= length(find(doping_now(1)==doping_now))
+        disp(['the doping for sample ' samples{index} ' is not consistent']); 
+    end
+    if length(thickness_now) ~= length(find(thickness_now(1)==thickness_now))
+        disp(['the thickness for sample ' samples{index} ' is not consistent']); 
+    end
     if strcmp(lifetime_analysis{1,i},'FZ')==0 && strcmp(lifetime_analysis{1,i},'FZ-new')==0 && ...
             strcmp(lifetime_analysis{1,i},'68-4')==0 && strcmp(lifetime_analysis{1,i},'60a')==0 && ...
             strcmp(lifetime_analysis{1,i},'56b')==0 && strcmp(lifetime_analysis{1,i},'FZ-new2')==0
         %Then we explicitly find the lifetime using the FZ wafer as a
         %reference
-        %....
+        tau_rev = zeros(num_meas,length(index_FZ)); 
+        %We'll want to save the fit data in a structure that makes sense
+        defect_fits = cell(num_meas,length(index_FZ)); 
+        for k = 1:length(index_FZ)
+            SRV_now = SRV_FZ{k,2};
+            SRV_times = SRV_FZ{k,1}; 
+            for j = 1:num_meas
+                %Get the length of the measured lifetime
+                lifetime_now = raw_now{j}; 
+                [injections,columns] = size(lifetime_now); 
+                %Figure out which SRV matters here
+                try
+                    t_index = find(SRV_times(:,1)==raw_times(j,1));
+                    SRV_this_time = SRV_now{t_index}; 
+                    %interpolate the SRV at the measured injection levels
+                    [SRV] = interp1(SRV_this_time(:,1),SRV_this_time(:,2),lifetime_now(:,1)); 
+                    %Get the doping and thickness of this sample
+                    W_now = thickness_now(j); 
+                    Na_now = doping_now(j); 
+                    %loop over the injection levels and calculate diffusivity,
+                    %surface lifetime, intrinsic lifetime to get at the
+                    %injection-dependent SRH lifetime. 
+                    tau_surf = zeros(injections,1); 
+                    tau_intr = zeros(injections,1); 
+                    for m = 1:injections
+                        [D_now,Dh] = diffusivity(300,'p',Na_now,lifetime_now(m,1));
+                        tau_surf(m) = (W_now./(2.*SRV(m)))+((1/D_now).*((W_now/pi)^2)); %cm/s
+                        tau_intr(m) = Richter(300,lifetime_now(m,1),Na_now,'p');
+                    end
+                    tau_SRH = ((1./lifetime_now(:,2))-(1./tau_surf)-(1./tau_intr)).^(-1);
+                    figure(lifetime_breakdown); clf; 
+                    loglog(lifetime_now(:,1),lifetime_now(:,2)); 
+                    hold all; 
+                    loglog(lifetime_now(:,1),tau_surf); 
+                    hold all;
+                    loglog(lifetime_now(:,1),tau_intr); 
+                    hold all;
+                    loglog(lifetime_now(:,1),tau_SRH); 
+                    legend('measured','surface','intrinsic','SRH'); 
+                    save_this = [savedirname '\' lifetime_analysis{i} '_' ...
+                        num2str(raw_times(j,1)) 's_' surface_control{k} '_'];
+                    [easy_summary,all_defect] = fit_procedure(lifetime_breakdown,...
+                        lifetime_now(:,1),tau_SRH,save_this,300,Na_now,type);
+                    easy_summary = [raw_times(j,1) easy_summary]; 
+                    defect_fits{j,k} = {easy_summary,all_defect}; 
+                catch
+                    %This time does not exist for this FZ wafer
+                    defect_fits{j,k} = []; 
+                end
+            end
+        end
     elseif strcmp(lifetime_analysis{1,i},'68-4')==1 || ...
             strcmp(lifetime_analysis{1,i},'60a')==1 || ...
             strcmp(lifetime_analysis{1,i},'56b')==1
         %Then we will go ahead and use the harmonic sum 
-        %....
+        %Set the initial data
+        raw_initial = raw_now{1};
+        deltan_initial = raw_initial(:,1); 
+        tau_initial = raw_initial(:,2); 
+        %Loop over all measured data
+        for j = 2:num_meas
+            W_now = thickness_now(j); 
+            Na_now = doping_now(j);
+            raw_this_time = raw_now{j}; 
+            deltan = raw_this_time(:,1); 
+            tau = raw_this_Time(:,2); 
+            figure(lifetime_breakdown); clf; 
+            loglog(deltan_initial,tau_initial); 
+            hold all; 
+            loglog(deltan,tau); 
+            hold all; 
+            try
+                [tau] = interp1(deltan,tau,deltan_initial); 
+            catch
+                [deltan,tau] = remove_duplicates(deltan,tau);
+                try
+                    [tau] = interp1(deltan,tau,deltan_initial); 
+                catch
+                    [deltan,tau] = remove_duplicates(deltan,tau);
+                    [tau] = interp1(deltan,tau,deltan_initial); 
+                end
+            end
+            %If we've exited successfully deltan should now be
+            %deltan_initial
+            deltan = deltan_initial; 
+            tau_SRH = ((1./tau)-(1./tau_initial)).^(-1);
+            loglog(deltan,tau_SRH);
+            legend('initial','this time','SRH'); 
+            save_this = [savedirname '\' lifetime_analysis{i} '_' ...
+                        num2str(raw_times(j,1)) 's_harmSum_'];
+            [easy_summary,all_defect] = fit_procedure(lifetime_breakdown,...
+                deltan,tau_SRH,save_this,300,Na_now,type);
+            easy_summary = [raw_times(j,1) easy_summary]; 
+            defect_fits{j,k} = {easy_summary,all_defect}; 
+        end
     end
+    defect_summary{i} = defect_fits; 
 end
-
-    
-    
-    
-    
     
 %% 
     
