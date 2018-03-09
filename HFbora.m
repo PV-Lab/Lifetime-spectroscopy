@@ -28,7 +28,7 @@ SOFTWARE.
 
 function [samples,dirnames,labels,savename,surface_control,...
     plotting_groups,plotting_names,meas_details,max_time,...
-    latesta,latestb]=HFbora(bora)
+    latesta,latestb,lifetime_analysis]=HFbora(bora)
 %This function takes as input a string, 'set-a' or 'set-b' or 'compE' defining the
 %sample set to be analyzed. This is specific to a particular experiment.
 %Then we define the directory names that we want to plot together on a net
@@ -121,6 +121,10 @@ if strcmp(bora,'set-a')==1
     plotting_names = {'controls','fired','unfired'}; 
     max_time = 3761830; 
     latesta = []; latestb = [];
+    lifetime_analysis = {'61a','54a','50a','45a','44a','60a','49a','53a','56a','52a','55a';...
+        'Unfired 0 min','Unfired 10 min','Unfired 30 min','Unfired 120 min',...
+        'Unfired 30 min no H','LeTID control','Fired 0 min','Fired 10 min',...
+        'Fired 30 min','Fired 120 min','Fired 30 min no H'};
 elseif strcmp(bora,'set-b')==1
     meas_details = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\measurement_details_setb.xlsx'; 
     samples = {'44b','45b','49b','50b','52b','53b','54b','55b','56b','60b','61b','C-1','C-2','66-2','FZ-new','FZ','FZ-12','FZ-new2'};
@@ -165,6 +169,10 @@ elseif strcmp(bora,'set-b')==1
     plotting_names = {'controls','fired','unfired'}; 
     max_time = 113020; 
     latesta = []; latestb = [];
+    lifetime_analysis = {'52b','45b','55b','60b','53b','56b','50b','54b','44b','49b','61b';...
+        'Unfired 0 min','Unfired 10 min','Unfired 30 min','Unfired 120 min',...
+        'Unfired 30 min no H','LeTID control','Fired 0 min','Fired 10 min',...
+        'Fired 30 min','Fired 120 min','Fired 30 min no H'};
 elseif strcmp(bora,'compE')==1
     meas_details = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\measurement_details_compE.xlsx'; 
     samples = {'66-2','FZ-new','68-2','68-4','FZ-12','FZ','FZ-new2'};
@@ -220,6 +228,8 @@ elseif strcmp(bora,'compE')==1
     savename = '_compE_1518840s';
     max_time = 1518840; 
     latesta = []; latestb = [];
+    lifetime_analysis = {'68-2','68-4','66-2';...
+        'mc-Si 950C bare','mc-Si 950C passivated','mc-Si 750C undegraded'};
 elseif strcmp(bora,'compare')==1
     %Latest files
     latesta = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\set a\3761830s\set-a_all_data_seta_3761830s.mat';
@@ -239,6 +249,7 @@ elseif strcmp(bora,'compare')==1
     %These outputs don't matter for this case
     samples={};dirnames={};labels={};surface_control={};
     meas_details=[];
+    lifetime_analysis = {}; 
 else
     disp('There was an error assigning the sample set'); 
 end
