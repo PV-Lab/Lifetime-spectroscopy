@@ -32,7 +32,7 @@ clear all; close all; clc;
 %-----------------------------
 bora = 'set-b'; %'set-b' or 'set-a' or 'compE' or 'compare' if you want to compare sets a and b directly
 %Most recent directory that we want to analyze now. 
-dirname = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\January 23 2018';
+dirname = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\set b\113020s';
 %where we want to save any new, non-sample-specific data
 savedirname = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\set b\113020s\lifetime spectroscopy'; 
 %Spreadsheet specification for the actual measurements
@@ -1066,6 +1066,118 @@ for i = 1:num_samples
 end
 
 save([savedirname '\defect_fits.mat'],'defect_summary','lifetime_analysis','surface_control'); 
-%% 
-
-
+%% Look through the data from the previous fit
+close all; clc; 
+load([savedirname '\defect_fits.mat']); 
+load([dirname '\' bora '_all_data' savename '.mat']); 
+%Loop over all of the investigated samples
+[rows,num_samples] = size(lifetime_analysis); 
+for i = 1:num_samples
+    defect_now = defect_summary{i}; 
+    [num_meas,columns] = size(defect_now); 
+    time_vector = zeros(num_meas,1); 
+    k1 = zeros(num_meas,1); 
+    k2 = zeros(num_meas,1); 
+    count = 1; 
+    for j = 1:num_meas
+        %Figure out which FZ control samples mattered
+        indexFZ = find(~cellfun(@isempty,defect_now(j,:)));
+        for k = 1:length(indexFZ)
+            all_defect = defect_now{j,indexFZ(k)}; 
+            easy_now = all_defect{1}; 
+            if easy_now(1) == 0
+                time_vector(count) = 1; 
+            else
+                time_vector(count) = easy_now(1); 
+            end
+            k1(count) = easy_now(2); 
+            k2(count) = easy_now(4); 
+                        
+            %The above was the easy summary
+            %Now we do the more challenging summary - details for each
+            %sample
+            full_details = all_defect{2}; 
+            figure('units','normalized','outerposition',[0 0 1 1]);
+            subplot(3,2,[1 2]);
+            %linearized lifetime
+            plot(full_details{6},full_details{7},'k','LineWidth',3); 
+            def1 = (full_details{1}(1,1).*full_details{6})+full_details{1}(1,2);
+            def2 = (full_details{1}(2,1).*full_details{6})+full_details{1}(2,2);
+            hold all;
+            plot(full_details{6},def1,'r--','LineWidth',3); 
+            hold all;
+            plot(full_details{6},def2,'b--','LineWidth',3); 
+            together = ((1./def1)+(1./def2)).^(-1); 
+            hold all;
+            plot(full_details{6},together,'x'); 
+            xlabel('X = n/p [-]'); 
+            ylabel('\tau_{SRH} [s]'); 
+            title([lifetime_analysis{1,i} ', ' lifetime_analysis{2,i} ...
+                ', ' num2str(time_vector(count)) 's']); 
+            %defect 1 k value
+            subplot(3,2,3); 
+            semilogy(full_details{3}{1},full_details{4}{1},'r','LineWidth',3); 
+            xlabel('E_t-E_i [eV]'); 
+            ylabel('k [-]'); 
+            xlim([min(full_details{3}{1}) max(full_details{3}{1})]); 
+            title('default defect 1'); 
+            %defect 1 tau_n0
+            subplot(3,2,5); 
+            semilogy(full_details{3}{1},1./full_details{5}{1},'r','LineWidth',3); 
+            xlabel('E_t-E_i [eV]'); 
+            ylabel('\tau_{n0} [s]'); 
+            xlim([min(full_details{3}{1}) max(full_details{3}{1})]);
+            %defect 2 k value
+            subplot(3,2,4); 
+            semilogy(full_details{3}{2},full_details{4}{2},'b','LineWidth',3); 
+            xlabel('E_t-E_i [eV]'); 
+            ylabel('k [-]'); 
+            xlim([min(full_details{3}{1}) max(full_details{3}{1})]);
+            title('default defect 2'); 
+            %defect 2 tau_n0
+            subplot(3,2,6);
+            semilogy(full_details{3}{2},1./full_details{5}{2},'b','LineWidth',3); 
+            xlabel('E_t-E_i [eV]'); 
+            ylabel('\tau_{n0} [s]'); 
+            xlim([min(full_details{3}{1}) max(full_details{3}{1})]);
+            save_this = [savedirname '\' lifetime_analysis{1,i} '\' ...
+                lifetime_analysis{1,i} '_' num2str(count) '_defect_details'];
+            hgsave(gcf,save_this);
+            print(gcf,'-dpng','-r0',[save_this '.png']);
+            
+            count = count+1; 
+        end
+    end
+    %find the lifetime degradation data
+    index_sample = find(strcmp(samples,lifetime_analysis{1,i})==1); 
+    norm_now = norm_lifetime_all{index_sample}; 
+    if norm_now(1,1) == 0
+        norm_now(1,1) = 1; 
+    end
+    %one figure per sample - summary of all times
+    figure('units','normalized','outerposition',[0 0 1 1]);
+    %top plot - lifetime degradation
+    subplot(3,1,1); 
+    semilogx(norm_now(:,1),norm_now(:,2),'LineWidth',3); 
+    ylabel('normalized lifetime [-]','FontSize',14); 
+    axis([1 max_time*1.25 0 1.5]);
+    title(lifetime_analysis{2,i},'FontSize',20); 
+    %middle plot - k1 defect at midgap
+    subplot(3,1,2); 
+    semilogx(time_vector,k1,'-','LineWidth',3); 
+    ylabel('k [-]','FontSize',14); 
+    xlim([1 max_time*1.25]);
+    title('dominant defect','FontSize',14); 
+    %bottom plot - k2 defect at midgap
+    subplot(3,1,3); 
+    semilogx(time_vector,k2,'-','LineWidth',3); 
+    ylabel('k [-]','FontSize',14); 
+    xlabel('degradation time [s]','FontSize',14); 
+    xlim([1 max_time*1.25]);
+    title('secondary defect','FontSize',14); 
+    save_this = [savedirname '\' lifetime_analysis{1,i} '\' ...
+                lifetime_analysis{1,i} '_defect_summary'];
+    hgsave(gcf,save_this);
+    print(gcf,'-dpng','-r0',[save_this '.png']);
+    close all; 
+end
