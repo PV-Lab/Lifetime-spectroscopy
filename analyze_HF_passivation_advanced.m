@@ -30,11 +30,15 @@ SOFTWARE.
 clear all; close all; clc; 
 %Change these values
 %-----------------------------
-bora = 'set-b'; %'set-b' or 'set-a' or 'compE' or 'compare' if you want to compare sets a and b directly
+bora = 'compE'; %'set-b' or 'set-a' or 'compE' or 'compare' if you want to compare sets a and b directly
 %Most recent directory that we want to analyze now. 
-dirname = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\set b\113020s';
+% dirname = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\set b\113020s';
+% dirname = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\set a\3761830s'
+dirname = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\compE\1518840s';
 %where we want to save any new, non-sample-specific data
-savedirname = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\set b\113020s\lifetime spectroscopy'; 
+% savedirname = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\set b\113020s\lifetime spectroscopy'; 
+% savedirname = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\set a\3761830s\lifetime spectroscopy';
+savedirname = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\compE\1518840s\lifetime spectroscopy';
 %Spreadsheet specification for the actual measurements
 spreadsheet = 'new'; %old (before TS) or new (after TS)
 %target injection level for the measurements, used to make degradation
@@ -1079,6 +1083,10 @@ for i = 1:num_samples
     k1 = zeros(num_meas,1); 
     k2 = zeros(num_meas,1); 
     count = 1; 
+    %We will plot the E-k curves together for defects 1,2 for better
+    %visibility
+    allEk=figure('units','normalized','outerposition',[0 0 1 1]);
+    labels = {};
     for j = 1:num_meas
         %Figure out which FZ control samples mattered
         indexFZ = find(~cellfun(@isempty,defect_now(j,:)));
@@ -1100,13 +1108,13 @@ for i = 1:num_samples
             figure('units','normalized','outerposition',[0 0 1 1]);
             subplot(3,2,[1 2]);
             %linearized lifetime
-            plot(full_details{6},full_details{7},'k','LineWidth',3); 
+            semilogy(full_details{6},full_details{7},'k','LineWidth',3); 
             def1 = (full_details{1}(1,1).*full_details{6})+full_details{1}(1,2);
             def2 = (full_details{1}(2,1).*full_details{6})+full_details{1}(2,2);
             hold all;
-            plot(full_details{6},def1,'r--','LineWidth',3); 
+            semilogy(full_details{6},def1,'r--','LineWidth',3); 
             hold all;
-            plot(full_details{6},def2,'b--','LineWidth',3); 
+            semilogy(full_details{6},def2,'b--','LineWidth',3); 
             together = ((1./def1)+(1./def2)).^(-1); 
             hold all;
             plot(full_details{6},together,'x'); 
@@ -1145,6 +1153,20 @@ for i = 1:num_samples
             hgsave(gcf,save_this);
             print(gcf,'-dpng','-r0',[save_this '.png']);
             
+            figure(allEk); 
+            subplot(2,2,1); 
+            semilogy(full_details{3}{1},full_details{4}{1},'LineWidth',3);
+            hold all; 
+            subplot(2,2,2);
+            semilogy(full_details{3}{2},full_details{4}{2},'LineWidth',3);
+            hold all; 
+            subplot(2,2,3); 
+            semilogy(full_details{3}{1},1./full_details{5}{1},'LineWidth',3); 
+            hold all; 
+            subplot(2,2,4);
+            semilogy(full_details{3}{2},1./full_details{5}{2},'LineWidth',3); 
+            hold all; 
+            labels{count} = [num2str(time_vector(count)) 's'];
             count = count+1; 
         end
     end
@@ -1179,5 +1201,31 @@ for i = 1:num_samples
                 lifetime_analysis{1,i} '_defect_summary'];
     hgsave(gcf,save_this);
     print(gcf,'-dpng','-r0',[save_this '.png']);
+    
+    figure(allEk); 
+    subplot(2,2,1);
+    xlabel('E_t-E_i [eV]'); 
+    ylabel('k [-]'); 
+    xlim([min(full_details{3}{1}) max(full_details{3}{1})]); 
+    legend(labels); 
+    title('default defect 1'); 
+    subplot(2,2,2); 
+    xlabel('E_t-E_i [eV]'); 
+    ylabel('k [-]'); 
+    xlim([min(full_details{3}{1}) max(full_details{3}{1})]);
+    title('default defect 2');
+    subplot(2,2,3); 
+    xlabel('E_t-E_i [eV]'); 
+    ylabel('\tau_{n0} [s]'); 
+    xlim([min(full_details{3}{1}) max(full_details{3}{1})]);
+    subplot(2,2,4); 
+    xlabel('E_t-E_i [eV]'); 
+    ylabel('\tau_{n0} [s]'); 
+    xlim([min(full_details{3}{1}) max(full_details{3}{1})]);
+    save_this = [savedirname '\' lifetime_analysis{1,i} '\' ...
+                lifetime_analysis{1,i} '_all_E_k_taun0'];
+    hgsave(gcf,save_this);
+    print(gcf,'-dpng','-r0',[save_this '.png']);
+               
     close all; 
 end
