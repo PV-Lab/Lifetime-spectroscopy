@@ -30,15 +30,15 @@ SOFTWARE.
 clear all; close all; clc; 
 %Change these values
 %-----------------------------
-bora = 'compE'; %'set-b' or 'set-a' or 'compE' or 'compare' if you want to compare sets a and b directly
+bora = 'set-a'; %'set-b' or 'set-a' or 'compE' or 'compare' if you want to compare sets a and b directly
 %Most recent directory that we want to analyze now. 
 % dirname = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\set b\113020s';
-% dirname = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\set a\3761830s'
-dirname = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\compE\1518840s';
+dirname = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\set a\3761830s';
+% dirname = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\compE\1518840s';
 %where we want to save any new, non-sample-specific data
 % savedirname = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\set b\113020s\lifetime spectroscopy'; 
-% savedirname = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\set a\3761830s\lifetime spectroscopy';
-savedirname = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\compE\1518840s\lifetime spectroscopy';
+savedirname = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\set a\3761830s\lifetime spectroscopy';
+% savedirname = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\compE\1518840s\lifetime spectroscopy';
 %Spreadsheet specification for the actual measurements
 spreadsheet = 'new'; %old (before TS) or new (after TS)
 %target injection level for the measurements, used to make degradation
@@ -1229,3 +1229,114 @@ for i = 1:num_samples
                
     close all; 
 end
+
+%% Look through data already calculated and extract data for further analysis
+close all; clc; 
+load([savedirname '\defect_fits.mat']); 
+load([dirname '\' bora '_all_data' savename '.mat']); 
+%Loop over all of the investigated samples
+[rows,num_samples] = size(lifetime_analysis); 
+for i = 1:num_samples
+    %File for saving the full injection dependent data for fitting
+    tau_file = [savedirname '\' lifetime_analysis{1,i} '\IDLS two and three curve fitting.xlsm']; 
+    defect_now = defect_summary{i}; 
+    [num_meas,columns] = size(defect_now); 
+    %Index for referencing the original data
+    index = find(strcmp(samples,lifetime_analysis{1,i})==1);
+    raw_tau = lifetime_all{index}; 
+    norm_raw = norm_lifetime_all{index}; 
+    Ntstar_raw = norm_lifetime_all{index}; 
+    %We want to write 7 columns of summary data for plotting
+    to_write = zeros(num_meas,7); 
+    FZ_track = cell(num_meas,1); 
+    count = 1; 
+    if strcmp(lifetime_analysis{1,i},'68-4')==1 || ...
+        strcmp(lifetime_analysis{1,i},'60a')==1 || ...
+        strcmp(lifetime_analysis{1,i},'56b')==1
+        %We need to make up for the first measurement
+        if raw_tau(1,1) == 0
+        	to_write(count,1) = 1;
+        else
+            to_write(count,1) = raw_tau(1,1); 
+        end
+        to_write(count,2) = raw_tau(1,2);
+        to_write(count,4) = norm_raw(1,2); 
+        to_write(count,6) = Ntstar_raw(1,2);
+        count = count+1; 
+    end
+    for j = 1:num_meas
+        %Figure out which FZ control samples mattered
+        indexFZ = find(~cellfun(@isempty,defect_now(j,:)));
+        for k = 1:length(indexFZ)
+            all_defect = defect_now{j,indexFZ(k)}; 
+            easy_now = all_defect{1}; 
+            %write the time
+            if easy_now(1) == 0
+                to_write(count,1) = 1; 
+            else
+                to_write(count,1) = easy_now(1); 
+            end
+            %write the raw lifetime, we'll assume for now that what we
+            %previously processed is at the right injection level
+            index_time = find(raw_tau(:,1)==easy_now(1));
+            if isempty(index_time)==0
+                to_write(count,2) = raw_tau(index_time,2); 
+            end
+            %write the SRH lifetime
+            tau_SRH = all_defect{2}{7}; 
+            deltan_SRH = all_defect{2}{8}; 
+            X_SRH = all_defect{2}{6}; 
+            tau_SRH_single = interp1(deltan_SRH,tau_SRH,deltan_target); 
+            to_write(count,3) = tau_SRH_single; 
+            %write the normalized raw lifetime
+            index_time = find(norm_raw(:,1)==easy_now(1));
+            if isempty(index_time)==0
+                to_write(count,4) = norm_raw(index_time,2); 
+            end
+            %write the Ntstar from the raw lifetime
+            index_time = find(Ntstar_raw(:,1)==easy_now(1));
+            if isempty(index_time)==0
+                to_write(count,6) = Ntstar_raw(index_time,2); 
+            end
+            
+            if strcmp(lifetime_analysis{1,i},'68-4')==1 || ...
+                strcmp(lifetime_analysis{1,i},'60a')==1 || ...
+                strcmp(lifetime_analysis{1,i},'56b')==1
+                FZ_track{count} = 'harmonic'; 
+                if count == 2
+                    to_write(count,5) = 1; 
+                else
+                    to_write(count,5) = tau_SRH_single/to_write(2,2); 
+                end
+                %write the Ntstar from the SRH lifetime
+                to_write(count,7) = (1/to_write(count,3))-(1/to_write(2,3)); 
+            else
+                FZ_track{count} = surface_control{indexFZ};
+                %write the normalized SRH lifetime
+                if count == 1
+                    to_write(count,5) = 1; 
+                else
+                    to_write(count,5) = tau_SRH_single/to_write(1,2);
+                end
+                %write the Ntstar from the SRH lifetime
+                to_write(count,7) = (1/to_write(count,3))-(1/to_write(1,3)); 
+            end
+            %write the injection dependent data for fit refining
+            tau_write = [X_SRH,tau_SRH]; 
+            Xs = length(X_SRH); 
+            xlsrange = ['B9:C' num2str(9+Xs)]; 
+            xlswrite(tau_file,tau_write,num2str(count),xlsrange); 
+            %also write the starting fit parameters for two defects
+            p_write = all_defect{2}{1}; 
+            p_write = [p_write(1,1);p_write(1,2);p_write(2,1);p_write(2,2)];
+            xlswrite(tau_file,p_write,num2str(count),'L2:L5');
+            count = count+1; 
+        end
+    end
+    save_this = [savedirname '\' lifetime_analysis{1,i} '\all_data_summary.xlsx'];
+    labels = {'time [s]','tau [s]','tauSRH [s]','norm tau [-]','norm tauSRH [-]','Nt*','Nt* SRH','surface'}; 
+    xlswrite(save_this,labels,1,'A1:H1'); 
+    xlswrite(save_this,to_write,1,'A2'); 
+    xlswrite(save_this,FZ_track,1,'H2'); 
+end   
+    
