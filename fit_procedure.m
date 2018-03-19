@@ -46,7 +46,7 @@ function [easy_summary,all_defect] = fit_procedure(figure_handle,deltan,...
     for x = 1:m
         [Et{x},k{x},alphanN{x}]=generate_Ek(two_defects(x,:),T,N_dop,type);
     end
-    all_defect = {two_defects,MSE_two,Et,k,alphanN,X,tau_rev}; 
+    all_defect = {two_defects,MSE_two,Et,k,alphanN,X,tau_rev,deltan_rev}; 
     %Pick the dominant defect in low injection (3e14 to be safe)
     inj = find(abs(deltan_rev-3e14)==min(abs(deltan_rev-3e14))); 
     actual = tau_rev(inj); 
