@@ -1245,7 +1245,7 @@ for i = 1:num_samples
     index = find(strcmp(samples,lifetime_analysis{1,i})==1);
     raw_tau = lifetime_all{index}; 
     norm_raw = norm_lifetime_all{index}; 
-    Ntstar_raw = norm_lifetime_all{index}; 
+    Ntstar_raw = Ntstar{index}; 
     %We want to write 7 columns of summary data for plotting
     to_write = zeros(num_meas,7); 
     FZ_track = cell(num_meas,1); 
