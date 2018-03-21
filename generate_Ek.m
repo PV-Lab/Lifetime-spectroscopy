@@ -52,11 +52,11 @@ C = best_fit(1)/A; %slope/X -> 1
 if type == 'p'
     for j = 1:length(Et)
         %Calculate n1
-        n1 = NC*exp(-(Eg-Et(j))/(k_B*T)); 
-%         n1 = NC*exp(-(Eg-Eiv-Et(j))/(k_B*T)); 
+%         n1 = NC*exp(-(Eg-Et(j))/(k_B*T)); 
+        n1 = NC*exp(-(Eg-Eiv-Et(j))/(k_B*T)); 
         %Calculate p1
-        p1 = NV*exp(-Et(j)/(k_B*T)); 
-%         p1 = NV*exp(-(Et(j)+Eiv)/(k_B*T)); 
+%         p1 = NV*exp(-Et(j)/(k_B*T)); 
+        p1 = NV*exp(-(Et(j)+Eiv)/(k_B*T)); 
         %Calculate the Q values for these defects
         Q(j) = (C+(p1/p0))/(1-(n1/p0)-C);
         %Calculate the quantity alphan*Nt for these defects
