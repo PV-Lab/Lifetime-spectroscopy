@@ -24,7 +24,7 @@ SOFTWARE.
 
 ndop = logspace(13,18,500); 
 
-type = 'n'; 
+type = 'p'; 
 
 deltan = ndop./1000; 
 
@@ -49,8 +49,9 @@ deltan = logspace(12,18,500)';
 Ndop = 1.9e16; 
 resistivity = 0.529;
 Nt = 1e12; 
-Ect = 0.24;
-Etv = 0;
+% Ect = 0.24;
+Ect = 0;
+Etv = 24;
 sigma_n = 3.6e-14; 
 sigma_p = 1e-14; 
 T = 300;
@@ -269,16 +270,19 @@ info = struct('filename',fileListShort,'thickness',thickness','resistivity',...
 save([saveName '\meas_info.mat'],'info'); 
 %% SRH test for linearization - make "fake" data
 clear all; close all; 
-dirname = 'C:\Users\Mallory\Dropbox (MIT)\Mallory in Australia\Method development\SRH test';
+dirname = 'C:\Users\Mallory Jensen\Documents\PhD thesis\thesis\source files';
 deltan = logspace(12,18,500)'; 
 Ndop = 1.9e16; 
 resistivity = 0.529;
 Nt = 1e12; 
-Ect = 0.24;
-Etv = 0;
+% Ect = 0.24;
+Ect = 0;
+Etv = 0.24;
 sigma_n = 3.6e-14; 
-sigma_p = 1e-14; 
-T = [250 300 350 400];
+sigma_p = 1e-15; 
+% T = [250 300 350 400];
+T = [-25 25 75 125]; 
+T = T+273.15; 
 type = 'p'; 
 W = .02; 
 SRV = 10.*ones(size(deltan)); %cm/s
@@ -326,7 +330,7 @@ temp_store{j} = T(j)-273.15;
 end
 lifetime_breakdown = struct('tau',tau_meas_all,'deltan',deltan_all,'tau_SRH',...
     tau_SRH_all,'tau_intr',tau_intr_all,'tau_surf',tau_surf_all);
-save([dirname '\lifetime_breakdown_sim.mat'],'lifetime_breakdown');
+save([dirname '\lifetime_breakdown.mat'],'lifetime_breakdown');
 save([dirname '\SRV_data.mat'],'SRVtoSave'); 
 
 save([dirname '\Raw_data.mat'],'fileListShort','dataSave');

@@ -39,10 +39,10 @@ k_B = 8.61733238e-5; %eV/K
 [vth_e,vth_h] = vth_em(T); %cm/s
 %Define the energy levels for evaluation
 %Let's try instead referencing to the intrinsic energy
-Et_min = -Eiv; 
-Et_max = Eg-Eiv; 
-% Et = linspace(0,Eg,250); %eV
-Et = linspace(Et_min,Et_max,250); %eV, Et-Ei
+% Et_min = -Eiv; 
+% Et_max = Eg-Eiv; 
+Et = linspace(0,Eg,250); %eV
+% Et = linspace(Et_min,Et_max,250); %eV, Et-Ei
 Q = zeros(size(Et)); 
 alphanN = zeros(size(Et));
 k = zeros(size(Et)); 
@@ -52,11 +52,11 @@ C = best_fit(1)/A; %slope/X -> 1
 if type == 'p'
     for j = 1:length(Et)
         %Calculate n1
-%         n1 = NC*exp(-(Eg-Et(j))/(k_B*T)); 
-        n1 = NC*exp(-(Eg-Eiv-Et(j))/(k_B*T)); 
+        n1 = NC*exp(-(Eg-Et(j))/(k_B*T)); 
+%         n1 = NC*exp(-(Eg-Eiv-Et(j))/(k_B*T)); 
         %Calculate p1
-%         p1 = NV*exp(-Et(j)/(k_B*T)); 
-        p1 = NV*exp(-(Et(j)+Eiv)/(k_B*T)); 
+        p1 = NV*exp(-Et(j)/(k_B*T)); 
+%         p1 = NV*exp(-(Et(j)+Eiv)/(k_B*T)); 
         %Calculate the Q values for these defects
         Q(j) = (C+(p1/p0))/(1-(n1/p0)-C);
         %Calculate the quantity alphan*Nt for these defects
