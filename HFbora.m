@@ -250,6 +250,26 @@ elseif strcmp(bora,'compare')==1
     samples={};dirnames={};labels={};surface_control={};
     meas_details=[];
     lifetime_analysis = {}; 
+elseif strcmp(bora,'follow-up')==1
+    meas_details = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\Follow-up experiment\lifetime data\measurement_details.xlsx'; 
+    samples = {'44f','49f','50f','53f','54c','55f','56c','57b','57c',...
+        '57f','59a','59b','60f','61f'};
+    dirname1 = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\Follow-up experiment\lifetime data\March 2018 as received UKN\degradation\March 26 2018\0s';
+    dirname2 = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\Follow-up experiment\lifetime data\March 2018 as received UKN\degradation\March 26 2018\250s';
+    dirname3 = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\Follow-up experiment\lifetime data\March 2018 as received UKN\degradation\March 26 2018\500s';
+    dirname4 = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\Follow-up experiment\lifetime data\March 2018 as received UKN\degradation\March 26 2018\1000s';
+    dirnames = {dirname1,dirname2,dirname3,dirname4};
+    labels = {'initial','250s','500s','1000s'};
+    plotting_groups = {{'59b','55f','59a','57b'; 'sandwich b','sandwich f','non-sandwich a','non-sandwich b'},...
+        {'56c','57c','54c'; 'control','bare firing + re-firing','nitride firing + re-firing'},...
+        {'60f','61f';'control','with etching'},...
+        {'60f','44f','49f','50f','53f','57f';'contro','350C 10 min','350C 30 min','350C 120 min','300C 30 min','400C 30 min'}};
+    plotting_names = {'firing config','out-diffusion','thickness','dark annealing'};
+    surface_control = {};
+    savename = '_followup_1000s';
+    max_time = 1000; 
+    latesta = []; latestb = [];
+    lifetime_analysis = {};
 else
     disp('There was an error assigning the sample set'); 
 end
