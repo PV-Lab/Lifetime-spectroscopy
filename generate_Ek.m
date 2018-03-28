@@ -39,10 +39,10 @@ k_B = 8.61733238e-5; %eV/K
 [vth_e,vth_h] = vth_em(T); %cm/s
 %Define the energy levels for evaluation
 %Let's try instead referencing to the intrinsic energy
-% Et_min = -Eiv; 
-% Et_max = Eg-Eiv; 
-Et = linspace(0,Eg,250); %eV
-% Et = linspace(Et_min,Et_max,250); %eV, Et-Ei
+Et_min = -Eiv; 
+Et_max = Eg-Eiv; 
+% Et = linspace(0,Eg,250); %eV
+Et = linspace(Et_min,Et_max,250); %eV, Et-Ei
 Q = zeros(size(Et)); 
 alphanN = zeros(size(Et));
 k = zeros(size(Et)); 
