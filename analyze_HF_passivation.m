@@ -23,9 +23,9 @@ SOFTWARE.
 %}
 %% First process the raw data
 clear all; close all; clc; 
-dirname = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\February 9 2018\1350000s'; 
-% samples = {'Ti-h-5','Ni-h-5','Mo-h-5','V-h-5','C-h-5','Ti-L-5','Ni-L-5','Mo-L-5','V-L-5','C-L-5','17-7-27-1','17-7-27-2'};
-samples = {'C-L-5'};
+dirname = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\April 3 2018\2242500s'; 
+samples = {'Ti-h-5','Ni-h-5','Mo-h-5','V-h-5','C-h-5','Ti-L-5','Ni-L-5','Mo-L-5','V-L-5','C-L-5','17-7-27-1','17-7-27-2'};
+% samples = {'C-L-5'};
 for index = 1:length(samples)
 %     [fileList,fileListShort] = getAllFiles([dirname '\' samples{index}]); 
     %Get all of the files in this directory
@@ -58,9 +58,9 @@ end
 clear all; close all; clc;
 %Process data after HF passivation
 
-dirname = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\February 9 2018\1350000s'; 
-% samples = {'Ti-h-5','Ni-h-5','Mo-h-5','V-h-5','C-h-5','Ti-L-5','Ni-L-5','Mo-L-5','V-L-5','C-L-5','17-7-27-1','17-7-27-2'};
-samples = {'C-L-5'};
+dirname = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\April 3 2018\2242500s'; 
+samples = {'Ti-h-5','Ni-h-5','Mo-h-5','V-h-5','C-h-5','Ti-L-5','Ni-L-5','Mo-L-5','V-L-5','C-L-5','17-7-27-1','17-7-27-2'};
+% samples = {'C-L-5'};
 lifetime_store = zeros(length(samples),1); 
 
 for i = 1:length(samples)
@@ -107,7 +107,7 @@ end
 
 %% Analyze different states together
 clear all; close all; clc;
-savedirname = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\Summary\1814530s';
+savedirname = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\Summary\2403840s';
 % dirname1 = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\August 16 2017';
 % dirname2 = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\August 17 2017\250s';
 % dirname3 = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\August 17 2017\500s';
@@ -202,13 +202,20 @@ dirname38 = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samp
 dirname39 = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\February 19 2018\1530000s';
 dirname40 = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\February 23 2018\1650000s';
 dirname41 = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\March 6 2018';
+dirname42 = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\March 15 2018\1650000s';
+dirname43 = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\March 19 2018\1750000s';
+dirname44 = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\March 22 2018\1925000s';
+dirname45 = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\March 26 2018\19425000s';
+dirname46 = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\March 29 2018\2142500s';
+dirname47 = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\April 3 2018\2242500s';
 dirnames = {dirname1 dirname2 dirname3 dirname4 dirname5 dirname6 dirname7 ...
     dirname8 dirname9 dirname10 dirname11 dirname12 dirname13 dirname14 ...
     dirname15 dirname16 dirname18 dirname19 dirname20 dirname21 ...
     dirname22 dirname23 dirname24 dirname25 dirname26 dirname27 ...
     dirname28 dirname29 dirname30 dirname31 dirname32 dirname33 ...
     dirname34 dirname35 dirname36 dirname37 dirname38 dirname39 ...
-    dirname40 dirname41}; 
+    dirname40 dirname41 dirname42 dirname43 dirname44 dirname45 ...
+    dirname46 dirname47}; 
 labels = {'initial','1000s','10000s','20000s','30000s','40030s',...
     '47471s','60221s','70031s','80031s','90031s','100361s',...
     '157871s','209681s','255581s',...
@@ -216,10 +223,11 @@ labels = {'initial','1000s','10000s','20000s','30000s','40030s',...
     '456940s wait','510190s','552550s','599290s','648910s','674200s just after',...
     '674200s wait','699070s','757210s','842440s','937360s','1024120s',...
     '1106680s','1202380s','1357600s','1468120s','1468120s wait','1648300s',...
-    '1814530s','1814530s wait'};
+    '1814530s','1814530s wait','1814530s wait 2','1916290s','2090890s',...
+    '2111850s','2308560s','2403840s'};
 cm = colormap(hsv(length(dirnames))); 
 samples = {'Ti-h-5','Ni-h-5','Mo-h-5','V-h-5','C-h-5','Ti-L-5','Ni-L-5','Mo-L-5','V-L-5','C-L-5','17-7-27-1','17-7-27-2'};
-savename = '_1814530s_lifetime summary';
+savename = '_2403840s_lifetime summary';
 for i = 1:length(samples)
     h=figure('units','normalized','outerposition',[0 0 1 1]);
     curves = [];
@@ -269,9 +277,9 @@ end
 
 %% Make the degradation curves
 clear all; close all; clc; 
-savedirname = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\Summary\1814530s';
-savename = '_1814530s_degradation';
-max_time = 1814530; 
+savedirname = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\Summary\2403840s';
+savename = '_2403840s_degradation';
+max_time = 2403840; 
 meas_details = 'C:\Users\Mallory Jensen\Documents\LeTID\Dartboard\Repassivated samples\Degradation\measurement_details.xlsx'; 
 deltan_target = 8e14; %target injection level for the measurements, changed to 6e14 on 2/13/17 from 5e14
 %Get the measurement details
