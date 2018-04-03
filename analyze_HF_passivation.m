@@ -23,13 +23,8 @@ SOFTWARE.
 %}
 %% First process the raw data
 clear all; close all; clc; 
-dirname = 'C:\Users\Mallory Jensen\Documents\LeTID\PDG\round 2 data\#7 degradation\February 1 2018'; 
-% samples = {'1-6','2-6','3-6','4-6','5-6','6-6','7-6','8-6','P-1'};
-% samples = {'1-7','2-7','3-7','4-7','5-7','6-7','7-7','8-7'};
-samples = {'1-7','4-7','6-7','7-7'};
-% samples = {'2-7','3-7','5-7','8-7'};
-% samples = {'1-3','2-3','3-3','4-3','5-3','6-3','7-3','8-3','P-2'};
-% samples = {'P-2'};
+dirname = 'C:\Users\Mallory Jensen\Documents\LeTID\PDG\round 3 data\04-03-2018_DegTime20000sec'; 
+samples = {'1-5','2-5','3-5','4-5','5-5','6-5','7-5','8-5','P-1'};
 for index = 1:length(samples)
     [fileList,fileListShort] = getAllFiles([dirname '\' samples{index}]); 
     savename = [dirname '\' samples{index} '\Raw_data.mat']';
@@ -62,12 +57,8 @@ end
 clear all; close all; clc;
 %Process data after HF passivation
 
-dirname = 'C:\Users\Mallory Jensen\Documents\LeTID\PDG\round 2 data\#7 degradation\February 1 2018'; 
-% samples = {'1-6','2-6','3-6','4-6','5-6','6-6','7-6','8-6','P-1'};
-% samples = {'1-7','2-7','3-7','4-7','5-7','6-7','7-7','8-7'};
-samples = {'1-7','4-7','6-7','7-7'};
-% samples = {'2-7','3-7','5-7','8-7'};
-% samples = {'1-3','2-3','3-3','4-3','5-3','6-3','7-3','8-3','P-2'};
+dirname = 'C:\Users\Mallory Jensen\Documents\LeTID\PDG\round 3 data\04-03-2018_DegTime20000sec'; 
+samples = {'1-5','2-5','3-5','4-5','5-5','6-5','7-5','8-5','P-1'};
 lifetime_store = zeros(length(samples),1); 
 
 for i = 1:length(samples)
@@ -127,22 +118,35 @@ clear all; close all; clc;
 % dirname4 = 'C:\Users\Mallory Jensen\Documents\LeTID\PDG\round 2 data\#7 degradation\February 1 2018';
 % dirnames = {dirname1 dirname2 dirname3 dirname4}; 
 % labels = {'initial','initial 2','81480s','186450s'};
-savedirname = 'C:\Users\Mallory Jensen\Documents\LeTID\PDG\round 2 data\#3 degradation\Summary\101735s';
-dirname1 = 'C:\Users\Mallory Jensen\Documents\LeTID\PDG\round 2 data\#3 degradation\January 22 2018';
-dirname2 = 'C:\Users\Mallory Jensen\Documents\LeTID\PDG\round 2 data\#3 degradation\January 23 2018';
-dirname3 = 'C:\Users\Mallory Jensen\Documents\LeTID\PDG\round 2 data\#3 degradation\January 24 2018';
-dirname4 = 'C:\Users\Mallory Jensen\Documents\LeTID\PDG\round 2 data\#3 degradation\January 25 2018';
-dirname5 = 'C:\Users\Mallory Jensen\Documents\LeTID\PDG\round 2 data\#3 degradation\January 26 2018';
-dirname6 = 'C:\Users\Mallory Jensen\Documents\LeTID\PDG\round 2 data\#3 degradation\January 29 2018';
-dirname7 = 'C:\Users\Mallory Jensen\Documents\LeTID\PDG\round 2 data\#3 degradation\January 31 2018';
-dirnames = {dirname1 dirname2 dirname3 dirname4 dirname5 dirname6 dirname7}; 
-labels = {'initial','2500s','5000s','10000s','25000s','50000s','101735s'};
+% savedirname = 'C:\Users\Mallory Jensen\Documents\LeTID\PDG\round 2 data\#3 degradation\Summary\101735s';
+% dirname1 = 'C:\Users\Mallory Jensen\Documents\LeTID\PDG\round 2 data\#3 degradation\January 22 2018';
+% dirname2 = 'C:\Users\Mallory Jensen\Documents\LeTID\PDG\round 2 data\#3 degradation\January 23 2018';
+% dirname3 = 'C:\Users\Mallory Jensen\Documents\LeTID\PDG\round 2 data\#3 degradation\January 24 2018';
+% dirname4 = 'C:\Users\Mallory Jensen\Documents\LeTID\PDG\round 2 data\#3 degradation\January 25 2018';
+% dirname5 = 'C:\Users\Mallory Jensen\Documents\LeTID\PDG\round 2 data\#3 degradation\January 26 2018';
+% dirname6 = 'C:\Users\Mallory Jensen\Documents\LeTID\PDG\round 2 data\#3 degradation\January 29 2018';
+% dirname7 = 'C:\Users\Mallory Jensen\Documents\LeTID\PDG\round 2 data\#3 degradation\January 31 2018';
+% dirnames = {dirname1 dirname2 dirname3 dirname4 dirname5 dirname6 dirname7}; 
+% labels = {'initial','2500s','5000s','10000s','25000s','50000s','101735s'};
+savedirname='C:\Users\Mallory Jensen\Documents\LeTID\PDG\round 3 data\summary\20000s';
+dirname1='C:\Users\Mallory Jensen\Documents\LeTID\PDG\round 3 data\03-26-2018_DegTime0sec';
+dirname2='C:\Users\Mallory Jensen\Documents\LeTID\PDG\round 3 data\03-27-2018_DegTime500sec';
+dirname3='C:\Users\Mallory Jensen\Documents\LeTID\PDG\round 3 data\03-28-2018_DegTime1000sec';
+dirname4='C:\Users\Mallory Jensen\Documents\LeTID\PDG\round 3 data\03-29-2018_DegTime2500sec';
+dirname5='C:\Users\Mallory Jensen\Documents\LeTID\PDG\round 3 data\03-30-2018_DegTime5000sec';
+dirname6='C:\Users\Mallory Jensen\Documents\LeTID\PDG\round 3 data\03-31-2018_DegTime7500sec';
+dirname7='C:\Users\Mallory Jensen\Documents\LeTID\PDG\round 3 data\04-02-2018_DegTime10000sec';
+dirname8='C:\Users\Mallory Jensen\Documents\LeTID\PDG\round 3 data\04-03-2018_DegTime20000sec';
+dirnames = {dirname1,dirname2,dirname3,dirname4,dirname5,dirname6,...
+    dirname7,dirname8};
+labels= {'0s','500s','1000s','2500s','5000s','7500s','10000s','20000s'};
 cm = colormap(hsv(length(dirnames))); 
 % samples = {'1-6','2-6','3-6','4-6','5-6','6-6','7-6','8-6','P-1'};
 % samples = {'1-7','4-7','6-7','7-7'};
 % samples = {'2-7','3-7','5-7','8-7'};
-samples = {'1-3','2-3','3-3','4-3','5-3','6-3','7-3','8-3','P-2'};
-savename = '_101735s_lifetime summary';
+% samples = {'1-3','2-3','3-3','4-3','5-3','6-3','7-3','8-3','P-2'};
+samples = {'1-5','2-5','3-5','4-5','5-5','6-5','7-5','8-5','P-1'};
+savename = '_20000s_lifetime summary';
 for i = 1:length(samples)
     h=figure('units','normalized','outerposition',[0 0 1 1]);
     curves = [];
@@ -196,10 +200,12 @@ end
 
 %% Plot lifetime as function of LTA temperature
 clear all; close all; clc; 
-savedirname = 'C:\Users\Mallory Jensen\Documents\LeTID\PDG\round 2 data\#6 degradation\Summary';
-dirname = 'C:\Users\Mallory Jensen\Documents\LeTID\PDG\round 2 data\from SERIS\Lifetime data\December 5 2017';
-samples = {'1-6','2-6','3-6','4-6','5-6','6-6','7-6','8-6'};
-LTA = [0 600 550 500 450 700 750 650];
+savedirname = 'C:\Users\Mallory Jensen\Documents\LeTID\PDG\round 3 data\summary\20000s';
+dirname = 'C:\Users\Mallory Jensen\Documents\LeTID\PDG\round 3 data\03-26-2018_DegTime0sec';
+% samples = {'1-6','2-6','3-6','4-6','5-6','6-6','7-6','8-6'};
+% LTA = [0 600 550 500 450 700 750 650];
+samples = {'1-5','2-5','3-5','4-5','5-5','6-5','7-5','8-5'};
+LTA = [650 700 450 550 600 0 500 750];
 deltan_target = 1e15; 
 lifetime_store = zeros(size(LTA)); 
 
@@ -245,10 +251,10 @@ print(h,'-dpng','-r0',[savedirname '\initial lifetime summary with LTA.png']);
 
 %% Make the degradation curves
 clear all; close all; clc; 
-savedirname = 'C:\Users\Mallory Jensen\Documents\LeTID\PDG\round 2 data\#6 degradation\Summary\179620s';
-savename = '_179620s_degradation';
-max_time = 179620; 
-meas_details = 'C:\Users\Mallory Jensen\Documents\LeTID\PDG\round 2 data\#6 degradation\measurement_details.xlsx'; 
+savedirname = 'C:\Users\Mallory Jensen\Documents\LeTID\PDG\round 3 data\summary\20000s';
+savename = '_20000s_degradation';
+max_time = 20000; 
+meas_details = 'C:\Users\Mallory Jensen\Documents\LeTID\PDG\round 3 data\measurement_details.xlsx'; 
 deltan_target = 6e14; %target injection level for the measurements, changed to 6e14 on 2/13/17 from 5e14
 %Get the measurement details
 [meas,samples] = xlsread(meas_details,'measurements');
@@ -259,7 +265,7 @@ filenames = filenames(2:end,2);
 
 lifetime_all = cell(length(samples),1); 
 norm_lifetime_all = cell(length(samples),1); 
-
+cm = colormap(hsv(length(samples))); 
 for i = 1:length(samples)
     meas_thissample = meas(i,:);
     lifetime_store = [];
@@ -300,12 +306,14 @@ for i = 1:length(samples)
 end
 
 %Now, which samples do we want to plot together?
-control = {'1-6','5-6','4-6','3-6','2-6','8-6','6-6','7-6','P-1';...
-    'STD','450C','500C','550C','600C','650C','700C','750C','FZ'};
+% control = {'1-6','5-6','4-6','3-6','2-6','8-6','6-6','7-6','P-1';...
+%     'STD','450C','500C','550C','600C','650C','700C','750C','FZ'};
 % control = {'1-7','2-7','3-7','4-7','5-7','6-7','7-7','8-7';...
 %     'STD','STD','STD','STD','STD','STD','STD','STD',};
 % control = {'5-3','7-3','8-3','6-3','4-3','2-3','1-3','3-3','P-2';...
 %     'STD','450C','500C','550C','600C','650C','700C','750C','FZ'};
+control = {'6-5','3-5','7-5','4-5','5-5','1-5','2-5','8-5','P-1';...
+    'STD','450C','500C','550C','600C','650C','700C','750C','FZ'};
 
 lifetime_raw=figure('units','normalized','outerposition',[0 0 1 1]);
 lifetime_norm=figure('units','normalized','outerposition',[0 0 1 1]);
@@ -323,10 +331,10 @@ for i = 1:samp
         norm_now(1,1) = 1; 
     end
     figure(lifetime_raw); 
-    loglog(raw_now(:,1),raw_now(:,2),'-o','LineWidth',3,'MarkerSize',10); 
+    loglog(raw_now(:,1),raw_now(:,2),'-o','LineWidth',3,'MarkerSize',10,'color',cm(i,:)); 
     hold all; 
     figure(lifetime_norm); 
-    semilogx(norm_now(:,1),norm_now(:,2),'-o','LineWidth',3,'MarkerSize',10);
+    semilogx(norm_now(:,1),norm_now(:,2),'-o','LineWidth',3,'MarkerSize',10,'color',cm(i,:));
     hold all;  
     labels{i,1} = control{2,i};
     %Calculate Nt_star
@@ -335,7 +343,7 @@ for i = 1:samp
         Nt_star_now(j) = (1/raw_now(j,2))-(1/raw_now(1,2));  
     end
     figure(Nt_star); 
-    loglog(raw_now(:,1),Nt_star_now,'-o','LineWidth',3,'MarkerSize',10); 
+    loglog(raw_now(:,1),Nt_star_now,'-o','LineWidth',3,'MarkerSize',10,'color',cm(i,:)); 
     hold all; 
 end
 figure(lifetime_raw); 
