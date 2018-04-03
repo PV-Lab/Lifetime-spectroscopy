@@ -35,12 +35,14 @@ bora = 'follow-up'; %'set-b' or 'set-a' or 'compE' or 'compare' if you want to c
 % dirname = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\set b\113020s';
 % dirname = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\set a\3761830s';
 % dirname = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\compE\1518840s';
-dirname = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\Follow-up experiment\lifetime data\March 2018 as received UKN\degradation\March 26 2018\1000s'; 
+
+dirname = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\Follow-up experiment\lifetime data\March 2018 as received UKN\degradation\April 3 2018\40000s';
+
 %where we want to save any new, non-sample-specific data
 % savedirname = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\set b\113020s\lifetime spectroscopy'; 
 % savedirname = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\set a\3761830s\lifetime spectroscopy';
 % savedirname = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\compE\1518840s\lifetime spectroscopy';
-savedirname = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\Follow-up experiment\lifetime data\March 2018 as received UKN\degradation\summary\1000s\1-1'; 
+savedirname = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\Follow-up experiment\lifetime data\March 2018 as received UKN\degradation\summary\42801s\1-64'; 
 %Spreadsheet specification for the actual measurements
 spreadsheet = 'new'; %old (before TS) or new (after TS)
 %target injection level for the measurements, used to make degradation
@@ -165,8 +167,8 @@ for i = 1:length(samples)
         if flag == 1
             if length(dataSave)>1
                 if length(dataSave)>2
-%                     t = 1; %1-64
-                    t = 3; %1-1 high
+                    t = 1; %1-64
+%                     t = 3; %1-1 high
                 else
                     t = 2; %high measurement
                 end
@@ -243,8 +245,8 @@ for i = 1:length(samples)
             load(filename);
             if length(dataSave)>1
                 if length(dataSave)>2
-%                     t = 1; %1-64
-                    t = 3; %1-1 high
+                    t = 1; %1-64
+%                     t = 3; %1-1 high
                 else
                     t = 2; %high measurement
                 end
