@@ -10,19 +10,27 @@ nbins = 7;
 %excess carrier densities for evaluation
 deltans = [3e14 6e14 8e14 1e15 5e15 1e16]; 
 
-dir='C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\set a\3761830s\lifetime spectroscopy\finalized defect fits';
-dir1 = [dir '\49a (fired 0 min)'];
-dir2 = [dir '\53a (fired 10 min)'];
-dir3 = [dir '\54a (unfired 10 min)'];
-dir4 = [dir '\61a (unfired 0 min)'];
-dir5 = [dir '\60a (control)'];
+% dir='C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\set a\3761830s\lifetime spectroscopy\finalized defect fits';
+% dir1 = [dir '\49a (fired 0 min)'];
+% dir2 = [dir '\53a (fired 10 min)'];
+% dir3 = [dir '\54a (unfired 10 min)'];
+% dir4 = [dir '\61a (unfired 0 min)'];
+% dir5 = [dir '\60a (control)'];
 
-samp_dir = {'49a','53a','54a','61a','60a';dir1,dir2,dir3,dir4,dir5}; 
+dir = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\compE\1518840s\lifetime spectroscopy\finalized defect fits';
+dir1 = [dir '\66-2'];
+dir2 = [dir '\68-2'];
+dir3 = [dir '\68-4'];
+
+% samp_dir = {'49a','53a','54a','61a','60a';dir1,dir2,dir3,dir4,dir5}; 
+samp_dir = {'66-2','68-2','68-4';dir1,dir2,dir3};
 [rows,num_samp] = size(samp_dir); 
 
 %load the data we'll need for calculation
-load('C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\set a\3761830s\set-a_all_data_seta_3761830s.mat'); 
-load('C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\set a\3761830s\lifetime spectroscopy\defect_fits.mat'); 
+% load('C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\set a\3761830s\set-a_all_data_seta_3761830s.mat'); 
+% load('C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\set a\3761830s\lifetime spectroscopy\defect_fits.mat'); 
+load('C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\compE\1518840s\compE_all_data_compE_1518840s.mat'); 
+load('C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\compE\1518840s\lifetime spectroscopy\defect_fits.mat'); 
 
 for i = 1:num_samp
     %Make the Excel filename to write this data
