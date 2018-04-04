@@ -113,9 +113,11 @@ else
     order = 2; 
     
     %Plot the result
+
     fit1 = (p(1).*X)+p(2); 
     fit2 = (p(3).*X)+p(4); 
-    potential_fit = ((1./fit1)+(1./fit2)).^(-1); 
+    potential_fit = ((1./fit1)+(1./fit2)).^(-1);
+
 %     figure; 
 %     h(1)=plot(X,tau_SRH); 
 %     hold all; 

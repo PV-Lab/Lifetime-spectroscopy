@@ -37,8 +37,8 @@ dirname = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF p
 % dirname = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\compE\1518840s';
 %where we want to save any new, non-sample-specific data
 % savedirname = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\set b\113020s\lifetime spectroscopy'; 
-savedirname = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\set a\3761830s\lifetime spectroscopy';
-% savedirname = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\compE\1518840s\lifetime spectroscopy';
+savedirname = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\set a\3761830s\lifetime spectroscopy\retest for error';
+% savedirname = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\HF passivation\compE\1518840s\lifetime spectroscopy\retest for error';
 %Spreadsheet specification for the actual measurements
 spreadsheet = 'new'; %old (before TS) or new (after TS)
 %target injection level for the measurements, used to make degradation
@@ -891,20 +891,25 @@ for i = 1:length(index_FZ)
         raw_FZ_data = raw_FZ{j};
         [injection,col] = size(raw_FZ_data); 
         SRV = zeros(injection,1); 
+        SRV_error = zeros(injection,1); 
         for k = 1:injection
             [De,Dh] = diffusivity(300,'p',doping_FZ(j),raw_FZ_data(k,1)); 
             D_FZ  = De; %cm2/s
             tau_intr = Richter(300,raw_FZ_data(k,1),doping_FZ(j),'p');
             tau_surf = ((1./raw_FZ_data(k,2))-(1./tau_intr)).^(-1);
             SRV(k) = thickness_FZ(j)./((tau_surf-((1/D_FZ)*((thickness_FZ(j)/pi)^2))).*2);
+            tau_error = abs(((1./raw_FZ_data(k,2)).^2)./((1./tau_surf).^2)).*(0.05.*tau_surf); 
+            SRV_error(k) = tau_error.*(thickness_FZ(j)./(((tau_surf-((1/D_FZ)*((thickness_FZ(j)/pi)^2))).^2).*2));
         end
         %get rid of any negative or nan SRV's
         index_neg = find(SRV<0); 
         deltan = raw_FZ_data(:,1); 
         SRV(index_neg) = []; deltan(index_neg) = []; 
+        SRV_error(index_neg) = []; 
         index_nan = find(isnan(SRV)==1); 
         SRV(index_nan) = []; deltan(index_nan) = []; 
-        SRV_thisFZ{j,1} = [deltan SRV]; 
+        SRV_error(index_nan) = []; 
+        SRV_thisFZ{j,1} = [deltan SRV SRV_error]; 
     end
     SRV_FZ{i,1} = meas;
     SRV_FZ{i,2} = SRV_thisFZ; 
@@ -952,6 +957,7 @@ for i = 1:num_samples
                     SRV_this_time = SRV_now{t_index}; 
                     %interpolate the SRV at the measured injection levels
                     [SRV] = interp1(SRV_this_time(:,1),SRV_this_time(:,2),lifetime_now(:,1)); 
+                    [SRV_error] = interp1(SRV_this_time(:,1),SRV_this_time(:,3),lifetime_now(:,1)); 
                     %Get the doping and thickness of this sample
                     W_now = thickness_now(j); 
                     Na_now = doping_now(j); 
@@ -960,19 +966,26 @@ for i = 1:num_samples
                     %injection-dependent SRH lifetime. 
                     tau_surf = zeros(injections,1); 
                     tau_intr = zeros(injections,1); 
+                    tau_surf_error = zeros(injections,1); 
                     for m = 1:injections
                         [D_now,Dh] = diffusivity(300,'p',Na_now,lifetime_now(m,1));
                         tau_surf(m) = (W_now./(2.*SRV(m)))+((1/D_now).*((W_now/pi)^2)); %cm/s
                         tau_intr(m) = Richter(300,lifetime_now(m,1),Na_now,'p');
+                        tau_surf_error(m) = (W_now./(2.*(SRV(m).^2))).*(SRV_error(m)); 
                     end
                     %Let's simplify the surface lifetime - it should be
                     %basically constant
                     surf_cutoff_high = 2e15; 
                     [deltan_surf_rev,tau_surf_rev]=...
                         remove_highinj(lifetime_now(:,1),tau_surf,surf_cutoff_high);
+                    [deltan_surf_rev,tau_surf_error_rev]=...
+                        remove_highinj(lifetime_now(:,1),tau_surf_error,surf_cutoff_high);
                     surf_avg = nanmean(tau_surf_rev); 
-                    tau_surf_new = ones(size(tau_intr)).*surf_avg; 
+                    surf_error_avg = nanmean(tau_surf_error_rev); 
+                    tau_surf_new = ones(size(tau_intr)).*surf_avg;
+                    tau_surf_error_new = ones(size(tau_intr)).*surf_error_avg; 
                     tau_SRH = ((1./lifetime_now(:,2))-(1./tau_surf_new)-(1./tau_intr)).^(-1);
+                    tau_SRH_error = (((((1./(lifetime_now(:,2).^2))./((1./tau_SRH).^2))).*((0.05.*lifetime_now(:,2)).^2))+((((1./(tau_surf_new.^2))./((1./tau_SRH).^2))).*(tau_surf_error_new.^2))).^(1/2); 
                     figure(lifetime_breakdown); clf; 
                     loglog(lifetime_now(:,1),lifetime_now(:,2)); 
                     hold all; 
@@ -1001,7 +1014,7 @@ for i = 1:num_samples
                     deltan_SRH = lifetime_now(:,1); deltan_SRH(index_nan)=[];
                     [easy_summary,all_defect] = fit_procedure(lifetime_breakdown,...
                         deltan_SRH,tau_SRH,save_this,300,Na_now,type,...
-                        cutoff_low,cutoff_high);
+                        cutoff_low,cutoff_high,tau_SRH_error);
                     easy_summary = [raw_times(j,1) easy_summary]; 
                     defect_fits{j,k} = {easy_summary,all_defect}; 
                 catch
@@ -1047,6 +1060,7 @@ for i = 1:num_samples
             %deltan_initial
             deltan = deltan_initial; 
             tau_SRH = ((1./tau)-(1./tau_initial)).^(-1);
+            tau_SRH_error = sqrt(((((1./tau).^2)./((1./tau_SRH).^2)).*((0.05.*tau).^2))+((((1./tau_initial).^2)./((1./tau_SRH).^2)).*((0.05.*tau_initial).^2)));
             loglog(deltan,tau_SRH);
             legend('initial','this time','SRH'); 
             if count == 1
@@ -1060,8 +1074,11 @@ for i = 1:num_samples
             save_this = [savedirname '\' lifetime_analysis{1,i} '\' ...
                 lifetime_analysis{1,i} '_' num2str(raw_times(j,1)) ...
                 's_harmSum'];
+            index_nan = find(isnan(tau_SRH)==1); 
+            tau_SRH(index_nan) = [];
+            deltan(index_nan) = [];
             [easy_summary,all_defect] = fit_procedure(lifetime_breakdown,...
-                deltan,tau_SRH,save_this,300,Na_now,type,cutoff_low,cutoff_high);
+                deltan,tau_SRH,save_this,300,Na_now,type,cutoff_low,cutoff_high,tau_SRH_error);
             easy_summary = [raw_times(j,1) easy_summary]; 
             defect_fits{j,k} = {easy_summary,all_defect}; 
         end
@@ -1246,8 +1263,8 @@ for i = 1:num_samples
     raw_tau = lifetime_all{index}; 
     norm_raw = norm_lifetime_all{index}; 
     Ntstar_raw = Ntstar{index}; 
-    %We want to write 7 columns of summary data for plotting
-    to_write = zeros(num_meas,7); 
+    %We want to write 9 columns of summary data for plotting
+    to_write = zeros(num_meas,10); 
     FZ_track = cell(num_meas,1); 
     count = 1; 
     if strcmp(lifetime_analysis{1,i},'68-4')==1 || ...
@@ -1285,9 +1302,12 @@ for i = 1:num_samples
             %write the SRH lifetime
             tau_SRH = all_defect{2}{7}; 
             deltan_SRH = all_defect{2}{8}; 
+            tau_SRH_error = all_defect{2}{9}; 
             X_SRH = all_defect{2}{6}; 
             tau_SRH_single = interp1(deltan_SRH,tau_SRH,deltan_target); 
+            tau_SRH_error_single = interp1(deltan_SRH,tau_SRH_error,deltan_target); 
             to_write(count,3) = tau_SRH_single; 
+            to_write(count,9) = tau_SRH_error_single; 
             %write the normalized raw lifetime
             index_time = find(norm_raw(:,1)==easy_now(1));
             if isempty(index_time)==0
@@ -1310,6 +1330,13 @@ for i = 1:num_samples
                 end
                 %write the Ntstar from the SRH lifetime
                 to_write(count,7) = (1/to_write(count,3))-(1/to_write(2,3)); 
+                %Need the Ntstar error, in this case it's just given by +/-
+                %5% error in each state
+                dNtdtdeg = 1/(to_write(count,3)^2); 
+                dNtdtinit = 1/(to_write(2,3)^2);
+                dtdeg = 0.05*to_write(count,3); 
+                dtinit = 0.05*to_write(2,3); 
+                to_write(count,8) = sqrt(((dNtdtdeg*dtdeg)^2)+((dNtdtinit*dtinit)^2)); 
             else
                 FZ_track{count} = surface_control{indexFZ};
                 %write the normalized SRH lifetime
@@ -1320,6 +1347,14 @@ for i = 1:num_samples
                 end
                 %write the Ntstar from the SRH lifetime
                 to_write(count,7) = (1/to_write(count,3))-(1/to_write(1,3)); 
+                %Need the Ntstar error
+                error_tau_deg = to_write(count,9); 
+                error_tau_init = to_write(1,9); 
+                dNtdtdeg = (1/(to_write(count,3)^2));
+                dNtdtinit = (1/(to_write(1,3)^2));
+                dtdeg = error_tau_deg;
+                dtinit = error_tau_init; 
+                to_write(count,8) = sqrt(((dNtdtdeg*dtdeg)^2)+((dNtdtinit*dtinit)^2)); 
             end
             %write the injection dependent data for fit refining
             tau_write = [X_SRH,tau_SRH]; 
@@ -1334,9 +1369,9 @@ for i = 1:num_samples
         end
     end
     save_this = [savedirname '\' lifetime_analysis{1,i} '\all_data_summary.xlsx'];
-    labels = {'time [s]','tau [s]','tauSRH [s]','norm tau [-]','norm tauSRH [-]','Nt*','Nt* SRH','surface'}; 
-    xlswrite(save_this,labels,1,'A1:H1'); 
+    labels = {'time [s]','tau [s]','tauSRH [s]','norm tau [-]','norm tauSRH [-]','Nt*','Nt* SRH','Nt* error','tauSRH error','surface'}; 
+    xlswrite(save_this,labels,1,'A1:J1'); 
     xlswrite(save_this,to_write,1,'A2'); 
-    xlswrite(save_this,FZ_track,1,'H2'); 
+    xlswrite(save_this,FZ_track,1,'J2'); 
 end   
     
