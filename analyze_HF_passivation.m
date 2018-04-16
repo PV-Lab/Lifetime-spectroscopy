@@ -23,7 +23,7 @@ SOFTWARE.
 %}
 %% First process the raw data
 clear all; close all; clc; 
-dirname = 'C:\Users\Mallory Jensen\Documents\LeTID\PDG\round 3 data\04-03-2018_DegTime20000sec'; 
+dirname = 'C:\Users\Mallory Jensen\Documents\LeTID\PDG\round 3 data\04-12-2018_DegTime100000sec'; 
 samples = {'1-5','2-5','3-5','4-5','5-5','6-5','7-5','8-5','P-1'};
 for index = 1:length(samples)
     [fileList,fileListShort] = getAllFiles([dirname '\' samples{index}]); 
@@ -57,7 +57,7 @@ end
 clear all; close all; clc;
 %Process data after HF passivation
 
-dirname = 'C:\Users\Mallory Jensen\Documents\LeTID\PDG\round 3 data\04-03-2018_DegTime20000sec'; 
+dirname = 'C:\Users\Mallory Jensen\Documents\LeTID\PDG\round 3 data\04-12-2018_DegTime100000sec'; 
 samples = {'1-5','2-5','3-5','4-5','5-5','6-5','7-5','8-5','P-1'};
 lifetime_store = zeros(length(samples),1); 
 
@@ -128,7 +128,7 @@ clear all; close all; clc;
 % dirname7 = 'C:\Users\Mallory Jensen\Documents\LeTID\PDG\round 2 data\#3 degradation\January 31 2018';
 % dirnames = {dirname1 dirname2 dirname3 dirname4 dirname5 dirname6 dirname7}; 
 % labels = {'initial','2500s','5000s','10000s','25000s','50000s','101735s'};
-savedirname='C:\Users\Mallory Jensen\Documents\LeTID\PDG\round 3 data\summary\20000s';
+savedirname='C:\Users\Mallory Jensen\Documents\LeTID\PDG\round 3 data\summary\100000s';
 dirname1='C:\Users\Mallory Jensen\Documents\LeTID\PDG\round 3 data\03-26-2018_DegTime0sec';
 dirname2='C:\Users\Mallory Jensen\Documents\LeTID\PDG\round 3 data\03-27-2018_DegTime500sec';
 dirname3='C:\Users\Mallory Jensen\Documents\LeTID\PDG\round 3 data\03-28-2018_DegTime1000sec';
@@ -137,16 +137,21 @@ dirname5='C:\Users\Mallory Jensen\Documents\LeTID\PDG\round 3 data\03-30-2018_De
 dirname6='C:\Users\Mallory Jensen\Documents\LeTID\PDG\round 3 data\03-31-2018_DegTime7500sec';
 dirname7='C:\Users\Mallory Jensen\Documents\LeTID\PDG\round 3 data\04-02-2018_DegTime10000sec';
 dirname8='C:\Users\Mallory Jensen\Documents\LeTID\PDG\round 3 data\04-03-2018_DegTime20000sec';
+dirname9 = 'C:\Users\Mallory Jensen\Documents\LeTID\PDG\round 3 data\04-05-2018_DegTime40000sec';
+dirname10 = 'C:\Users\Mallory Jensen\Documents\LeTID\PDG\round 3 data\04-06-2018_DegTime60000sec';
+dirname11 = 'C:\Users\Mallory Jensen\Documents\LeTID\PDG\round 3 data\04-10-2018_DegTime80000sec'; 
+dirname12 = 'C:\Users\Mallory Jensen\Documents\LeTID\PDG\round 3 data\04-12-2018_DegTime100000sec';
 dirnames = {dirname1,dirname2,dirname3,dirname4,dirname5,dirname6,...
-    dirname7,dirname8};
-labels= {'0s','500s','1000s','2500s','5000s','7500s','10000s','20000s'};
+    dirname7,dirname8,dirname9,dirname10,dirname11,dirname12};
+labels= {'0s','500s','1000s','2500s','5000s','7500s','10000s','20000s',...
+    '40000s','60000s','80000s','100000s'};
 cm = colormap(hsv(length(dirnames))); 
 % samples = {'1-6','2-6','3-6','4-6','5-6','6-6','7-6','8-6','P-1'};
 % samples = {'1-7','4-7','6-7','7-7'};
 % samples = {'2-7','3-7','5-7','8-7'};
 % samples = {'1-3','2-3','3-3','4-3','5-3','6-3','7-3','8-3','P-2'};
 samples = {'1-5','2-5','3-5','4-5','5-5','6-5','7-5','8-5','P-1'};
-savename = '_20000s_lifetime summary';
+savename = '_100000s_lifetime summary';
 for i = 1:length(samples)
     h=figure('units','normalized','outerposition',[0 0 1 1]);
     curves = [];
@@ -200,7 +205,7 @@ end
 
 %% Plot lifetime as function of LTA temperature
 clear all; close all; clc; 
-savedirname = 'C:\Users\Mallory Jensen\Documents\LeTID\PDG\round 3 data\summary\20000s';
+savedirname = 'C:\Users\Mallory Jensen\Documents\LeTID\PDG\round 3 data\summary\100000s';
 dirname = 'C:\Users\Mallory Jensen\Documents\LeTID\PDG\round 3 data\03-26-2018_DegTime0sec';
 % samples = {'1-6','2-6','3-6','4-6','5-6','6-6','7-6','8-6'};
 % LTA = [0 600 550 500 450 700 750 650];
@@ -251,9 +256,9 @@ print(h,'-dpng','-r0',[savedirname '\initial lifetime summary with LTA.png']);
 
 %% Make the degradation curves
 clear all; close all; clc; 
-savedirname = 'C:\Users\Mallory Jensen\Documents\LeTID\PDG\round 3 data\summary\20000s';
-savename = '_20000s_degradation';
-max_time = 20000; 
+savedirname = 'C:\Users\Mallory Jensen\Documents\LeTID\PDG\round 3 data\summary\100000s';
+savename = '_100000s_degradation';
+max_time = 100000; 
 meas_details = 'C:\Users\Mallory Jensen\Documents\LeTID\PDG\round 3 data\measurement_details.xlsx'; 
 deltan_target = 6e14; %target injection level for the measurements, changed to 6e14 on 2/13/17 from 5e14
 %Get the measurement details
@@ -352,8 +357,8 @@ ylabel('lifetime [s]','FontSize',25);
 legend(labels); 
 % title('high hydrogen','FontSize',25); 
 set(0,'defaultAxesFontSize', 20)
-hgsave(lifetime_raw,[savedirname '\highH' savename]);
-print(lifetime_raw,'-dpng','-r0',[savedirname '\highH' savename '.png']);
+hgsave(lifetime_raw,[savedirname '\raw' savename]);
+print(lifetime_raw,'-dpng','-r0',[savedirname '\raw' savename '.png']);
 figure(lifetime_norm); 
 xlabel('time [s]','FontSize',25); 
 ylabel('norm. lifetime [-]','FontSize',25); 
@@ -361,13 +366,13 @@ legend(labels);
 axis([1 max_time 0 2]);
 % title('high hydrogen','FontSize',25); 
 set(0,'defaultAxesFontSize', 20)
-hgsave(lifetime_norm,[savedirname '\highH_norm' savename]);
-print(lifetime_norm,'-dpng','-r0',[savedirname '\highH_norm' savename '.png']);
+hgsave(lifetime_norm,[savedirname '\norm' savename]);
+print(lifetime_norm,'-dpng','-r0',[savedirname '\norm' savename '.png']);
 figure(Nt_star); 
 xlabel('time [s]','FontSize',25); 
 ylabel('N_t*','FontSize',25); 
 legend(labels,'Location','northwest'); 
 % title('high hydrogen','FontSize',25); 
 set(0,'defaultAxesFontSize', 20)
-hgsave(Nt_star,[savedirname '\highH_Ntstar' savename]);
-print(Nt_star,'-dpng','-r0',[savedirname '\highH_Ntstar' savename '.png']);
+hgsave(Nt_star,[savedirname '\Ntstar' savename]);
+print(Nt_star,'-dpng','-r0',[savedirname '\Ntstar' savename '.png']);
