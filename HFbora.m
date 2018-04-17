@@ -269,19 +269,36 @@ elseif strcmp(bora,'follow-up')==1
     dirname13 = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\Follow-up experiment\lifetime data\March 2018 as received UKN\degradation\March 30 2018\20000s';
     dirname14 = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\Follow-up experiment\lifetime data\March 2018 as received UKN\degradation\March 30 2018\40000s';
     dirname15 = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\Follow-up experiment\lifetime data\March 2018 as received UKN\degradation\April 3 2018\40000s';
+    dirname16 = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\Follow-up experiment\lifetime data\March 2018 as received UKN\degradation\April 3 2018\60000s';
+    dirname17 = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\Follow-up experiment\lifetime data\March 2018 as received UKN\degradation\April 4 2018\60000s';
+    dirname18 = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\Follow-up experiment\lifetime data\March 2018 as received UKN\degradation\April 4 2018\80000s';
+    dirname19 = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\Follow-up experiment\lifetime data\March 2018 as received UKN\degradation\April 5 2018\80000s';
+    dirname20 = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\Follow-up experiment\lifetime data\March 2018 as received UKN\degradation\April 5 2018\100000s';
+    dirname21= 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\Follow-up experiment\lifetime data\March 2018 as received UKN\degradation\April 6 2018\100000s';
+    dirname22 = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\Follow-up experiment\lifetime data\March 2018 as received UKN\degradation\April 6 2018\125000s';
+    dirname23 = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\Follow-up experiment\lifetime data\March 2018 as received UKN\degradation\April 9 2018\125000s';
+    dirname24 = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\Follow-up experiment\lifetime data\March 2018 as received UKN\degradation\April 9 2018\146600s';
+    dirname25 = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\Follow-up experiment\lifetime data\March 2018 as received UKN\degradation\April 10 2018\146600s';
+    dirname26 = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\Follow-up experiment\lifetime data\March 2018 as received UKN\degradation\April 10 2018\167000s';
+    dirname27 = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\Follow-up experiment\lifetime data\March 2018 as received UKN\degradation\April 13 2018\167000s';
+    dirname28 = 'C:\Users\Mallory Jensen\Documents\LeTID\Hydrogenation experiment\Follow-up experiment\lifetime data\March 2018 as received UKN\degradation\April 13 2018\187160s';
     dirnames = {dirname1,dirname2,dirname3,dirname4,dirname5,dirname6,...
         dirname7,dirname8,dirname9,dirname10,dirname11,dirname12,...
-        dirname13,dirname14,dirname15};
+        dirname13,dirname14,dirname15,dirname16,dirname17,dirname18,dirname19,...
+        dirname20,dirname21,dirname22,dirname23,dirname24,dirname25,dirname26,...
+        dirname27,dirname28};
     labels = {'initial','250s','500s','1000s','1001s','2500s','5000s','5001s',...
-        '7500s','10000s','10001s','20660s','20661s','42800s','42801s'};
+        '7500s','10000s','10001s','20660s','20661s','42800s','42801s',...
+        '64460','64461','84500','84501','108440','108441','133040','133041',...
+        '155000','155001','175510','175511','195670'};
     plotting_groups = {{'59b','55f','59a','57b'; 'sandwich b','sandwich f','non-sandwich a','non-sandwich b'},...
         {'56c','57c','54c'; 'control','bare firing + re-firing','nitride firing + re-firing'},...
         {'60f','61f';'control','with etching'},...
         {'60f','44f','49f','50f','53f','57f';'control','350C 10 min','350C 30 min','350C 120 min','300C 30 min','400C 30 min'}};
     plotting_names = {'firing config','out-diffusion','thickness','dark annealing'};
     surface_control = {};
-    savename = '_followup_42801s';
-    max_time =42801; 
+    savename = '_followup_195670s';
+    max_time =195670; 
     latesta = []; latestb = [];
     lifetime_analysis = {};
 else
