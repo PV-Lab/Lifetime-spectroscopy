@@ -23,7 +23,7 @@ SOFTWARE.
 %}
 %% First process the raw data
 clear all; close all; clc; 
-dirname = 'C:\Users\Mallory Jensen\Documents\LeTID\PDG\round 3 data\04-20-2018_DegTime160000sec'; 
+dirname = 'C:\Users\Mallory Jensen\Documents\LeTID\PDG\round 3 data\04-26-2018_DegTime231240sec'; 
 samples = {'1-5','2-5','3-5','4-5','5-5','6-5','7-5','8-5','P-1'};
 for index = 1:length(samples)
     [fileList,fileListShort] = getAllFiles([dirname '\' samples{index}]); 
@@ -57,7 +57,7 @@ end
 clear all; close all; clc;
 %Process data after HF passivation
 
-dirname = 'C:\Users\Mallory Jensen\Documents\LeTID\PDG\round 3 data\04-20-2018_DegTime160000sec'; 
+dirname = 'C:\Users\Mallory Jensen\Documents\LeTID\PDG\round 3 data\04-26-2018_DegTime231240sec'; 
 samples = {'1-5','2-5','3-5','4-5','5-5','6-5','7-5','8-5','P-1'};
 lifetime_store = zeros(length(samples),1); 
 
@@ -128,7 +128,7 @@ clear all; close all; clc;
 % dirname7 = 'C:\Users\Mallory Jensen\Documents\LeTID\PDG\round 2 data\#3 degradation\January 31 2018';
 % dirnames = {dirname1 dirname2 dirname3 dirname4 dirname5 dirname6 dirname7}; 
 % labels = {'initial','2500s','5000s','10000s','25000s','50000s','101735s'};
-savedirname='C:\Users\Mallory Jensen\Documents\LeTID\PDG\round 3 data\summary\160000s';
+savedirname='C:\Users\Mallory Jensen\Documents\LeTID\PDG\round 3 data\summary\231240s';
 dirname1='C:\Users\Mallory Jensen\Documents\LeTID\PDG\round 3 data\03-26-2018_DegTime0sec';
 dirname2='C:\Users\Mallory Jensen\Documents\LeTID\PDG\round 3 data\03-27-2018_DegTime500sec';
 dirname3='C:\Users\Mallory Jensen\Documents\LeTID\PDG\round 3 data\03-28-2018_DegTime1000sec';
@@ -144,18 +144,23 @@ dirname12 = 'C:\Users\Mallory Jensen\Documents\LeTID\PDG\round 3 data\04-12-2018
 dirname13 = 'C:\Users\Mallory Jensen\Documents\LeTID\PDG\round 3 data\04-18-2018_DegTime120000sec';
 dirname14 = 'C:\Users\Mallory Jensen\Documents\LeTID\PDG\round 3 data\04-19-2018_DegTime140000sec';
 dirname15 = 'C:\Users\Mallory Jensen\Documents\LeTID\PDG\round 3 data\04-20-2018_DegTime160000sec';
+dirname16 = 'C:\Users\Mallory Jensen\Documents\LeTID\PDG\round 3 data\04-23-2018_DegTime180000sec';
+dirname17 = 'C:\Users\Mallory Jensen\Documents\LeTID\PDG\round 3 data\04-24-2018_DegTime201300sec';
+dirname18 = 'C:\Users\Mallory Jensen\Documents\LeTID\PDG\round 3 data\04-25-2018_DegTime211240sec';
+dirname19 = 'C:\Users\Mallory Jensen\Documents\LeTID\PDG\round 3 data\04-26-2018_DegTime231240sec';
 dirnames = {dirname1,dirname2,dirname3,dirname4,dirname5,dirname6,...
     dirname7,dirname8,dirname9,dirname10,dirname11,dirname12,dirname13,...
-    dirname14,dirname15};
+    dirname14,dirname15,dirname16,dirname17,dirname18,dirname19};
 labels= {'0s','500s','1000s','2500s','5000s','7500s','10000s','20000s',...
-    '40000s','60000s','80000s','100000s','120000s','140000s','160000s'};
+    '40000s','60000s','80000s','100000s','120000s','140000s','160000s',...
+    '180000s','201300s','211240s','231240s'};
 cm = colormap(hsv(length(dirnames))); 
 % samples = {'1-6','2-6','3-6','4-6','5-6','6-6','7-6','8-6','P-1'};
 % samples = {'1-7','4-7','6-7','7-7'};
 % samples = {'2-7','3-7','5-7','8-7'};
 % samples = {'1-3','2-3','3-3','4-3','5-3','6-3','7-3','8-3','P-2'};
 samples = {'1-5','2-5','3-5','4-5','5-5','6-5','7-5','8-5','P-1'};
-savename = '_160000s_lifetime summary';
+savename = '_231240s_lifetime summary';
 for i = 1:length(samples)
     h=figure('units','normalized','outerposition',[0 0 1 1]);
     curves = [];
@@ -260,9 +265,9 @@ print(h,'-dpng','-r0',[savedirname '\initial lifetime summary with LTA.png']);
 
 %% Make the degradation curves
 clear all; close all; clc; 
-savedirname = 'C:\Users\Mallory Jensen\Documents\LeTID\PDG\round 3 data\summary\160000s';
-savename = '_160000s_degradation';
-max_time = 160000; 
+savedirname = 'C:\Users\Mallory Jensen\Documents\LeTID\PDG\round 3 data\summary\231240s';
+savename = '_231240s_degradation';
+max_time = 231240; 
 meas_details = 'C:\Users\Mallory Jensen\Documents\LeTID\PDG\round 3 data\measurement_details.xlsx'; 
 deltan_target = 6e14; %target injection level for the measurements, changed to 6e14 on 2/13/17 from 5e14
 %Get the measurement details
