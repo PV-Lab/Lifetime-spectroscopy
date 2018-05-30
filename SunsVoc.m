@@ -1,4 +1,5 @@
 %{
+
 MIT License
 
 Copyright (c) [2018] [Mallory Ann Jensen, jensenma@alum.mit.edu & Ryan Sander, rmsander@mit.edu]
@@ -26,12 +27,16 @@ SOFTWARE.
 %Lifetime measurements.
 %___________
 %USER INPUTS
-base_sample_name = 'BSF4-8_05-15-2018'; %E.g. 'BSF3-8'; don't include seconds
-degradation_seconds = [0,500,1000,2500,5000,7500,10000,13510,23510,39170,68090,98330]; %Enter as a list where each index is a time measurement (e.g. 500 corresponds to a lifetime measurement at 500 seconds)
+directory = 'C:\Users\Mallory Jensen\Documents\LeTID\Quasi Fermi level\UNSW collaboration\Cells at MIT\Suns-Voc\BSF 4-8';
+base_sample_name = [directory '\BSF4-8_']; %E.g. 'BSF3-8'; don't include seconds
+degradation_seconds = [0,500,1000,2500,5000,7500,7501,10000,13510,23510,39170,68090,68091,98330,98331,130520,160310,245570,269030,332570]; %Enter as a list where each index is a time measurement (e.g. 500 corresponds to a lifetime measurement at 500 seconds)
+% degradation_seconds = [0 5 10 20 40 70 110 160 220 300 400 530 700 701 900 1150 1400 1650 1900 2150 2400 2700 3000 3250 3500 3800 4100 4400];
+% degradation_seconds = [0 5 10 20 40 70 110 160 220 300 400 530 700 701 900 1400 1650 1900 2150 2400 2700 3000 3250 3500 3800 4100 4400];
+deltan_target = 6e14; 
 %___________ABOVE ARE THE ONLY TWO USER INPUTS
 %Initialize output vectors and tensors
 num_files = length(degradation_seconds);
-Vocs = zeros(num_files,1); %Open circuit voltages across degradation
+VOCs = zeros(num_files,1); %Open circuit voltages across degradation
 PFFs = zeros(num_files,1); %Pseudo fill factors across degradation
 PEs = zeros(num_files,1); %Pseudo-Efficiencies across degradation
 Ts = zeros(num_files,1); %Temperatures across degradation
@@ -43,25 +48,30 @@ taus_raw = zeros(num_files,125); %Take lifetime values over time and over degrad
 %num_files = length(degradation_seconds);
 for i=1:num_files
     %Determine target filename
-    if i == 1
-        filename = base_sample_name;
-    else
-        filename = strcat(base_sample_name,'_',num2str(degradation_seconds(i)));
-    end
+%     filename = strcat(base_sample_name,num2str(degradation_seconds(i)),'s');
+%     filename = [base_sample_name num2str(degradation_seconds(i)) 's.xlsm'];
+    filename = [base_sample_name num2str(degradation_seconds(i)) '.xlsm'];
+%     if i == 1
+%         filename = base_sample_name;
+%     else
+%         filename = strcat(base_sample_name,'_',num2str(degradation_seconds(i)));
+%     end
     %Now that we have the target filename and have made the appropriate initializations, use xlsread to take data
     data_summary = xlsread(filename,'Summary','A2:S2');
     data_raw = xlsread(filename,'RawData','A2:J126')'; %Take transpose for syntax simplicity
     %After reading this data from MATLAB, write to vectors for plotting
-    PFFs(i) = data_summary(2);
-    VOCs(i) = data_summary(3);
-    PEs(i) = data_summary(7);
-    Ts(i) = data_summary(17);
+    PEs(i) = data_summary(2); %efficiency
+    VOCs(i) = data_summary(3); %Voc
+    PFFs(i) = data_summary(7); %pseudo fill factor 
+    Ts(i) = data_summary(17); %temperature
     seconds_raw(i,:) = data_raw(1,:);
     MCDs_raw(i,:) = data_raw(9,:);
     taus_raw(i,:) = data_raw(10,:);
     %We can append to the Taus vector by taking the max of the raw values
     %for this measurement
     Taus(i) = max(data_raw(10,:));
+    %Interpolate the MCD tau vectors at the target excess carrier density
+    Taus(i) = interp1(MCDs_raw(i,:),taus_raw(i,:),deltan_target); 
 end
 %After we've taken data, develop plots and files to save
 %Plot 1: Injection-Dependent Lifetime
@@ -86,7 +96,32 @@ xlabel('seconds','FontSize',15);
 ylabel('Lifetime \tau (seconds)', 'FontSize',15);
 grid on
 
+%Plot 3: Voc over time
+figure
+plot(degradation_seconds,VOCs,'LineWidth',1.5);
+set(gca,'FontSize',12);
+title('V_o_c vs. t','FontSize',20);
+xlabel('seconds','FontSize',15);
+ylabel('V_o_c (V)', 'FontSize',15);
+grid on
 
+%Plot 4: efficiency over time
+figure
+plot(degradation_seconds,PEs,'LineWidth',1.5);
+set(gca,'FontSize',12);
+title('Pseudo efficiency \eta vs. t','FontSize',20);
+xlabel('seconds','FontSize',15);
+ylabel('Pseudo efficiency \eta (%)', 'FontSize',15);
+grid on
+
+%Plot 5: temperature over time
+figure
+plot(degradation_seconds,Ts,'LineWidth',1.5);
+set(gca,'FontSize',12);
+title('Temperature vs. t','FontSize',20);
+xlabel('seconds','FontSize',15);
+ylabel('Temperature (C)', 'FontSize',15);
+grid on
 
 
 
