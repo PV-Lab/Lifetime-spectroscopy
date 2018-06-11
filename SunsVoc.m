@@ -22,14 +22,15 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 %}
+clear all; close all; clc;
 
 %This function is used to gather cell degradation data from Suns Voc
 %Lifetime measurements.
 %___________
 %USER INPUTS
-directory = 'C:\Users\Mallory Jensen\Documents\LeTID\Quasi Fermi level\UNSW collaboration\Cells at MIT\Suns-Voc\BSF 4-8';
-base_sample_name = [directory '\BSF4-8_']; %E.g. 'BSF3-8'; don't include seconds
-degradation_seconds = [0,500,1000,2500,5000,7500,7501,10000,13510,23510,39170,68090,68091,98330,98331,130520,160310,245570,269030,332570]; %Enter as a list where each index is a time measurement (e.g. 500 corresponds to a lifetime measurement at 500 seconds)
+directory = 'C:\Users\Mallory Jensen\Documents\LeTID\Quasi Fermi level\UNSW collaboration\Cells at MIT\Suns-Voc\PERC 3-8';
+base_sample_name = [directory '\PERC3-8_']; %E.g. 'BSF3-8'; don't include seconds
+degradation_seconds = [0,500,1000,2500,5000,7500,7501,10000,23510,23511,39170,68090,68091,98330,98331,130520,160310,245570,269030,332570,352910,416390,446960,524660]; %Enter as a list where each index is a time measurement (e.g. 500 corresponds to a lifetime measurement at 500 seconds)
 % degradation_seconds = [0 5 10 20 40 70 110 160 220 300 400 530 700 701 900 1150 1400 1650 1900 2150 2400 2700 3000 3250 3500 3800 4100 4400];
 % degradation_seconds = [0 5 10 20 40 70 110 160 220 300 400 530 700 701 900 1400 1650 1900 2150 2400 2700 3000 3250 3500 3800 4100 4400];
 deltan_target = 6e14; 
